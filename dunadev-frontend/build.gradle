@@ -1,0 +1,9 @@
+plugins {
+  id 'org.siouan.frontend-jdk21' version '10.0.0'
+}
+
+frontend {
+  nodeVersion = '24.17.0'
+  assembleScript = 'run build'
+  verboseModeEnabled = true
+}

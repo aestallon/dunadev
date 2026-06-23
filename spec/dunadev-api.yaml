@@ -1,0 +1,8 @@
+openapi: 3.0.1
+info:
+  title: DunaDev API
+  version: 1.0.0
+tags: []
+paths: {}
+components:
+  schemas: {}
