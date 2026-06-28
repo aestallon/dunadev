@@ -4,10 +4,10 @@
   "generator-cli": {
     "version": "7.10.0",
     "generators": {
-      "revizit": {
+      "dunadev": {
         "generatorName": "typescript-angular",
-        "inputSpec": "../spec/revizit-api.yaml",
-        "output": "src/api/revizit",
+        "inputSpec": "../spec/dunadev-api.yaml",
+        "output": "src/api/dunadev",
         "additionalProperties": {
           "enumPropertyNaming": "UPPERCASE",
           "stringEnums": true
