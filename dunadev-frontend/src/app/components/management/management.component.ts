@@ -1,73 +1,50 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EventService } from '../../services/event.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   template: `
-    <div class="management-page container">
-      <div class="form-card">
-        <header class="form-header">
-          <h1>Create New Event</h1>
-          <p>Fill in the details below to publish a new event to the DunaDev calendar.</p>
+    <div class="manage-page">
+      <div class="container">
+        <header class="page-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p>
+              Signed in as
+              <span class="role-badge">{{ authService.role() }}</span>
+            </p>
+          </div>
+          <button class="btn btn-secondary" (click)="logout()">Sign out</button>
         </header>
 
-        <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
-          <section class="form-section">
-            <div class="form-group">
-              <label for="title">Event Title *</label>
-              <input id="title" type="text" formControlName="title" placeholder="e.g. Budapest JS Meetup #42" />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Description (Hungarian)</label>
-                <textarea formControlName="descriptionHu" placeholder="A meetup részletes leírása..." rows="4"></textarea>
-              </div>
-              <div class="form-group">
-                <label>Description (English)</label>
-                <textarea formControlName="descriptionEn" placeholder="Detailed description in English..." rows="4"></textarea>
-              </div>
-            </div>
-          </section>
-
-          <section class="form-section">
-            <h3 class="section-title">Logistics</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="date">Date & Time *</label>
-                <input id="date" type="datetime-local" formControlName="date" />
-              </div>
-              <div class="form-group">
-                <label for="externalLink">External Link *</label>
-                <input id="externalLink" type="url" formControlName="externalLink" placeholder="https://meetup.com/event/..." />
-              </div>
-            </div>
-          </section>
-
-          <section class="form-section" formGroupName="location">
-            <h3 class="section-title">Location</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="locName">Venue Name *</label>
-                <input id="locName" type="text" formControlName="name" placeholder="e.g. Google Ground" />
-              </div>
-              <div class="form-group">
-                <label for="locLink">Google Maps Link *</label>
-                <input id="locLink" type="url" formControlName="googleMapsLink" placeholder="https://goo.gl/maps/..." />
-              </div>
-            </div>
-          </section>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" (click)="cancel()">Discard</button>
-            <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid">Publish Event</button>
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <div class="dash-card-icon events-icon"></div>
+            <h3>My Events</h3>
+            <p>Create, edit, cancel, or reschedule your events.</p>
+            <span class="dash-card-status">Coming soon</span>
           </div>
-        </form>
+
+          <div class="dash-card">
+            <div class="dash-card-icon locations-icon"></div>
+            <h3>Locations</h3>
+            <p>Manage your saved venues for quick event setup.</p>
+            <span class="dash-card-status">Coming soon</span>
+          </div>
+
+          @if (authService.isAdmin()) {
+            <div class="dash-card">
+              <div class="dash-card-icon admin-icon"></div>
+              <h3>Administration</h3>
+              <p>Manage all organisers, events, and user accounts.</p>
+              <span class="dash-card-status">Coming soon</span>
+            </div>
+          }
+        </div>
       </div>
     </div>
   `,
@@ -77,118 +54,91 @@ import { Router } from '@angular/router';
       margin: 0 auto;
       padding: 0 1.5rem;
     }
-    .management-page {
-      padding: 4rem 0 6rem;
-      background: var(--bg);
+    .manage-page {
+      padding: 3rem 0 6rem;
     }
-    .form-card {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 3rem;
-      box-shadow: var(--shadow-lg);
-    }
-    .form-header {
-      margin-bottom: 3rem;
-      text-align: center;
-    }
-    .form-header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.75rem;
-    }
-    .form-header p {
-      color: var(--text-muted);
-    }
-    .form-section {
-      margin-bottom: 2.5rem;
-    }
-    .section-title {
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-      font-weight: 700;
+    .page-header {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 3rem;
     }
-    .section-title::after {
-      content: '';
-      flex-grow: 1;
-      height: 1px;
-      background: var(--border);
+    .page-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.375rem;
     }
-    .form-group {
-      margin-bottom: 1.25rem;
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
     }
-    .form-row {
+    .role-badge {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+    .dashboard-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
-    @media (max-width: 640px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
+    .dash-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: var(--transition);
+      position: relative;
     }
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
+    .dash-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
     }
-    .btn-primary:disabled {
-      background-color: var(--border);
+    .dash-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+    }
+    .events-icon {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    }
+    .locations-icon {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    }
+    .admin-icon {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+    .dash-card h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+    .dash-card p {
+      font-size: 0.875rem;
       color: var(--text-muted);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+      line-height: 1.5;
+      margin-bottom: 1rem;
     }
-  `
+    .dash-card-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  `,
 })
 export class ManagementComponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly eventService = inject(EventService);
+  readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  eventForm = this.fb.group({
-    title: ['', Validators.required],
-    descriptionHu: [''],
-    descriptionEn: [''],
-    date: ['', Validators.required],
-    externalLink: ['', [Validators.required, Validators.pattern('https?://.+')]],
-    location: this.fb.group({
-      name: ['', Validators.required],
-      googleMapsLink: ['', [Validators.required, Validators.pattern('https?://.+')]],
-    })
-  });
-
-  onSubmit() {
-    if (this.eventForm.valid) {
-      const val = this.eventForm.value;
-      this.eventService.addEvent({
-        title: val.title!,
-        description: {
-          hu: val.descriptionHu || undefined,
-          en: val.descriptionEn || undefined,
-        },
-        date: new Date(val.date!),
-        location: {
-          name: val.location!.name!,
-          googleMapsLink: val.location!.googleMapsLink!,
-        },
-        externalLink: val.externalLink!,
-      });
-      alert('Event created successfully!');
-      this.router.navigate(['/']);
-    }
-  }
-
-  cancel() {
+  logout() {
+    this.authService.logout();
     this.router.navigate(['/']);
   }
 }
