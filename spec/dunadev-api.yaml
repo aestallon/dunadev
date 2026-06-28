@@ -1,8 +1,297 @@
 openapi: 3.0.1
 info:
   title: DunaDev API
+  description: Public calendar of tech meetups and events in and around Budapest.
   version: 1.0.0
-tags: []
-paths: {}
+
+tags:
+  - name: Public Events
+    description: Publicly accessible event endpoints (no authentication required).
+  - name: Authentication
+    description: Login and token refresh endpoints.
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      operationId: login
+      summary: Authenticate with email and password
+      description: >
+        Validates the provided credentials and returns an access/refresh token pair.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials.
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      operationId: refreshToken
+      summary: Refresh an access token
+      description: >
+        Accepts a valid refresh token and returns a new access/refresh token pair.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid or expired refresh token.
+
+  /api/events/upcoming:
+    get:
+      tags:
+        - Public Events
+      operationId: getUpcomingEvents
+      summary: List the next upcoming events
+      description: >
+        Returns the closest upcoming events that are publicly visible and not
+        cancelled. Intended for the landing-page hero cards.
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of events to return (1–20).
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 5
+      responses:
+        '200':
+          description: A list of upcoming events ordered by start time ascending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+
+  /api/events:
+    get:
+      tags:
+        - Public Events
+      operationId: getEventsByMonth
+      summary: List events for a given month
+      description: >
+        Returns all publicly visible, non-cancelled events whose start time
+        falls within the specified year and month. Intended for the monthly
+        event list and calendar view on the landing page.
+      parameters:
+        - name: year
+          in: query
+          description: Four-digit year.
+          required: true
+          schema:
+            type: integer
+            example: 2026
+        - name: month
+          in: query
+          description: Month number (1–12).
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            example: 6
+      responses:
+        '200':
+          description: A list of events for the requested month ordered by start time ascending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '400':
+          description: Invalid year or month parameter.
+
 components:
-  schemas: {}
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+        description:
+          type: string
+      required: [ status, timestamp ]
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - expiresIn
+        - role
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+          description: Access token lifetime in seconds.
+        role:
+          type: string
+
+    EventSummary:
+      type: object
+      description: Public-facing summary of an event, including organiser and location info.
+      required:
+        - id
+        - title
+        - startsAt
+        - free
+        - registrationRequired
+        - status
+        - organiser
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+          description: Link to the external event page.
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        organiser:
+          $ref: '#/components/schemas/OrganiserSummary'
+        location:
+          $ref: '#/components/schemas/LocationSummary'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLink'
+
+    EventStatus:
+      type: string
+      enum:
+        - SCHEDULED
+        - CANCELLED
+        - RESCHEDULED
+
+    OrganiserSummary:
+      type: object
+      description: Minimal organiser info embedded in event responses.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+
+    LocationSummary:
+      type: object
+      description: Minimal location info embedded in event responses.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+
+    EventLink:
+      type: object
+      description: An additional external link attached to an event.
+      required:
+        - label
+        - url
+      properties:
+        label:
+          type: string
+        url:
+          type: string
