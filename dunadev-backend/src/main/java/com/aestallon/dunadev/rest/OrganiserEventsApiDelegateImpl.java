@@ -3,6 +3,7 @@ package com.aestallon.dunadev.rest;
 import com.aestallon.dunadev.rest.api.OrganiserEventsApiDelegate;
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
+import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import com.aestallon.dunadev.service.OrganiserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,16 @@ public class OrganiserEventsApiDelegateImpl implements OrganiserEventsApiDelegat
   public ResponseEntity<EventSummary> createEvent(EventRequest eventRequest) {
     var summary = organiserEventService.createEvent(currentEmail(), eventRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(summary);
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> getEvent(Long id) {
+    return ResponseEntity.ok(organiserEventService.getMyEvent(currentEmail(), id));
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> updateEvent(Long id, EventUpdateRequest eventUpdateRequest) {
+    return ResponseEntity.ok(organiserEventService.updateEvent(currentEmail(), id, eventUpdateRequest));
   }
 
   @Override

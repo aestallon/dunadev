@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { OrganiserEventsService, EventSummary } from '../../../api/dunadev';
+import { OrganiserEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
 
 @Component({
   selector: 'app-manage-events',
@@ -64,6 +64,12 @@ import { OrganiserEventsService, EventSummary } from '../../../api/dunadev';
                     }
                   </div>
                 </div>
+                @if (isFutureEditable(event)) {
+                  <a [routerLink]="['/manage/events', event.id, 'edit']"
+                     class="btn btn-secondary btn-sm edit-btn">
+                    Edit
+                  </a>
+                }
               </div>
             }
           </div>
@@ -117,6 +123,13 @@ import { OrganiserEventsService, EventSummary } from '../../../api/dunadev';
       color: white;
     }
     .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-sm { padding: 0.4rem 0.875rem; font-size: 0.8125rem; }
     .loading-state, .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -222,6 +235,11 @@ import { OrganiserEventsService, EventSummary } from '../../../api/dunadev';
     }
     .free { background: #d1fae5; color: #059669; }
     .paid { background: #ede9fe; color: #7c3aed; }
+    .edit-btn {
+      flex-shrink: 0;
+      margin-left: auto;
+      text-decoration: none;
+    }
   `,
 })
 export class ManageEventsComponent implements OnInit {
@@ -229,6 +247,13 @@ export class ManageEventsComponent implements OnInit {
 
   events = signal<EventSummary[]>([]);
   loading = signal(true);
+
+  isFutureEditable(event: EventSummary): boolean {
+    return (
+      event.status !== EventStatus.CANCELLED &&
+      new Date(event.startsAt) > new Date()
+    );
+  }
 
   ngOnInit() {
     this.eventsService.getMyEvents().subscribe({

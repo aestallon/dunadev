@@ -9,10 +9,13 @@ import com.aestallon.dunadev.repository.OrganiserRepository;
 import com.aestallon.dunadev.rest.NotFoundException;
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
+import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +66,46 @@ public class OrganiserEventService {
             .build());
       }
       event.setLinks(links);
+    }
+
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  @Transactional(readOnly = true)
+  public EventSummary getMyEvent(String email, Long id) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(id, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    return PublicEventService.toSummary(event);
+  }
+
+  @Transactional
+  public EventSummary updateEvent(String email, Long id, EventUpdateRequest request) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(id, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+
+    if (!event.getStartsAt().isAfter(OffsetDateTime.now(ZoneOffset.UTC))) {
+      throw new IllegalArgumentException("Cannot edit an event that has already started or passed");
+    }
+
+    event.setTitle(request.getTitle());
+    event.setDescription(request.getDescription());
+    event.setEventUrl(request.getEventUrl());
+    event.setFree(Boolean.TRUE.equals(request.getFree()));
+    event.setRegistrationRequired(Boolean.TRUE.equals(request.getRegistrationRequired()));
+    event.setRegistrationUrl(request.getRegistrationUrl());
+    event.setVisibleFrom(request.getVisibleFrom());
+
+    event.getLinks().clear();
+    if (request.getLinks() != null) {
+      for (var lr : request.getLinks()) {
+        event.getLinks().add(EventLinkEntity.builder()
+            .event(event)
+            .label(lr.getLabel())
+            .url(lr.getUrl())
+            .build());
+      }
     }
 
     return PublicEventService.toSummary(eventRepository.save(event));

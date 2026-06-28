@@ -153,6 +153,65 @@ paths:
         '404':
           description: Location not found or not owned by the authenticated organiser.
 
+  /api/events/{id}:
+    get:
+      tags:
+        - Organiser Events
+      operationId: getEvent
+      summary: Get a single event owned by the authenticated organiser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The requested event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+    put:
+      tags:
+        - Organiser Events
+      operationId: updateEvent
+      summary: Update the editable fields of an upcoming event
+      description: >
+        Updates title, description, links, and other metadata of a future event.
+        Date, time, and location cannot be changed through this endpoint.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: Event updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '400':
+          description: The event has already started or passed.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+
   /api/events/my:
     get:
       tags:
@@ -545,3 +604,35 @@ components:
           type: string
         url:
           type: string
+
+    EventUpdateRequest:
+      type: object
+      description: Fields that may be edited on a future event. Date, time, and location are immutable.
+      required:
+        - title
+        - free
+        - registrationRequired
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        visibleFrom:
+          type: string
+          format: date-time
+          nullable: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLinkRequest'

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
@@ -36,6 +37,15 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
   List<EventEntity> findByMonth(OffsetDateTime from, OffsetDateTime to, OffsetDateTime now);
 
   boolean existsByLocationId(Long locationId);
+
+  @Query("""
+      SELECT e FROM EventEntity e
+        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.location
+        LEFT JOIN FETCH e.links
+      WHERE e.id = :id AND e.organiser = :organiser
+      """)
+  Optional<EventEntity> findByIdAndOrganiser(Long id, OrganiserEntity organiser);
 
   @Query("""
       SELECT e FROM EventEntity e

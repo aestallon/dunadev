@@ -7,6 +7,7 @@ package com.aestallon.dunadev.rest.api;
 
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
+import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -73,6 +74,39 @@ public interface OrganiserEventsApi {
     }
 
 
+    String PATH_GET_EVENT = "/api/events/{id}";
+    /**
+     * GET /api/events/{id} : Get a single event owned by the authenticated organiser
+     *
+     * @param id  (required)
+     * @return The requested event. (status code 200)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     */
+    @Operation(
+        operationId = "getEvent",
+        summary = "Get a single event owned by the authenticated organiser",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "The requested event.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = OrganiserEventsApi.PATH_GET_EVENT,
+        produces = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> getEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        return getDelegate().getEvent(id);
+    }
+
+
     String PATH_GET_MY_EVENTS = "/api/events/my";
     /**
      * GET /api/events/my : List the authenticated organiser&#39;s events
@@ -102,6 +136,46 @@ public interface OrganiserEventsApi {
         
     ) {
         return getDelegate().getMyEvents();
+    }
+
+
+    String PATH_UPDATE_EVENT = "/api/events/{id}";
+    /**
+     * PUT /api/events/{id} : Update the editable fields of an upcoming event
+     * Updates title, description, links, and other metadata of a future event. Date, time, and location cannot be changed through this endpoint. 
+     *
+     * @param id  (required)
+     * @param eventUpdateRequest  (required)
+     * @return Event updated successfully. (status code 200)
+     *         or The event has already started or passed. (status code 400)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     */
+    @Operation(
+        operationId = "updateEvent",
+        summary = "Update the editable fields of an upcoming event",
+        description = "Updates title, description, links, and other metadata of a future event. Date, time, and location cannot be changed through this endpoint. ",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Event updated successfully.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The event has already started or passed."),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = OrganiserEventsApi.PATH_UPDATE_EVENT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> updateEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "EventUpdateRequest", description = "", required = true) @Valid @RequestBody EventUpdateRequest eventUpdateRequest
+    ) {
+        return getDelegate().updateEvent(id, eventUpdateRequest);
     }
 
 }

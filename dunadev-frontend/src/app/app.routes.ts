@@ -6,6 +6,7 @@ import { ManagementComponent } from './components/management/management.componen
 import { LocationsComponent } from './components/locations/locations.component';
 import { ManageEventsComponent } from './components/events/manage-events.component';
 import { EventCreateComponent } from './components/events/event-create.component';
+import { EventEditComponent } from './components/events/event-edit.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'manage/locations', component: LocationsComponent, canActivate: [authGuard] },
   { path: 'manage/events', component: ManageEventsComponent, canActivate: [authGuard] },
   { path: 'manage/events/new', component: EventCreateComponent, canActivate: [authGuard] },
+  { path: 'manage/events/:id/edit', component: EventEditComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

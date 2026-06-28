@@ -5,6 +5,7 @@ export * from './eventLinkRequest';
 export * from './eventRequest';
 export * from './eventStatus';
 export * from './eventSummary';
+export * from './eventUpdateRequest';
 export * from './locationRequest';
 export * from './locationSummary';
 export * from './loginRequest';

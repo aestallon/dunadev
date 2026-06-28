@@ -17,6 +17,7 @@ model/eventLinkRequest.ts
 model/eventRequest.ts
 model/eventStatus.ts
 model/eventSummary.ts
+model/eventUpdateRequest.ts
 model/locationRequest.ts
 model/locationSummary.ts
 model/loginRequest.ts
