@@ -44,7 +44,7 @@ public class PublicEventService {
         .toList();
   }
 
-  private static EventSummary toSummary(EventEntity e) {
+  static EventSummary toSummary(EventEntity e) {
     var summary = new EventSummary(
         e.getId(),
         e.getTitle(),

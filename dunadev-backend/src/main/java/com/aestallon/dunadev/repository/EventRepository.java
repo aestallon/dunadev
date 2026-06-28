@@ -1,7 +1,7 @@
 package com.aestallon.dunadev.repository;
 
 import com.aestallon.dunadev.entity.EventEntity;
-import org.springframework.data.domain.Limit;
+import com.aestallon.dunadev.entity.OrganiserEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,4 +36,14 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
   List<EventEntity> findByMonth(OffsetDateTime from, OffsetDateTime to, OffsetDateTime now);
 
   boolean existsByLocationId(Long locationId);
+
+  @Query("""
+      SELECT e FROM EventEntity e
+        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.location
+        LEFT JOIN FETCH e.links
+      WHERE e.organiser = :organiser
+      ORDER BY e.startsAt DESC
+      """)
+  List<EventEntity> findByOrganiserOrderByStartsAtDesc(OrganiserEntity organiser);
 }

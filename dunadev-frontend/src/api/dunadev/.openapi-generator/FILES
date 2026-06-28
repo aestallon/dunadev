@@ -4,6 +4,7 @@ api.module.ts
 api/api.ts
 api/authentication.service.ts
 api/locations.service.ts
+api/organiserEvents.service.ts
 api/publicEvents.service.ts
 configuration.ts
 encoder.ts
@@ -12,6 +13,8 @@ index.ts
 model/apiError.ts
 model/authResponse.ts
 model/eventLink.ts
+model/eventLinkRequest.ts
+model/eventRequest.ts
 model/eventStatus.ts
 model/eventSummary.ts
 model/locationRequest.ts

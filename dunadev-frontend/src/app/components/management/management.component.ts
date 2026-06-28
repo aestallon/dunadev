@@ -22,12 +22,12 @@ import { AuthService } from '../../services/auth.service';
         </header>
 
         <div class="dashboard-grid">
-          <div class="dash-card">
+          <a routerLink="/manage/events" class="dash-card dash-card-link">
             <div class="dash-card-icon events-icon"></div>
             <h3>My Events</h3>
             <p>Create, edit, cancel, or reschedule your events.</p>
-            <span class="dash-card-status">Coming soon</span>
-          </div>
+            <span class="dash-card-action">Manage &rarr;</span>
+          </a>
 
           <a routerLink="/manage/locations" class="dash-card dash-card-link">
             <div class="dash-card-icon locations-icon"></div>

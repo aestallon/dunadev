@@ -11,6 +11,8 @@ tags:
     description: Login and token refresh endpoints.
   - name: Locations
     description: Location management for organisers (authentication required).
+  - name: Organiser Events
+    description: Event management for authenticated organisers.
 
 paths:
   /api/auth/login:
@@ -128,6 +130,49 @@ paths:
                   $ref: '#/components/schemas/EventSummary'
         '400':
           description: Invalid year or month parameter.
+    post:
+      tags:
+        - Organiser Events
+      operationId: createEvent
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '201':
+          description: Event created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated organiser.
+
+  /api/events/my:
+    get:
+      tags:
+        - Organiser Events
+      operationId: getMyEvents
+      summary: List the authenticated organiser's events
+      description: >
+        Returns all events created by the authenticated organiser,
+        ordered by start time descending (most recent first).
+      responses:
+        '200':
+          description: The organiser's events (past and upcoming).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
 
   /api/locations:
     get:
@@ -433,6 +478,65 @@ components:
     EventLink:
       type: object
       description: An additional external link attached to an event.
+      required:
+        - label
+        - url
+      properties:
+        label:
+          type: string
+        url:
+          type: string
+
+    EventRequest:
+      type: object
+      required:
+        - title
+        - startsAt
+        - locationId
+        - free
+        - registrationRequired
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+          description: Link to the external event page.
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        visibleFrom:
+          type: string
+          format: date-time
+          nullable: true
+          description: >
+            The date-time from which the event becomes publicly visible.
+            Omit or set to null to publish immediately.
+        locationId:
+          type: integer
+          format: int64
+          description: ID of the organiser's location where the event takes place.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLinkRequest'
+
+    EventLinkRequest:
+      type: object
       required:
         - label
         - url
