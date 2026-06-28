@@ -9,11 +9,7 @@
  */
 
 
-/**
- * Minimal location info embedded in event responses.
- */
-export interface LocationSummary { 
-    id: number;
+export interface LocationRequest { 
     name: string;
     address?: string | null;
     city?: string | null;

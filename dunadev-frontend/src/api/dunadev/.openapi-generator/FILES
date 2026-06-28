@@ -3,6 +3,7 @@ README.md
 api.module.ts
 api/api.ts
 api/authentication.service.ts
+api/locations.service.ts
 api/publicEvents.service.ts
 configuration.ts
 encoder.ts
@@ -13,6 +14,7 @@ model/authResponse.ts
 model/eventLink.ts
 model/eventStatus.ts
 model/eventSummary.ts
+model/locationRequest.ts
 model/locationSummary.ts
 model/loginRequest.ts
 model/models.ts

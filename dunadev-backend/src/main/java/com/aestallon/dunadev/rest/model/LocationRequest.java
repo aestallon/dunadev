@@ -15,14 +15,11 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * Minimal location info embedded in event responses.
+ * LocationRequest
  */
 
-@Schema(name = "LocationSummary", description = "Minimal location info embedded in event responses.")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.17.0")
-public class LocationSummary {
-
-  private Long id;
+public class LocationRequest {
 
   private String name;
 
@@ -38,39 +35,18 @@ public class LocationSummary {
 
   private @Nullable String howToGetThere = null;
 
-  public LocationSummary() {
+  public LocationRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public LocationSummary(Long id, String name) {
-    this.id = id;
+  public LocationRequest(String name) {
     this.name = name;
   }
 
-  public LocationSummary id(Long id) {
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Get id
-   * @return id
-   */
-  @NotNull 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("id")
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public LocationSummary name(String name) {
+  public LocationRequest name(String name) {
     this.name = name;
     return this;
   }
@@ -90,7 +66,7 @@ public class LocationSummary {
     this.name = name;
   }
 
-  public LocationSummary address(@Nullable String address) {
+  public LocationRequest address(@Nullable String address) {
     this.address = address;
     return this;
   }
@@ -110,7 +86,7 @@ public class LocationSummary {
     this.address = address;
   }
 
-  public LocationSummary city(@Nullable String city) {
+  public LocationRequest city(@Nullable String city) {
     this.city = city;
     return this;
   }
@@ -130,7 +106,7 @@ public class LocationSummary {
     this.city = city;
   }
 
-  public LocationSummary latitude(@Nullable Double latitude) {
+  public LocationRequest latitude(@Nullable Double latitude) {
     this.latitude = latitude;
     return this;
   }
@@ -150,7 +126,7 @@ public class LocationSummary {
     this.latitude = latitude;
   }
 
-  public LocationSummary longitude(@Nullable Double longitude) {
+  public LocationRequest longitude(@Nullable Double longitude) {
     this.longitude = longitude;
     return this;
   }
@@ -170,7 +146,7 @@ public class LocationSummary {
     this.longitude = longitude;
   }
 
-  public LocationSummary websiteUrl(@Nullable String websiteUrl) {
+  public LocationRequest websiteUrl(@Nullable String websiteUrl) {
     this.websiteUrl = websiteUrl;
     return this;
   }
@@ -190,7 +166,7 @@ public class LocationSummary {
     this.websiteUrl = websiteUrl;
   }
 
-  public LocationSummary howToGetThere(@Nullable String howToGetThere) {
+  public LocationRequest howToGetThere(@Nullable String howToGetThere) {
     this.howToGetThere = howToGetThere;
     return this;
   }
@@ -218,27 +194,25 @@ public class LocationSummary {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    LocationSummary locationSummary = (LocationSummary) o;
-    return Objects.equals(this.id, locationSummary.id) &&
-        Objects.equals(this.name, locationSummary.name) &&
-        Objects.equals(this.address, locationSummary.address) &&
-        Objects.equals(this.city, locationSummary.city) &&
-        Objects.equals(this.latitude, locationSummary.latitude) &&
-        Objects.equals(this.longitude, locationSummary.longitude) &&
-        Objects.equals(this.websiteUrl, locationSummary.websiteUrl) &&
-        Objects.equals(this.howToGetThere, locationSummary.howToGetThere);
+    LocationRequest locationRequest = (LocationRequest) o;
+    return Objects.equals(this.name, locationRequest.name) &&
+        Objects.equals(this.address, locationRequest.address) &&
+        Objects.equals(this.city, locationRequest.city) &&
+        Objects.equals(this.latitude, locationRequest.latitude) &&
+        Objects.equals(this.longitude, locationRequest.longitude) &&
+        Objects.equals(this.websiteUrl, locationRequest.websiteUrl) &&
+        Objects.equals(this.howToGetThere, locationRequest.howToGetThere);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, address, city, latitude, longitude, websiteUrl, howToGetThere);
+    return Objects.hash(name, address, city, latitude, longitude, websiteUrl, howToGetThere);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class LocationSummary {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("class LocationRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("    city: ").append(toIndentedString(city)).append("\n");

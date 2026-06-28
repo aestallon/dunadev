@@ -3,6 +3,7 @@ export * from './authResponse';
 export * from './eventLink';
 export * from './eventStatus';
 export * from './eventSummary';
+export * from './locationRequest';
 export * from './locationSummary';
 export * from './loginRequest';
 export * from './organiserSummary';

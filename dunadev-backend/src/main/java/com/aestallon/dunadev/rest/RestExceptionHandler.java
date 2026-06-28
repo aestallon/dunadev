@@ -51,6 +51,12 @@ public class RestExceptionHandler {
     return errorOf(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), request);
   }
 
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ApiError> notFoundException(final NotFoundException e,
+                                                     final WebRequest request) {
+    return errorOf(HttpStatus.NOT_FOUND, e.getMessage(), request);
+  }
+
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApiError> constraintViolationException(final ConstraintViolationException e,
                                                                final WebRequest request) {

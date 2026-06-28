@@ -34,4 +34,6 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
       ORDER BY e.startsAt ASC
       """)
   List<EventEntity> findByMonth(OffsetDateTime from, OffsetDateTime to, OffsetDateTime now);
+
+  boolean existsByLocationId(Long locationId);
 }

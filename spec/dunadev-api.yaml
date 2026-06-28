@@ -9,6 +9,8 @@ tags:
     description: Publicly accessible event endpoints (no authentication required).
   - name: Authentication
     description: Login and token refresh endpoints.
+  - name: Locations
+    description: Location management for organisers (authentication required).
 
 paths:
   /api/auth/login:
@@ -126,6 +128,117 @@ paths:
                   $ref: '#/components/schemas/EventSummary'
         '400':
           description: Invalid year or month parameter.
+
+  /api/locations:
+    get:
+      tags:
+        - Locations
+      operationId: getMyLocations
+      summary: List the logged-in organiser's active locations
+      responses:
+        '200':
+          description: A list of the organiser's active locations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+    post:
+      tags:
+        - Locations
+      operationId: createLocation
+      summary: Create a new location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+
+  /api/locations/{id}:
+    get:
+      tags:
+        - Locations
+      operationId: getLocation
+      summary: Get a single location by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The requested location.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
+    put:
+      tags:
+        - Locations
+      operationId: updateLocation
+      summary: Update an existing location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
+    delete:
+      tags:
+        - Locations
+      operationId: deleteLocation
+      summary: Delete a location (soft-delete if used by events)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Location deleted successfully.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
 
 components:
   schemas:
@@ -282,6 +395,39 @@ components:
         longitude:
           type: number
           format: double
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        howToGetThere:
+          type: string
+          nullable: true
+
+    LocationRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        howToGetThere:
+          type: string
           nullable: true
 
     EventLink:

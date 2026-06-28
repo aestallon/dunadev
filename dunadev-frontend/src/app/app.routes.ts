@@ -3,6 +3,7 @@ import { LandingComponent } from './components/landing/landing.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { LoginComponent } from './components/login/login.component';
 import { ManagementComponent } from './components/management/management.component';
+import { LocationsComponent } from './components/locations/locations.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -10,5 +11,6 @@ export const routes: Routes = [
   { path: 'calendar', component: CalendarComponent },
   { path: 'login', component: LoginComponent },
   { path: 'manage', component: ManagementComponent, canActivate: [authGuard] },
+  { path: 'manage/locations', component: LocationsComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

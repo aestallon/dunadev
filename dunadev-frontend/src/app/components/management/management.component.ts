@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-management',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="manage-page">
       <div class="container">
@@ -29,12 +29,12 @@ import { AuthService } from '../../services/auth.service';
             <span class="dash-card-status">Coming soon</span>
           </div>
 
-          <div class="dash-card">
+          <a routerLink="/manage/locations" class="dash-card dash-card-link">
             <div class="dash-card-icon locations-icon"></div>
             <h3>Locations</h3>
             <p>Manage your saved venues for quick event setup.</p>
-            <span class="dash-card-status">Coming soon</span>
-          </div>
+            <span class="dash-card-action">Manage &rarr;</span>
+          </a>
 
           @if (authService.isAdmin()) {
             <div class="dash-card">
@@ -130,6 +130,17 @@ import { AuthService } from '../../services/auth.service';
       color: var(--secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+    }
+    .dash-card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      cursor: pointer;
+    }
+    .dash-card-action {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary);
     }
   `,
 })

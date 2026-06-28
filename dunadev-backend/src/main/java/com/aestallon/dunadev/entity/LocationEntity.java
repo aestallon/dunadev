@@ -36,6 +36,9 @@ public class LocationEntity {
   @Column(name = "website_url")
   private String websiteUrl;
 
+  @Column(name = "how_to_get_there")
+  private String howToGetThere;
+
   @Column(nullable = false)
   @Builder.Default
   private boolean active = true;

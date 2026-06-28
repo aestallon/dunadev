@@ -72,12 +72,7 @@ public class PublicEventService {
   }
 
   private static LocationSummary toLocationSummary(LocationEntity l) {
-    var s = new LocationSummary(l.getId(), l.getName());
-    s.setAddress(l.getAddress());
-    s.setCity(l.getCity());
-    s.setLatitude(l.getLatitude());
-    s.setLongitude(l.getLongitude());
-    return s;
+    return LocationService.toSummary(l);
   }
 
   private static EventLink toEventLink(EventLinkEntity el) {
