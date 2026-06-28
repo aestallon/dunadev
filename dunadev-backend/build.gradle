@@ -69,7 +69,7 @@ tasks.named('jar') {
 openApiGenerate {
   generatorName = "spring"
   inputSpec = "$rootDir/spec/dunadev-api.yaml".toString()
-  outputDir = "$rootDir/backend".toString()
+  outputDir = "$rootDir/dunadev-backend".toString()
   apiPackage = "com.aestallon.dunadev.rest.api"
   modelPackage = "com.aestallon.dunadev.rest.model"
   configOptions = [

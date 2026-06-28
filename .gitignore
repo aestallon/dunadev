@@ -6,3 +6,7 @@
 **/node_modules
 **/.vscode
 dunadev-frontend/dist
+
+CLAUDE.md
+MEMORY.md
+.claude
