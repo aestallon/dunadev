@@ -1,3 +1,6 @@
+src/main/java/com/aestallon/dunadev/rest/api/AdministrationApi.java
+src/main/java/com/aestallon/dunadev/rest/api/AdministrationApiController.java
+src/main/java/com/aestallon/dunadev/rest/api/AdministrationApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/ApiUtil.java
 src/main/java/com/aestallon/dunadev/rest/api/AuthenticationApi.java
 src/main/java/com/aestallon/dunadev/rest/api/AuthenticationApiDelegate.java
@@ -6,10 +9,10 @@ src/main/java/com/aestallon/dunadev/rest/api/LocationsApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserEventsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserEventsApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApi.java
-src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApiController.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApiDelegate.java
+src/main/java/com/aestallon/dunadev/rest/model/AdminOrganiserSummary.java
 src/main/java/com/aestallon/dunadev/rest/model/ApiError.java
 src/main/java/com/aestallon/dunadev/rest/model/AuthResponse.java
 src/main/java/com/aestallon/dunadev/rest/model/EventLink.java

@@ -12,4 +12,10 @@ public interface LocationRepository extends JpaRepository<LocationEntity, Long> 
   List<LocationEntity> findByOrganiserAndActiveTrue(OrganiserEntity organiser);
 
   Optional<LocationEntity> findByIdAndOrganiser(Long id, OrganiserEntity organiser);
+
+  List<LocationEntity> findByOrganiserIdAndActiveTrue(Long organiserId);
+
+  Optional<LocationEntity> findByIdAndOrganiserId(Long id, Long organiserId);
+
+  long countByOrganiserAndActiveTrue(OrganiserEntity organiser);
 }

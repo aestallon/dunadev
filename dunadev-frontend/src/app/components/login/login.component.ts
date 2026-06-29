@@ -172,7 +172,8 @@ export class LoginComponent {
       next: (response) => {
         this.authService.storeTokens(response);
         this.loading.set(false);
-        this.router.navigate(['/manage/events']);
+        const dest = response.role === 'ADMIN' ? '/admin/upcoming' : '/manage/events';
+        this.router.navigate([dest]);
       },
       error: (err) => {
         this.loading.set(false);

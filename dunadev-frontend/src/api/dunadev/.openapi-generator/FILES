@@ -1,6 +1,7 @@
 .gitignore
 README.md
 api.module.ts
+api/administration.service.ts
 api/api.ts
 api/authentication.service.ts
 api/locations.service.ts
@@ -11,6 +12,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/adminOrganiserSummary.ts
 model/apiError.ts
 model/authResponse.ts
 model/eventLink.ts

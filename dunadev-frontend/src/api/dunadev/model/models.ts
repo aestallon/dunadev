@@ -1,3 +1,4 @@
+export * from './adminOrganiserSummary';
 export * from './apiError';
 export * from './authResponse';
 export * from './eventLink';

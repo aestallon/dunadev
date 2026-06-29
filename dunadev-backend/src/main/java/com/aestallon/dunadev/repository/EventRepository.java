@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
@@ -56,4 +57,35 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
       ORDER BY e.startsAt DESC
       """)
   List<EventEntity> findByOrganiserOrderByStartsAtDesc(OrganiserEntity organiser);
+
+  @Query("""
+      SELECT e FROM EventEntity e
+        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.location
+        LEFT JOIN FETCH e.links
+      WHERE e.startsAt > :from AND e.startsAt <= :to
+      ORDER BY e.startsAt ASC
+      """)
+  List<EventEntity> findAdminUpcoming(OffsetDateTime from, OffsetDateTime to);
+
+  @Query("""
+      SELECT e FROM EventEntity e
+        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.location
+        LEFT JOIN FETCH e.links
+      WHERE e.organiser.id = :organiserId
+      ORDER BY e.startsAt DESC
+      """)
+  List<EventEntity> findByOrganiserIdOrderByStartsAtDesc(Long organiserId);
+
+  @Query("""
+      SELECT e FROM EventEntity e
+        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.location
+        LEFT JOIN FETCH e.links
+      WHERE e.id = :id
+      """)
+  Optional<EventEntity> findByIdAdmin(Long id);
+
+  long countByOrganiser(OrganiserEntity organiser);
 }
