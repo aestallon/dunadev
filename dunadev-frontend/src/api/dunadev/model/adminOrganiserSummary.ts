@@ -15,6 +15,7 @@
 export interface AdminOrganiserSummary { 
     id: number;
     name: string;
+    status: AdminOrganiserSummaryStatusEnum;
     description?: string | null;
     logoUrl?: string | null;
     websiteUrl?: string | null;
@@ -22,4 +23,10 @@ export interface AdminOrganiserSummary {
     locationCount: number;
     userEmail: string;
 }
+export enum AdminOrganiserSummaryStatusEnum {
+    INVITED = 'INVITED',
+    ACTIVE = 'ACTIVE'
+};
+
+
 

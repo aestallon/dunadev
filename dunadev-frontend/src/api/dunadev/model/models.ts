@@ -1,3 +1,4 @@
+export * from './adminOrganiserCreateRequest';
 export * from './adminOrganiserSummary';
 export * from './apiError';
 export * from './authResponse';

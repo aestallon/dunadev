@@ -5,7 +5,9 @@
  */
 package com.aestallon.dunadev.rest.api;
 
+import com.aestallon.dunadev.rest.model.AdminOrganiserCreateRequest;
 import com.aestallon.dunadev.rest.model.AdminOrganiserSummary;
+import com.aestallon.dunadev.rest.model.ApiError;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import com.aestallon.dunadev.rest.model.LocationRequest;
@@ -44,6 +46,44 @@ public interface AdministrationApi {
     default AdministrationApiDelegate getDelegate() {
         return new AdministrationApiDelegate() {};
     }
+
+    String PATH_CREATE_ADMIN_ORGANISER = "/api/admin/organisers";
+    /**
+     * POST /api/admin/organisers : Invite a new organiser
+     * Creates a new organisation and its primary user account. A randomly generated password is emailed to the provided address. The organiser&#39;s status is set to INVITED until their first login, after which it becomes ACTIVE. 
+     *
+     * @param adminOrganiserCreateRequest  (required)
+     * @return Organiser created and invitation email sent. (status code 201)
+     *         or Email address is already registered. (status code 409)
+     *         or Not an administrator. (status code 403)
+     */
+    @Operation(
+        operationId = "createAdminOrganiser",
+        summary = "Invite a new organiser",
+        description = "Creates a new organisation and its primary user account. A randomly generated password is emailed to the provided address. The organiser's status is set to INVITED until their first login, after which it becomes ACTIVE. ",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Organiser created and invitation email sent.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = AdminOrganiserSummary.class))
+            }),
+            @ApiResponse(responseCode = "409", description = "Email address is already registered.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))
+            }),
+            @ApiResponse(responseCode = "403", description = "Not an administrator.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = AdministrationApi.PATH_CREATE_ADMIN_ORGANISER,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<AdminOrganiserSummary> createAdminOrganiser(
+        @Parameter(name = "AdminOrganiserCreateRequest", description = "", required = true) @Valid @RequestBody AdminOrganiserCreateRequest adminOrganiserCreateRequest
+    ) {
+        return getDelegate().createAdminOrganiser(adminOrganiserCreateRequest);
+    }
+
 
     String PATH_GET_ADMIN_EVENT = "/api/admin/events/{id}";
     /**

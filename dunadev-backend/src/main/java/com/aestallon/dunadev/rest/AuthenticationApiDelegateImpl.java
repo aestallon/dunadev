@@ -6,6 +6,7 @@ import com.aestallon.dunadev.rest.model.AuthResponse;
 import com.aestallon.dunadev.rest.model.LoginRequest;
 import com.aestallon.dunadev.rest.model.RefreshRequest;
 import com.aestallon.dunadev.security.JwtService;
+import com.aestallon.dunadev.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
   private final AuthenticationManager authenticationManager;
   private final UserDetailsService userDetailsService;
   private final JwtService jwtService;
+  private final AdminService adminService;
 
   @Override
   public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
@@ -28,6 +30,9 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
       var authentication = authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
       var user = (UserEntity) authentication.getPrincipal();
+      if ("ORGANISER".equals(user.getRole())) {
+        adminService.activateIfInvited(user.getEmail());
+      }
       return ResponseEntity.ok(buildAuthResponse(user.getEmail(), user.getRole()));
     } catch (BadCredentialsException e) {
       return ResponseEntity.status(401).build();

@@ -1,55 +1,100 @@
 package com.aestallon.dunadev.service;
 
 import com.aestallon.dunadev.entity.EventLinkEntity;
+import com.aestallon.dunadev.entity.OrganiserEntity;
+import com.aestallon.dunadev.entity.UserEntity;
 import com.aestallon.dunadev.repository.EventRepository;
 import com.aestallon.dunadev.repository.LocationRepository;
 import com.aestallon.dunadev.repository.OrganiserRepository;
+import com.aestallon.dunadev.repository.UserRepository;
 import com.aestallon.dunadev.rest.NotFoundException;
 import com.aestallon.dunadev.rest.model.*;
+import com.aestallon.dunadev.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
 
+  private static final String UPPER  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static final String LOWER  = "abcdefghijklmnopqrstuvwxyz";
+  private static final String DIGITS = "0123456789";
+  private static final String ALL    = UPPER + LOWER + DIGITS;
+  private static final SecureRandom RANDOM = new SecureRandom();
+
   private final OrganiserRepository organiserRepository;
   private final EventRepository eventRepository;
   private final LocationRepository locationRepository;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final EmailService emailService;
+
+  @Value("${dunadev.admin-email}")
+  private String adminEmail;
+
+  // ── List ──────────────────────────────────────────────────────────────────
 
   @Transactional(readOnly = true)
   public List<AdminOrganiserSummary> listOrganisers() {
     return organiserRepository.findAll().stream()
         .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
-        .map(o -> {
-          long eventCount = eventRepository.countByOrganiser(o);
-          long locationCount = locationRepository.countByOrganiserAndActiveTrue(o);
-          var s = new AdminOrganiserSummary(
-              o.getId(), o.getName(), (int) eventCount, (int) locationCount,
-              o.getUser().getEmail());
-          s.setDescription(o.getDescription());
-          s.setLogoUrl(o.getLogoUrl());
-          s.setWebsiteUrl(o.getWebsiteUrl());
-          return s;
-        })
+        .map(this::toSummary)
         .toList();
   }
+
+  // ── Get single ────────────────────────────────────────────────────────────
 
   @Transactional(readOnly = true)
   public OrganiserProfile getOrganiser(Long id) {
     var o = organiserRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Organiser not found"));
-    var p = new OrganiserProfile(o.getId(), o.getName());
-    p.setDescription(o.getDescription());
-    p.setWebsiteUrl(o.getWebsiteUrl());
-    p.setLogoUrl(o.getLogoUrl());
-    return p;
+    return toProfile(o);
   }
+
+  // ── Create (invite) ───────────────────────────────────────────────────────
+
+  @Transactional
+  public AdminOrganiserSummary createOrganiser(AdminOrganiserCreateRequest request) {
+    if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT,
+          "Email address is already registered");
+    }
+
+    String rawPassword = generatePassword();
+
+    var user = UserEntity.builder()
+        .email(request.getEmail())
+        .passwordHash(passwordEncoder.encode(rawPassword))
+        .role("ORGANISER")
+        .build();
+    user = userRepository.save(user);
+
+    var organiser = OrganiserEntity.builder()
+        .user(user)
+        .name(request.getName())
+        .status("INVITED")
+        .build();
+    organiser = organiserRepository.save(organiser);
+
+    emailService.sendInvitation(request.getEmail(), request.getName(), rawPassword, adminEmail);
+
+    return toSummary(organiser);
+  }
+
+  // ── Update organiser ──────────────────────────────────────────────────────
 
   @Transactional
   public OrganiserProfile updateOrganiser(Long id, OrganiserUpdateRequest request) {
@@ -58,13 +103,22 @@ public class AdminService {
     o.setName(request.getName());
     o.setDescription(request.getDescription());
     o.setWebsiteUrl(request.getWebsiteUrl());
-    o = organiserRepository.save(o);
-    var p = new OrganiserProfile(o.getId(), o.getName());
-    p.setDescription(o.getDescription());
-    p.setWebsiteUrl(o.getWebsiteUrl());
-    p.setLogoUrl(o.getLogoUrl());
-    return p;
+    return toProfile(organiserRepository.save(o));
   }
+
+  // ── Activate on first login ───────────────────────────────────────────────
+
+  @Transactional
+  public void activateIfInvited(String email) {
+    organiserRepository.findByUserEmail(email).ifPresent(o -> {
+      if ("INVITED".equals(o.getStatus())) {
+        o.setStatus("ACTIVE");
+        organiserRepository.save(o);
+      }
+    });
+  }
+
+  // ── Events ────────────────────────────────────────────────────────────────
 
   @Transactional(readOnly = true)
   public List<EventSummary> getOrganiserEvents(Long organiserId) {
@@ -77,20 +131,9 @@ public class AdminService {
   }
 
   @Transactional(readOnly = true)
-  public List<LocationSummary> getOrganiserLocations(Long organiserId) {
-    organiserRepository.findById(organiserId)
-        .orElseThrow(() -> new NotFoundException("Organiser not found"));
-    return locationRepository.findByOrganiserIdAndActiveTrue(organiserId)
-        .stream()
-        .map(LocationService::toSummary)
-        .toList();
-  }
-
-  @Transactional(readOnly = true)
   public List<EventSummary> getUpcomingEvents(int days) {
     var now = OffsetDateTime.now(ZoneOffset.UTC);
-    var until = now.plusDays(days);
-    return eventRepository.findAdminUpcoming(now, until)
+    return eventRepository.findAdminUpcoming(now, now.plusDays(days))
         .stream()
         .map(PublicEventService::toSummary)
         .toList();
@@ -98,9 +141,9 @@ public class AdminService {
 
   @Transactional(readOnly = true)
   public EventSummary getEvent(Long id) {
-    var event = eventRepository.findByIdAdmin(id)
-        .orElseThrow(() -> new NotFoundException("Event not found"));
-    return PublicEventService.toSummary(event);
+    return PublicEventService.toSummary(
+        eventRepository.findByIdAdmin(id)
+            .orElseThrow(() -> new NotFoundException("Event not found")));
   }
 
   @Transactional
@@ -118,13 +161,22 @@ public class AdminService {
     if (request.getLinks() != null) {
       for (var lr : request.getLinks()) {
         event.getLinks().add(EventLinkEntity.builder()
-            .event(event)
-            .label(lr.getLabel())
-            .url(lr.getUrl())
-            .build());
+            .event(event).label(lr.getLabel()).url(lr.getUrl()).build());
       }
     }
     return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  // ── Locations ─────────────────────────────────────────────────────────────
+
+  @Transactional(readOnly = true)
+  public List<LocationSummary> getOrganiserLocations(Long organiserId) {
+    organiserRepository.findById(organiserId)
+        .orElseThrow(() -> new NotFoundException("Organiser not found"));
+    return locationRepository.findByOrganiserIdAndActiveTrue(organiserId)
+        .stream()
+        .map(LocationService::toSummary)
+        .toList();
   }
 
   @Transactional
@@ -139,5 +191,41 @@ public class AdminService {
     location.setWebsiteUrl(request.getWebsiteUrl());
     location.setHowToGetThere(request.getHowToGetThere());
     return LocationService.toSummary(locationRepository.save(location));
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  private AdminOrganiserSummary toSummary(OrganiserEntity o) {
+    long eventCount    = eventRepository.countByOrganiser(o);
+    long locationCount = locationRepository.countByOrganiserAndActiveTrue(o);
+    var status = AdminOrganiserSummary.StatusEnum.fromValue(o.getStatus());
+    var s = new AdminOrganiserSummary(o.getId(), o.getName(), status,
+        (int) eventCount, (int) locationCount, o.getUser().getEmail());
+    s.setDescription(o.getDescription());
+    s.setLogoUrl(o.getLogoUrl());
+    s.setWebsiteUrl(o.getWebsiteUrl());
+    return s;
+  }
+
+  private static OrganiserProfile toProfile(OrganiserEntity o) {
+    var p = new OrganiserProfile(o.getId(), o.getName());
+    p.setDescription(o.getDescription());
+    p.setWebsiteUrl(o.getWebsiteUrl());
+    p.setLogoUrl(o.getLogoUrl());
+    return p;
+  }
+
+  private static String generatePassword() {
+    var chars = new ArrayList<Character>();
+    chars.add(UPPER.charAt(RANDOM.nextInt(UPPER.length())));
+    chars.add(LOWER.charAt(RANDOM.nextInt(LOWER.length())));
+    chars.add(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
+    for (int i = 0; i < 9; i++) {
+      chars.add(ALL.charAt(RANDOM.nextInt(ALL.length())));
+    }
+    Collections.shuffle(chars, RANDOM);
+    var sb = new StringBuilder(chars.size());
+    chars.forEach(sb::append);
+    return sb.toString();
   }
 }

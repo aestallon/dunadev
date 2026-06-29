@@ -21,6 +21,12 @@ public class AdministrationApiDelegateImpl implements AdministrationApiDelegate 
   }
 
   @Override
+  public ResponseEntity<AdminOrganiserSummary> createAdminOrganiser(
+      AdminOrganiserCreateRequest request) {
+    return ResponseEntity.status(201).body(adminService.createOrganiser(request));
+  }
+
+  @Override
   public ResponseEntity<OrganiserProfile> getAdminOrganiser(Long id) {
     return ResponseEntity.ok(adminService.getOrganiser(id));
   }

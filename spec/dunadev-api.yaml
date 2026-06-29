@@ -361,6 +361,36 @@ paths:
                   $ref: '#/components/schemas/AdminOrganiserSummary'
         '403':
           description: Not an administrator.
+    post:
+      tags:
+        - Administration
+      operationId: createAdminOrganiser
+      summary: Invite a new organiser
+      description: >
+        Creates a new organisation and its primary user account. A randomly generated
+        password is emailed to the provided address. The organiser's status is set to
+        INVITED until their first login, after which it becomes ACTIVE.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminOrganiserCreateRequest'
+      responses:
+        '201':
+          description: Organiser created and invitation email sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrganiserSummary'
+        '409':
+          description: Email address is already registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Not an administrator.
 
   /api/admin/organisers/{id}:
     get:
@@ -998,13 +1028,16 @@ components:
     AdminOrganiserSummary:
       type: object
       description: Organiser summary for admin views, includes counts and user email.
-      required: [id, name, eventCount, locationCount, userEmail]
+      required: [id, name, status, eventCount, locationCount, userEmail]
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+        status:
+          type: string
+          enum: [INVITED, ACTIVE]
         description:
           type: string
           nullable: true
@@ -1020,3 +1053,14 @@ components:
           type: integer
         userEmail:
           type: string
+
+    AdminOrganiserCreateRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          description: Name of the organisation.
+        email:
+          type: string
+          description: Email address for the primary user of the organisation.

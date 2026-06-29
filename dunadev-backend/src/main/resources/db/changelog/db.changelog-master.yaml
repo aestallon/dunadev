@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/002-add-how-to-get-there.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/changelog/003-add-organiser-status.sql
+      relativeToChangelogFile: false

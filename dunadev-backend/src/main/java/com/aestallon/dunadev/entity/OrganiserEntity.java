@@ -23,6 +23,9 @@ public class OrganiserEntity {
   private UserEntity user;
 
   @Column(nullable = false)
+  private String status;
+
+  @Column(nullable = false)
   private String name;
 
   private String description;

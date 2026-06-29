@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -26,6 +27,43 @@ public class AdminOrganiserSummary {
 
   private String name;
 
+  /**
+   * Gets or Sets status
+   */
+  public enum StatusEnum {
+    INVITED("INVITED"),
+    
+    ACTIVE("ACTIVE");
+
+    private final String value;
+
+    StatusEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static StatusEnum fromValue(String value) {
+      for (StatusEnum b : StatusEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  private StatusEnum status;
+
   private @Nullable String description = null;
 
   private @Nullable String logoUrl = null;
@@ -45,9 +83,10 @@ public class AdminOrganiserSummary {
   /**
    * Constructor with only required parameters
    */
-  public AdminOrganiserSummary(Long id, String name, Integer eventCount, Integer locationCount, String userEmail) {
+  public AdminOrganiserSummary(Long id, String name, StatusEnum status, Integer eventCount, Integer locationCount, String userEmail) {
     this.id = id;
     this.name = name;
+    this.status = status;
     this.eventCount = eventCount;
     this.locationCount = locationCount;
     this.userEmail = userEmail;
@@ -91,6 +130,26 @@ public class AdminOrganiserSummary {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public AdminOrganiserSummary status(StatusEnum status) {
+    this.status = status;
+    return this;
+  }
+
+  /**
+   * Get status
+   * @return status
+   */
+  @NotNull 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("status")
+  public StatusEnum getStatus() {
+    return status;
+  }
+
+  public void setStatus(StatusEnum status) {
+    this.status = status;
   }
 
   public AdminOrganiserSummary description(@Nullable String description) {
@@ -224,6 +283,7 @@ public class AdminOrganiserSummary {
     AdminOrganiserSummary adminOrganiserSummary = (AdminOrganiserSummary) o;
     return Objects.equals(this.id, adminOrganiserSummary.id) &&
         Objects.equals(this.name, adminOrganiserSummary.name) &&
+        Objects.equals(this.status, adminOrganiserSummary.status) &&
         Objects.equals(this.description, adminOrganiserSummary.description) &&
         Objects.equals(this.logoUrl, adminOrganiserSummary.logoUrl) &&
         Objects.equals(this.websiteUrl, adminOrganiserSummary.websiteUrl) &&
@@ -234,7 +294,7 @@ public class AdminOrganiserSummary {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, logoUrl, websiteUrl, eventCount, locationCount, userEmail);
+    return Objects.hash(id, name, status, description, logoUrl, websiteUrl, eventCount, locationCount, userEmail);
   }
 
   @Override
@@ -243,6 +303,7 @@ public class AdminOrganiserSummary {
     sb.append("class AdminOrganiserSummary {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    logoUrl: ").append(toIndentedString(logoUrl)).append("\n");
     sb.append("    websiteUrl: ").append(toIndentedString(websiteUrl)).append("\n");

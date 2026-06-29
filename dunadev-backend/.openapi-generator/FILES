@@ -1,5 +1,4 @@
 src/main/java/com/aestallon/dunadev/rest/api/AccountApi.java
-src/main/java/com/aestallon/dunadev/rest/api/AccountApiController.java
 src/main/java/com/aestallon/dunadev/rest/api/AccountApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/AdministrationApi.java
 src/main/java/com/aestallon/dunadev/rest/api/AdministrationApiDelegate.java
@@ -14,6 +13,7 @@ src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApi.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApiDelegate.java
+src/main/java/com/aestallon/dunadev/rest/model/AdminOrganiserCreateRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/AdminOrganiserSummary.java
 src/main/java/com/aestallon/dunadev/rest/model/ApiError.java
 src/main/java/com/aestallon/dunadev/rest/model/AuthResponse.java

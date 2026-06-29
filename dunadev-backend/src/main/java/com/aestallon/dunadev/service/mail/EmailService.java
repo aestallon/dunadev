@@ -40,6 +40,12 @@ public abstract class EmailService {
     return send(to, subject, template, params);
   }
 
+  public boolean sendInvitation(String to, String orgName, String password, String adminEmail) {
+    return deliver(to, "You've been invited to DunaDev",
+        "email/invitation.html",
+        Map.of("email", to, "orgName", orgName, "password", password, "adminEmail", adminEmail));
+  }
+
   public boolean notifyPasswordChanged(String to, String changedAt, String adminEmail) {
     return deliver(to, "Your DunaDev password has been changed",
         "email/password-changed.html",

@@ -13,6 +13,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/adminOrganiserCreateRequest.ts
 model/adminOrganiserSummary.ts
 model/apiError.ts
 model/authResponse.ts

@@ -1,6 +1,8 @@
 package com.aestallon.dunadev.rest.api;
 
+import com.aestallon.dunadev.rest.model.AdminOrganiserCreateRequest;
 import com.aestallon.dunadev.rest.model.AdminOrganiserSummary;
+import com.aestallon.dunadev.rest.model.ApiError;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import com.aestallon.dunadev.rest.model.LocationRequest;
@@ -30,6 +32,35 @@ public interface AdministrationApiDelegate {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
+    }
+
+    /**
+     * POST /api/admin/organisers : Invite a new organiser
+     * Creates a new organisation and its primary user account. A randomly generated password is emailed to the provided address. The organiser&#39;s status is set to INVITED until their first login, after which it becomes ACTIVE. 
+     *
+     * @param adminOrganiserCreateRequest  (required)
+     * @return Organiser created and invitation email sent. (status code 201)
+     *         or Email address is already registered. (status code 409)
+     *         or Not an administrator. (status code 403)
+     * @see AdministrationApi#createAdminOrganiser
+     */
+    default ResponseEntity<AdminOrganiserSummary> createAdminOrganiser(AdminOrganiserCreateRequest adminOrganiserCreateRequest) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"websiteUrl\" : \"websiteUrl\", \"locationCount\" : 1, \"name\" : \"name\", \"description\" : \"description\", \"eventCount\" : 6, \"userEmail\" : \"userEmail\", \"id\" : 0, \"logoUrl\" : \"logoUrl\", \"status\" : \"INVITED\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"description\" : \"description\", \"message\" : \"message\", \"status\" : 0, \"timestamp\" : \"2000-01-23T04:56:07.000+00:00\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
     }
 
     /**
@@ -157,7 +188,7 @@ public interface AdministrationApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"websiteUrl\" : \"websiteUrl\", \"locationCount\" : 1, \"name\" : \"name\", \"description\" : \"description\", \"eventCount\" : 6, \"userEmail\" : \"userEmail\", \"id\" : 0, \"logoUrl\" : \"logoUrl\" }, { \"websiteUrl\" : \"websiteUrl\", \"locationCount\" : 1, \"name\" : \"name\", \"description\" : \"description\", \"eventCount\" : 6, \"userEmail\" : \"userEmail\", \"id\" : 0, \"logoUrl\" : \"logoUrl\" } ]";
+                    String exampleString = "[ { \"websiteUrl\" : \"websiteUrl\", \"locationCount\" : 1, \"name\" : \"name\", \"description\" : \"description\", \"eventCount\" : 6, \"userEmail\" : \"userEmail\", \"id\" : 0, \"logoUrl\" : \"logoUrl\", \"status\" : \"INVITED\" }, { \"websiteUrl\" : \"websiteUrl\", \"locationCount\" : 1, \"name\" : \"name\", \"description\" : \"description\", \"eventCount\" : 6, \"userEmail\" : \"userEmail\", \"id\" : 0, \"logoUrl\" : \"logoUrl\", \"status\" : \"INVITED\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
