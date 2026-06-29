@@ -7,10 +7,14 @@ import { LocationsComponent } from './components/locations/locations.component';
 import { ManageEventsComponent } from './components/events/manage-events.component';
 import { EventCreateComponent } from './components/events/event-create.component';
 import { EventEditComponent } from './components/events/event-edit.component';
+import { AboutComponent } from './components/about/about.component';
+import { ContactComponent } from './components/contact/contact.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+  { path: 'about', component: AboutComponent },
+  { path: 'contact', component: ContactComponent },
   { path: 'calendar', component: CalendarComponent },
   { path: 'login', component: LoginComponent },
   { path: 'manage', component: ManagementComponent, canActivate: [authGuard] },

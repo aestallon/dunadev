@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,7 +18,6 @@ import { AuthService } from '../../services/auth.service';
               <span class="role-badge">{{ authService.role() }}</span>
             </p>
           </div>
-          <button class="btn btn-secondary" (click)="logout()">Sign out</button>
         </header>
 
         <div class="dashboard-grid">
@@ -146,10 +145,4 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ManagementComponent {
   readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/']);
-  }
 }

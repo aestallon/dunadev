@@ -9,87 +9,83 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
   imports: [CommonModule, RouterLink, DatePipe],
   template: `
     <div class="landing-page">
-      <header class="hero">
-        <div class="hero-content">
-          <h1>Discover Budapest's <span class="text-gradient">Tech Community</span></h1>
-          <p>
-            Join local meetups, workshops, and conferences. Stay connected with fellow developers in
-            the heart of Hungary.
-          </p>
-        </div>
-      </header>
 
-      <div class="container">
-        <!-- Hero cards: next upcoming events -->
-        <section class="upcoming-section">
-          <div class="section-header">
-            <h2>Coming Up Next</h2>
+      <!-- ===== HERO ===== -->
+      <section class="hero">
+        <!-- Artwork placeholder background -->
+        <div class="hero-artwork" aria-hidden="true">
+          <div class="art-blob art-blob-1"></div>
+          <div class="art-blob art-blob-2"></div>
+          <div class="art-blob art-blob-3"></div>
+          <div class="art-grid"></div>
+        </div>
+
+        <div class="hero-inner">
+          <!-- Left: title + hero text -->
+          <div class="hero-text">
+            <span class="hero-eyebrow">Budapest · Tech Events</span>
+            <h1>Discover the <span class="text-gradient">Tech Community</span></h1>
+            <p>
+              Join local meetups, workshops, and conferences. Stay connected with fellow developers
+              in the heart of Hungary.
+            </p>
           </div>
 
-          @if (loadingUpcoming()) {
-            <div class="loading-grid">
-              @for (i of [1, 2, 3]; track i) {
-                <div class="skeleton-card">
-                  <div class="skeleton-line short"></div>
-                  <div class="skeleton-line"></div>
-                  <div class="skeleton-line medium"></div>
-                </div>
-              }
+          <!-- Right: upcoming events panel -->
+          <div class="hero-panel">
+            <div class="hero-panel-header">
+              <span class="panel-label">Coming Up Next</span>
             </div>
-          } @else if (upcomingEvents().length === 0) {
-            <div class="empty-state">
-              <p>No upcoming events at the moment. Check back later!</p>
-            </div>
-          } @else {
-            <div class="event-grid">
-              @for (event of upcomingEvents(); track event.id) {
-                <div class="event-card">
-                  <div class="event-card-header">
-                    <span class="event-badge">{{ statusLabel(event) }}</span>
-                    <span class="event-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
+
+            @if (loadingUpcoming()) {
+              <div class="hero-panel-list">
+                @for (i of [1, 2, 3]; track i) {
+                  <div class="hec-skeleton">
+                    <div class="hec-sk-line short"></div>
+                    <div class="hec-sk-line"></div>
+                    <div class="hec-sk-line medium"></div>
                   </div>
-                  <h3>{{ event.title }}</h3>
-                  <div class="event-info">
-                    <div class="info-item">
-                      <span class="info-icon organiser-icon"></span>
-                      <span>{{ event.organiser.name }}</span>
+                }
+              </div>
+            } @else if (upcomingEvents().length === 0) {
+              <div class="hero-empty">
+                <p>No upcoming events at the moment. Check back soon!</p>
+              </div>
+            } @else {
+              <div class="hero-panel-list">
+                @for (event of upcomingEvents(); track event.id) {
+                  <div class="hec">
+                    <div class="hec-header">
+                      <span class="hec-badge">{{ statusLabel(event) }}</span>
+                      <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
                     </div>
-                    @if (event.location) {
-                      <div class="info-item">
-                        <span class="info-icon location-icon"></span>
-                        <span>{{ event.location.name }}@if (event.location.city) {, {{ event.location.city }}}</span>
-                      </div>
-                    }
-                    <div class="info-item">
-                      <span class="info-icon time-icon"></span>
-                      <span>{{ event.startsAt | date: 'HH:mm' }}@if (event.endsAt) { &ndash; {{ event.endsAt | date: 'HH:mm' }}}</span>
+                    <div class="hec-title">{{ event.title }}</div>
+                    <div class="hec-meta">
+                      <span class="hec-meta-item">{{ event.organiser.name }}</span>
+                      @if (event.location) {
+                        <span class="hec-sep">·</span>
+                        <span class="hec-meta-item">{{ event.location.name }}</span>
+                      }
+                      <span class="hec-sep">·</span>
+                      <span class="hec-meta-item">{{ event.startsAt | date: 'HH:mm' }}</span>
                     </div>
-                    @if (!event.free) {
-                      <div class="info-item">
-                        <span class="info-icon paid-icon"></span>
-                        <span>Paid event</span>
-                      </div>
-                    }
-                  </div>
-                  @if (event.description) {
-                    <div class="event-description">
-                      <p>{{ event.description }}</p>
-                    </div>
-                  }
-                  <div class="event-footer">
                     @if (event.registrationRequired && event.registrationUrl) {
                       <a [href]="event.registrationUrl" target="_blank" rel="noopener"
-                         class="btn btn-primary btn-sm full-width">Register</a>
+                         class="hec-link">Register &rarr;</a>
                     } @else if (event.eventUrl) {
                       <a [href]="event.eventUrl" target="_blank" rel="noopener"
-                         class="btn btn-primary btn-sm full-width">View Details</a>
+                         class="hec-link">Details &rarr;</a>
                     }
                   </div>
-                </div>
-              }
-            </div>
-          }
-        </section>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MONTHLY SECTION + CTA ===== -->
+      <div class="container">
 
         <!-- Monthly event list -->
         <section class="monthly-section">
@@ -212,6 +208,7 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
             <a routerLink="/manage" class="btn btn-primary">Manage your events</a>
           </div>
         </section>
+
       </div>
     </div>
   `,
@@ -220,34 +217,226 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       padding-bottom: 5rem;
     }
 
-    /* --- Hero --- */
+    /* ===== HERO ===== */
     .hero {
-      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      padding: 5rem 1.5rem;
-      text-align: center;
-      margin-bottom: 3rem;
+      position: relative;
+      min-height: 88vh;
+      background: linear-gradient(135deg, #0c1526 0%, #0f2044 45%, #0d1b36 100%);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      margin-bottom: 4rem;
     }
-    .hero-content {
-      max-width: 720px;
+
+    /* Artwork placeholder — abstract geometric blobs + dot grid */
+    .hero-artwork {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .art-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+    .art-blob-1 {
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.35), transparent 70%);
+      top: -200px;
+      right: -100px;
+    }
+    .art-blob-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent 70%);
+      bottom: -100px;
+      left: 5%;
+    }
+    .art-blob-3 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.18), transparent 70%);
+      top: 30%;
+      left: 38%;
+    }
+    .art-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Hero content */
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 5rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      width: 100%;
     }
-    .hero h1 {
-      font-size: 3rem;
-      line-height: 1.1;
+
+    .hero-text {
+      color: white;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #60a5fa;
       margin-bottom: 1.25rem;
     }
+    .hero-text h1 {
+      font-size: clamp(2.25rem, 4vw, 3.5rem);
+      line-height: 1.1;
+      color: white;
+      margin-bottom: 1.5rem;
+    }
     .text-gradient {
-      background: linear-gradient(to right, var(--primary), var(--accent));
+      background: linear-gradient(to right, #60a5fa, #22d3ee);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .hero p {
-      font-size: 1.125rem;
-      color: var(--text-muted);
-      line-height: 1.6;
+    .hero-text p {
+      font-size: 1.0625rem;
+      color: #94a3b8;
+      line-height: 1.75;
+      max-width: 440px;
     }
 
-    /* --- Layout --- */
+    /* Events panel */
+    .hero-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 1.75rem;
+      max-height: 72vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+    .hero-panel-header {
+      margin-bottom: 1.25rem;
+    }
+    .panel-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #60a5fa;
+    }
+    .hero-panel-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    /* Individual upcoming event card in the hero panel */
+    .hec {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.125rem 1.25rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .hec:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(96, 165, 250, 0.35);
+    }
+    .hec-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .hec-badge {
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.15);
+      padding: 0.1875rem 0.5rem;
+      border-radius: 9999px;
+    }
+    .hec-date {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .hec-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: white;
+      line-height: 1.35;
+      margin-bottom: 0.375rem;
+    }
+    .hec-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem;
+      margin-bottom: 0.625rem;
+    }
+    .hec-meta-item {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    .hec-sep {
+      font-size: 0.75rem;
+      color: #334155;
+    }
+    .hec-link {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #60a5fa;
+    }
+    .hec-link:hover { text-decoration: underline; }
+
+    /* Hero skeleton */
+    .hec-skeleton {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.125rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+    .hec-sk-line {
+      height: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      animation: shimmer-dark 1.5s infinite;
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+    }
+    .hec-sk-line.short { width: 35%; }
+    .hec-sk-line.medium { width: 65%; }
+    @keyframes shimmer-dark {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Hero empty state */
+    .hero-empty {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    /* ===== CONTAINER ===== */
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -262,113 +451,14 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       gap: 1rem;
     }
 
-    /* --- Upcoming event cards --- */
-    .event-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 4rem;
-    }
-    .event-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-    }
-    .event-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--primary);
-    }
-    .event-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .event-badge {
-      background: rgba(37, 99, 235, 0.1);
-      color: var(--primary);
-      padding: 0.2rem 0.625rem;
-      border-radius: 9999px;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
-    }
-    .event-date {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .event-card h3 {
-      font-size: 1.125rem;
-      margin-bottom: 0.75rem;
-      line-height: 1.3;
-    }
-    .event-info {
-      margin-bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.375rem;
-    }
-    .info-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-    }
-    .info-icon {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-      background-size: contain;
-      background-repeat: no-repeat;
-      opacity: 0.5;
-    }
-    .organiser-icon {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E");
-    }
-    .location-icon {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E");
-    }
-    .time-icon {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
-    }
-    .paid-icon {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cline x1='12' y1='1' x2='12' y2='23'/%3E%3Cpath d='M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'/%3E%3C/svg%3E");
-    }
-    .event-description {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      margin-bottom: 1.25rem;
-      flex-grow: 1;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .event-footer {
-      margin-top: auto;
-    }
-    .full-width { width: 100%; }
-    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8125rem; }
-
-    /* --- Month nav --- */
+    /* ===== MONTH NAV ===== */
     .month-nav {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .btn-icon {
-      padding: 0.5rem 0.625rem;
-      line-height: 1;
-    }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8125rem; }
+    .btn-icon { padding: 0.5rem 0.625rem; line-height: 1; }
     .chevron-left, .chevron-right {
       display: inline-block;
       width: 8px;
@@ -400,12 +490,12 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       color: white;
     }
 
-    /* --- Monthly section --- */
+    /* ===== MONTHLY SECTION ===== */
     .monthly-section {
       margin-bottom: 4rem;
     }
 
-    /* --- Timeline (list view) --- */
+    /* ===== TIMELINE (list view) ===== */
     .event-timeline {
       display: flex;
       flex-direction: column;
@@ -424,12 +514,8 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       border-color: var(--primary);
       box-shadow: var(--shadow);
     }
-    .timeline-item.cancelled {
-      opacity: 0.55;
-    }
-    .timeline-item.cancelled h3 {
-      text-decoration: line-through;
-    }
+    .timeline-item.cancelled { opacity: 0.55; }
+    .timeline-item.cancelled h3 { text-decoration: line-through; }
     .timeline-date {
       display: flex;
       flex-direction: column;
@@ -509,11 +595,9 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       color: var(--primary);
     }
     .link-btn:hover { text-decoration: underline; }
-    .link-btn-secondary {
-      color: var(--secondary);
-    }
+    .link-btn-secondary { color: var(--secondary); }
 
-    /* --- Calendar grid view --- */
+    /* ===== CALENDAR GRID VIEW ===== */
     .calendar-grid {
       background: white;
       border: 1px solid var(--border);
@@ -539,28 +623,17 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       display: grid;
       grid-template-columns: repeat(7, 1fr);
     }
-    .calendar-week:not(:last-child) {
-      border-bottom: 1px solid var(--border);
-    }
+    .calendar-week:not(:last-child) { border-bottom: 1px solid var(--border); }
     .calendar-cell {
       min-height: 100px;
       padding: 0.375rem;
       border-right: 1px solid var(--border);
       position: relative;
     }
-    .calendar-cell:nth-child(7) {
-      border-right: none;
-    }
-    .calendar-cell.other-month {
-      background: var(--bg);
-    }
-    .calendar-cell.other-month .cell-day {
-      color: var(--border);
-    }
-    .calendar-cell.today .cell-day {
-      background: var(--primary);
-      color: white;
-    }
+    .calendar-cell:nth-child(7) { border-right: none; }
+    .calendar-cell.other-month { background: var(--bg); }
+    .calendar-cell.other-month .cell-day { color: var(--border); }
+    .calendar-cell.today .cell-day { background: var(--primary); color: white; }
     .cell-day {
       display: inline-flex;
       align-items: center;
@@ -583,10 +656,7 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       cursor: default;
       overflow: hidden;
     }
-    .calendar-event.cancelled {
-      opacity: 0.4;
-      text-decoration: line-through;
-    }
+    .calendar-event.cancelled { opacity: 0.4; text-decoration: line-through; }
     .calendar-event-time {
       font-size: 0.625rem;
       font-weight: 600;
@@ -601,31 +671,7 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       text-overflow: ellipsis;
     }
 
-    /* --- Loading skeletons --- */
-    .loading-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 4rem;
-    }
-    .skeleton-card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .skeleton-line {
-      height: 14px;
-      background: linear-gradient(90deg, var(--bg) 25%, #eef2f7 50%, var(--bg) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 4px;
-    }
-    .skeleton-line.short { width: 40%; }
-    .skeleton-line.medium { width: 70%; }
+    /* ===== SKELETON (monthly) ===== */
     .loading-timeline {
       display: flex;
       flex-direction: column;
@@ -642,12 +688,11 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
     .skeleton-date-box {
       width: 64px;
       height: 64px;
-      background: var(--bg);
       border-radius: 10px;
       flex-shrink: 0;
-      animation: shimmer 1.5s infinite;
       background: linear-gradient(90deg, var(--bg) 25%, #eef2f7 50%, var(--bg) 75%);
       background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
     }
     .skeleton-content {
       flex-grow: 1;
@@ -656,12 +701,31 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       gap: 0.5rem;
       justify-content: center;
     }
+    .skeleton-line {
+      height: 14px;
+      background: linear-gradient(90deg, var(--bg) 25%, #eef2f7 50%, var(--bg) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+    .skeleton-line.short { width: 40%; }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
 
-    /* --- CTA banner --- */
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: var(--radius);
+      border: 2px dashed var(--border);
+      color: var(--text-muted);
+      margin-bottom: 4rem;
+    }
+
+    /* ===== CTA BANNER ===== */
     .cta-banner {
       background: #1e293b;
       color: white;
@@ -681,24 +745,37 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
     .cta-banner h2 { color: white; font-size: 2rem; margin-bottom: 0.75rem; }
     .cta-banner p { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; }
 
-    /* --- Empty state --- */
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      background: white;
-      border-radius: var(--radius);
-      border: 2px dashed var(--border);
-      color: var(--text-muted);
-      margin-bottom: 4rem;
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .hero {
+        min-height: auto;
+      }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 3.5rem 1.25rem;
+      }
+      .hero-text p {
+        max-width: none;
+      }
+      .hero-panel {
+        max-height: none;
+      }
     }
-
     @media (max-width: 640px) {
-      .hero h1 { font-size: 2rem; }
       .section-header { flex-direction: column; align-items: flex-start; }
       .month-nav { flex-wrap: wrap; }
       .timeline-item { flex-direction: column; gap: 0.75rem; }
-      .timeline-date { flex-direction: row; gap: 0.5rem; width: fit-content; height: auto; padding: 0.375rem 0.75rem; min-width: auto; }
+      .timeline-date {
+        flex-direction: row;
+        gap: 0.5rem;
+        width: fit-content;
+        height: auto;
+        padding: 0.375rem 0.75rem;
+        min-width: auto;
+      }
       .calendar-cell { min-height: 70px; }
+      .cta-banner { padding: 2.5rem 1.5rem; }
     }
   `,
 })
@@ -714,7 +791,7 @@ export class LandingComponent implements OnInit {
   readonly loadingMonthly = signal(true);
 
   readonly selectedYear = signal(new Date().getFullYear());
-  readonly selectedMonth = signal(new Date().getMonth() + 1); // 1-based for API
+  readonly selectedMonth = signal(new Date().getMonth() + 1);
   readonly viewMode = signal<'list' | 'calendar'>('list');
 
   readonly monthLabel = computed(() => {
@@ -732,14 +809,13 @@ export class LandingComponent implements OnInit {
 
   readonly calendarWeeks = computed(() => {
     const year = this.selectedYear();
-    const month = this.selectedMonth() - 1; // 0-based
+    const month = this.selectedMonth() - 1;
     const events = this.monthlyEvents();
     const today = new Date();
 
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
 
-    // Monday=0 offset
     let startOffset = (firstDay.getDay() + 6) % 7;
     const weeks: {
       day: number;
@@ -767,12 +843,7 @@ export class LandingComponent implements OnInit {
         ? events.filter((e) => new Date(e.startsAt).getDate() === d)
         : [];
 
-      weeks[weeks.length - 1].push({
-        day: d,
-        currentMonth: isCurrentMonth,
-        isToday,
-        events: dayEvents,
-      });
+      weeks[weeks.length - 1].push({ day: d, currentMonth: isCurrentMonth, isToday, events: dayEvents });
 
       current.setDate(current.getDate() + 1);
 
@@ -834,24 +905,18 @@ export class LandingComponent implements OnInit {
         this.upcomingEvents.set(events);
         this.loadingUpcoming.set(false);
       },
-      error: () => {
-        this.loadingUpcoming.set(false);
-      },
+      error: () => this.loadingUpcoming.set(false),
     });
   }
 
   private loadMonthly() {
     this.loadingMonthly.set(true);
-    this.publicEventsService
-      .getEventsByMonth(this.selectedYear(), this.selectedMonth())
-      .subscribe({
-        next: (events) => {
-          this.monthlyEvents.set(events);
-          this.loadingMonthly.set(false);
-        },
-        error: () => {
-          this.loadingMonthly.set(false);
-        },
-      });
+    this.publicEventsService.getEventsByMonth(this.selectedYear(), this.selectedMonth()).subscribe({
+      next: (events) => {
+        this.monthlyEvents.set(events);
+        this.loadingMonthly.set(false);
+      },
+      error: () => this.loadingMonthly.set(false),
+    });
   }
 }
