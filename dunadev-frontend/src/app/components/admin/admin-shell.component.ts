@@ -35,6 +35,16 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
 
         </nav>
 
+        <a routerLink="password" routerLinkActive="nav-active" (click)="onNavClick()"
+           class="change-pwd-link" title="Change Password">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="nav-text">Change Password</span>
+        </a>
+
         <div class="sidebar-footer">
           <div class="sidebar-role">
             <span class="role-chip">ADMIN</span>
@@ -98,6 +108,17 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
       min-width: 0; flex: 1; overflow: hidden; transition: opacity 0.15s;
     }
 
+    .change-pwd-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 500;
+      color: var(--text-muted); text-decoration: none;
+      white-space: nowrap; overflow: hidden;
+      border-top: 1px solid var(--border);
+      transition: background 0.15s, color 0.15s; flex-shrink: 0;
+    }
+    .change-pwd-link:hover { color: var(--primary); background: rgba(37,99,235,0.06); }
+    .change-pwd-link.nav-active { color: var(--primary); background: rgba(37,99,235,0.09); font-weight: 600; }
+
     .sidebar-footer {
       border-top: 1px solid var(--border); padding: 0.5rem;
       display: flex; flex-direction: column; gap: 0.125rem; flex-shrink: 0;
@@ -127,6 +148,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
       .sidebar-collapsed .sidebar { width: 56px; }
       .sidebar-collapsed .sidebar .nav-text { opacity: 0; pointer-events: none; }
       .sidebar-collapsed .sidebar .sidebar-nav a { justify-content: center; padding: 0.625rem; gap: 0; }
+      .sidebar-collapsed .sidebar .change-pwd-link { justify-content: center; padding: 0.625rem; gap: 0; }
       .sidebar-collapsed .sidebar .sidebar-role { display: none; }
       .sidebar-collapsed .sidebar .collapse-btn { justify-content: center; padding: 0.625rem; gap: 0; }
       .sidebar-collapsed .sidebar .collapse-chevron { transform: rotate(180deg); }

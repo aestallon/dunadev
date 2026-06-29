@@ -1,5 +1,7 @@
+src/main/java/com/aestallon/dunadev/rest/api/AccountApi.java
+src/main/java/com/aestallon/dunadev/rest/api/AccountApiController.java
+src/main/java/com/aestallon/dunadev/rest/api/AccountApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/AdministrationApi.java
-src/main/java/com/aestallon/dunadev/rest/api/AdministrationApiController.java
 src/main/java/com/aestallon/dunadev/rest/api/AdministrationApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/ApiUtil.java
 src/main/java/com/aestallon/dunadev/rest/api/AuthenticationApi.java
@@ -27,4 +29,5 @@ src/main/java/com/aestallon/dunadev/rest/model/LoginRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/OrganiserProfile.java
 src/main/java/com/aestallon/dunadev/rest/model/OrganiserSummary.java
 src/main/java/com/aestallon/dunadev/rest/model/OrganiserUpdateRequest.java
+src/main/java/com/aestallon/dunadev/rest/model/PasswordChangeRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/RefreshRequest.java

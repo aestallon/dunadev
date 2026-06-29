@@ -13,4 +13,5 @@ export * from './loginRequest';
 export * from './organiserProfile';
 export * from './organiserSummary';
 export * from './organiserUpdateRequest';
+export * from './passwordChangeRequest';
 export * from './refreshRequest';

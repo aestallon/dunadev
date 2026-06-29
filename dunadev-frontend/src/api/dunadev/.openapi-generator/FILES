@@ -1,6 +1,7 @@
 .gitignore
 README.md
 api.module.ts
+api/account.service.ts
 api/administration.service.ts
 api/api.ts
 api/authentication.service.ts
@@ -28,6 +29,7 @@ model/models.ts
 model/organiserProfile.ts
 model/organiserSummary.ts
 model/organiserUpdateRequest.ts
+model/passwordChangeRequest.ts
 model/refreshRequest.ts
 param.ts
 variables.ts

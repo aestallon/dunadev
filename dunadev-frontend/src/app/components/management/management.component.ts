@@ -68,6 +68,17 @@ import { OrganiserProfileService } from '../../../api/dunadev';
 
         </nav>
 
+        <!-- Change-password link sits between nav and footer -->
+        <a routerLink="password" routerLinkActive="nav-active" (click)="onNavClick()"
+           class="change-pwd-link" title="Change Password">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="nav-text">Change Password</span>
+        </a>
+
         <!-- Footer: role chip + collapse toggle -->
         <div class="sidebar-footer">
           <div class="sidebar-role">
@@ -213,6 +224,25 @@ import { OrganiserProfileService } from '../../../api/dunadev';
       100% { background-position: -200% 0; }
     }
 
+    /* ===== Change-password link ===== */
+    .change-pwd-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .change-pwd-link:hover { color: var(--primary); background: rgba(37,99,235,0.06); }
+    .change-pwd-link.nav-active { color: var(--primary); background: rgba(37,99,235,0.09); font-weight: 600; }
+
     /* ===== Sidebar footer ===== */
     .sidebar-footer {
       border-top: 1px solid var(--border);
@@ -296,6 +326,11 @@ import { OrganiserProfileService } from '../../../api/dunadev';
       }
       .sidebar-collapsed .sidebar .sidebar-nav a,
       .sidebar-collapsed .sidebar .nav-disabled {
+        justify-content: center;
+        padding: 0.625rem;
+        gap: 0;
+      }
+      .sidebar-collapsed .sidebar .change-pwd-link {
         justify-content: center;
         padding: 0.625rem;
         gap: 0;

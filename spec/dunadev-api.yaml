@@ -17,6 +17,8 @@ tags:
     description: Event management for authenticated organisers.
   - name: Administration
     description: Admin-only management endpoints (ROLE_ADMIN required).
+  - name: Account
+    description: Self-service account management for all authenticated users.
 
 paths:
   /api/auth/login:
@@ -66,6 +68,33 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
           description: Invalid or expired refresh token.
+
+  /api/me/password:
+    post:
+      tags:
+        - Account
+      operationId: changePassword
+      summary: Change the authenticated user's password
+      description: >
+        Verifies the current password then replaces it with the new one.
+        Triggers a notification email to the account's registered address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+      responses:
+        '204':
+          description: Password changed successfully.
+        '400':
+          description: Current password is incorrect or new password fails validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Not authenticated.
 
   /api/organiser/me:
     get:
@@ -954,6 +983,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EventLinkRequest'
+
+    PasswordChangeRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
 
     AdminOrganiserSummary:
       type: object

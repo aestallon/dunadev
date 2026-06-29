@@ -1,3 +1,5 @@
+export * from './account.service';
+import { AccountService } from './account.service';
 export * from './administration.service';
 import { AdministrationService } from './administration.service';
 export * from './authentication.service';
@@ -10,4 +12,4 @@ export * from './organiserProfile.service';
 import { OrganiserProfileService } from './organiserProfile.service';
 export * from './publicEvents.service';
 import { PublicEventsService } from './publicEvents.service';
-export const APIS = [AdministrationService, AuthenticationService, LocationsService, OrganiserEventsService, OrganiserProfileService, PublicEventsService];
+export const APIS = [AccountService, AdministrationService, AuthenticationService, LocationsService, OrganiserEventsService, OrganiserProfileService, PublicEventsService];
