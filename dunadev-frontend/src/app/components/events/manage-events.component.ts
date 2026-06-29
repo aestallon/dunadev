@@ -105,31 +105,6 @@ import { OrganiserEventsService, EventSummary, EventStatus } from '../../../api/
       margin-bottom: 0.375rem;
     }
     .back-link:hover { color: var(--primary); }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-      padding: 0.625rem 1.25rem;
-      border-radius: var(--radius);
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-secondary {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-sm { padding: 0.4rem 0.875rem; font-size: 0.8125rem; }
     .loading-state, .empty-state {
       text-align: center;
       padding: 4rem 2rem;

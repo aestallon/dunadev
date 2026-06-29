@@ -428,47 +428,7 @@ interface EventForm {
       margin-bottom: 0.5rem;
     }
     .link-row:last-child { margin-bottom: 0; }
-    .btn-icon {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      padding: 0.375rem;
-      border-radius: calc(var(--radius) - 4px);
-      transition: color 0.15s, background 0.15s;
-      flex-shrink: 0;
-    }
-    .btn-icon:hover { color: #dc2626; background: #fee2e2; }
 
-    /* Actions */
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.625rem 1.25rem;
-      border-radius: var(--radius);
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
-    .btn-secondary {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
-    .btn-sm { padding: 0.4rem 0.875rem; font-size: 0.8125rem; }
 
     /* Sidebar */
     .sidebar-card {
