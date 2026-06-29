@@ -1,4 +1,4 @@
-package com.aestallon.dunadev.service;
+package com.aestallon.dunadev.service.mail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,10 +36,13 @@ public abstract class EmailService {
 
   protected abstract void doSend(String to, String subject, String body) throws Exception;
 
-  /**
-   * Public façade — concrete subclasses expose domain-specific send methods that call this.
-   */
   protected final boolean deliver(String to, String subject, String template, Map<String, String> params) {
     return send(to, subject, template, params);
+  }
+
+  public boolean notifyPasswordChanged(String to, String changedAt, String adminEmail) {
+    return deliver(to, "Your DunaDev password has been changed",
+        "email/password-changed.html",
+        Map.of("email", to, "changedAt", changedAt, "adminEmail", adminEmail));
   }
 }

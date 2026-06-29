@@ -1,12 +1,10 @@
-package com.aestallon.dunadev.service;
+package com.aestallon.dunadev.service.mail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
-@Service
-@ConditionalOnMissingBean(EmailService.class)
 public class LoggingEmailService extends EmailService {
 
   private static final Logger log = LoggerFactory.getLogger(LoggingEmailService.class);

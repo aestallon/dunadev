@@ -1,12 +1,8 @@
-package com.aestallon.dunadev.service;
+package com.aestallon.dunadev.service.mail;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
 
-@Service
-@ConditionalOnProperty(name = "spring.mail.host")
 public class SmtpEmailService extends EmailService {
 
   private final JavaMailSender mailSender;
