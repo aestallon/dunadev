@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -9,10 +9,12 @@ import { AuthService } from './services/auth.service';
   template: `
     <nav class="navbar">
       <div class="nav-container">
-        <a class="logo" routerLink="/">
+        <a class="logo" routerLink="/" (click)="closeMenu()">
           <span class="logo-icon">D</span>
           <span class="logo-text">DunaDev</span>
         </a>
+
+        <!-- Desktop links -->
         <div class="nav-links">
           <a routerLink="/about" routerLinkActive="active">About</a>
           <a routerLink="/contact" routerLinkActive="active">Contact</a>
@@ -28,7 +30,35 @@ import { AuthService } from './services/auth.service';
             </a>
           }
         </div>
+
+        <!-- Hamburger button (mobile only) -->
+        <button class="hamburger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()"
+                aria-label="Toggle navigation menu">
+          <span class="ham-bar" [class.open]="menuOpen()"></span>
+          <span class="ham-bar" [class.open]="menuOpen()"></span>
+          <span class="ham-bar" [class.open]="menuOpen()"></span>
+        </button>
       </div>
+
+      <!-- Mobile dropdown -->
+      @if (menuOpen()) {
+        <div class="mobile-menu">
+          <a routerLink="/about" routerLinkActive="mobile-active" (click)="closeMenu()">About</a>
+          <a routerLink="/contact" routerLinkActive="mobile-active" (click)="closeMenu()">Contact</a>
+          @if (auth.isLoggedIn()) {
+            <a routerLink="/manage" routerLinkActive="mobile-active" class="mobile-dashboard"
+               (click)="closeMenu()">
+              <span class="nav-user-dot"></span>
+              Dashboard
+            </a>
+            <button class="btn btn-secondary mobile-signout" (click)="logout()">Sign out</button>
+          } @else {
+            <a routerLink="/login" routerLinkActive="mobile-active" class="btn btn-primary mobile-signin"
+               (click)="closeMenu()">Sign in</a>
+          }
+        </div>
+        <div class="mobile-backdrop" (click)="closeMenu()"></div>
+      }
     </nav>
 
     <main class="content">
@@ -97,6 +127,8 @@ import { AuthService } from './services/auth.service';
       font-weight: 700;
       color: var(--text-main);
     }
+
+    /* Desktop links */
     .nav-links {
       display: flex;
       gap: 0.25rem;
@@ -115,7 +147,7 @@ import { AuthService } from './services/auth.service';
       background: var(--bg);
     }
     .nav-links a.active {
-      color: var(--primary);
+      color: var(--primary) !important;
       background: rgba(37, 99, 235, 0.08);
     }
     .nav-dashboard {
@@ -141,9 +173,85 @@ import { AuthService } from './services/auth.service';
       background: var(--primary-hover) !important;
       color: white !important;
     }
-    .btn-sm {
-      padding: 0.4375rem 1rem;
-      font-size: 0.875rem;
+
+    /* Hamburger button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      padding: 6px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .hamburger:hover {
+      background: var(--bg);
+    }
+    .ham-bar {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--text-main);
+      border-radius: 2px;
+      transform-origin: center;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    /* Animate bars into an X when open */
+    .ham-bar:nth-child(1).open { transform: translateY(7px) rotate(45deg); }
+    .ham-bar:nth-child(2).open { opacity: 0; transform: scaleX(0); }
+    .ham-bar:nth-child(3).open { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile dropdown */
+    .mobile-menu {
+      display: flex;
+      flex-direction: column;
+      padding: 0.75rem 1.25rem 1rem;
+      border-top: 1px solid var(--border);
+      gap: 0.25rem;
+      background: rgba(255, 255, 255, 0.98);
+      position: relative;
+      z-index: 101;
+    }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.75rem 0.875rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .mobile-menu a.mobile-active {
+      color: var(--primary);
+      background: rgba(37, 99, 235, 0.08);
+    }
+    .mobile-dashboard {
+      border: 1px solid var(--border);
+    }
+    .mobile-signin {
+      justify-content: center;
+      color: white !important;
+      margin-top: 0.25rem;
+    }
+    .mobile-signout {
+      width: 100%;
+      margin-top: 0.25rem;
+      justify-content: center;
+    }
+
+    /* Transparent backdrop to close menu on outside click */
+    .mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 99;
     }
 
     /* --- Content area --- */
@@ -215,6 +323,12 @@ import { AuthService } from './services/auth.service';
       font-size: 0.8125rem;
       color: #334155;
     }
+
+    /* --- Responsive breakpoint --- */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
   `,
 })
 export class App {
@@ -222,9 +336,27 @@ export class App {
   private readonly router = inject(Router);
 
   readonly year = new Date().getFullYear();
+  readonly menuOpen = signal(false);
+
+  constructor() {
+    this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        this.menuOpen.set(false);
+      }
+    });
+  }
+
+  toggleMenu() {
+    this.menuOpen.update((v) => !v);
+  }
+
+  closeMenu() {
+    this.menuOpen.set(false);
+  }
 
   logout() {
     this.auth.logout();
+    this.closeMenu();
     this.router.navigate(['/']);
   }
 }
