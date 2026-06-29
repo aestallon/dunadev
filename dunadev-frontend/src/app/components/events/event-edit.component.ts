@@ -28,7 +28,7 @@ interface EditForm {
       <div class="container">
         <header class="page-header">
           <div>
-            <a routerLink="/manage/events" class="back-link">&larr; My Events</a>
+            <a routerLink="/manage/events" class="back-link">&larr; Events</a>
             <h1>Edit Event</h1>
           </div>
         </header>

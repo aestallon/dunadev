@@ -172,7 +172,7 @@ export class LoginComponent {
       next: (response) => {
         this.authService.storeTokens(response);
         this.loading.set(false);
-        this.router.navigate(['/manage']);
+        this.router.navigate(['/manage/events']);
       },
       error: (err) => {
         this.loading.set(false);

@@ -18,11 +18,11 @@ import {
 
         <div class="page-header">
           <div class="breadcrumb">
-            <a routerLink="/manage">Dashboard</a>
+            <a routerLink="/manage/events">Events</a>
             <span class="breadcrumb-sep">/</span>
-            <span>My Organisation</span>
+            <span>Organisation</span>
           </div>
-          <h1>My Organisation</h1>
+          <h1>Organisation</h1>
         </div>
 
         @if (loading()) {
@@ -92,7 +92,7 @@ import {
                     Save changes
                   }
                 </button>
-                <a routerLink="/manage" class="btn btn-secondary">Cancel</a>
+                <a routerLink="/manage/events" class="btn btn-secondary">Cancel</a>
               </div>
             </form>
           </div>

@@ -11,10 +11,7 @@ import { OrganiserEventsService, EventSummary, EventStatus } from '../../../api/
     <div class="events-page">
       <div class="container">
         <header class="page-header">
-          <div>
-            <a routerLink="/manage" class="back-link">&larr; Dashboard</a>
-            <h1>My Events</h1>
-          </div>
+          <h1>Events</h1>
           <a routerLink="/manage/events/new" class="btn btn-primary">+ New Event</a>
         </header>
 
@@ -95,16 +92,7 @@ import { OrganiserEventsService, EventSummary, EventStatus } from '../../../api/
     .page-header h1 {
       font-size: 2rem;
       margin-bottom: 0;
-      margin-top: 0.25rem;
     }
-    .back-link {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      display: block;
-      margin-bottom: 0.375rem;
-    }
-    .back-link:hover { color: var(--primary); }
     .loading-state, .empty-state {
       text-align: center;
       padding: 4rem 2rem;
