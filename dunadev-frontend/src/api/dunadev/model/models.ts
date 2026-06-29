@@ -9,5 +9,7 @@ export * from './eventUpdateRequest';
 export * from './locationRequest';
 export * from './locationSummary';
 export * from './loginRequest';
+export * from './organiserProfile';
 export * from './organiserSummary';
+export * from './organiserUpdateRequest';
 export * from './refreshRequest';

@@ -5,6 +5,9 @@ src/main/java/com/aestallon/dunadev/rest/api/LocationsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/LocationsApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserEventsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/OrganiserEventsApiDelegate.java
+src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApi.java
+src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApiController.java
+src/main/java/com/aestallon/dunadev/rest/api/OrganiserProfileApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApi.java
 src/main/java/com/aestallon/dunadev/rest/api/PublicEventsApiDelegate.java
 src/main/java/com/aestallon/dunadev/rest/model/ApiError.java
@@ -18,5 +21,7 @@ src/main/java/com/aestallon/dunadev/rest/model/EventUpdateRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/LocationRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/LocationSummary.java
 src/main/java/com/aestallon/dunadev/rest/model/LoginRequest.java
+src/main/java/com/aestallon/dunadev/rest/model/OrganiserProfile.java
 src/main/java/com/aestallon/dunadev/rest/model/OrganiserSummary.java
+src/main/java/com/aestallon/dunadev/rest/model/OrganiserUpdateRequest.java
 src/main/java/com/aestallon/dunadev/rest/model/RefreshRequest.java

@@ -9,6 +9,7 @@ import { EventCreateComponent } from './components/events/event-create.component
 import { EventEditComponent } from './components/events/event-edit.component';
 import { AboutComponent } from './components/about/about.component';
 import { ContactComponent } from './components/contact/contact.component';
+import { OrganiserProfileComponent } from './components/organiser-profile/organiser-profile.component';
 import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'calendar', component: CalendarComponent },
   { path: 'login', component: LoginComponent },
   { path: 'manage', component: ManagementComponent, canActivate: [authGuard] },
+  { path: 'manage/profile', component: OrganiserProfileComponent, canActivate: [authGuard] },
   { path: 'manage/locations', component: LocationsComponent, canActivate: [authGuard] },
   { path: 'manage/events', component: ManageEventsComponent, canActivate: [authGuard] },
   { path: 'manage/events/new', component: EventCreateComponent, canActivate: [authGuard] },

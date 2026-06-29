@@ -1,6 +1,6 @@
 package com.aestallon.dunadev.rest;
 
-import com.aestallon.dunadev.repository.UserRepository;
+import com.aestallon.dunadev.entity.UserEntity;
 import com.aestallon.dunadev.rest.api.AuthenticationApiDelegate;
 import com.aestallon.dunadev.rest.model.AuthResponse;
 import com.aestallon.dunadev.rest.model.LoginRequest;
@@ -8,26 +8,30 @@ import com.aestallon.dunadev.rest.model.RefreshRequest;
 import com.aestallon.dunadev.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate {
 
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
+  private final AuthenticationManager authenticationManager;
+  private final UserDetailsService userDetailsService;
   private final JwtService jwtService;
 
   @Override
   public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
-    var user = userRepository.findByEmail(loginRequest.getEmail())
-        .filter(u -> passwordEncoder.matches(loginRequest.getPassword(), u.getPasswordHash()))
-        .orElse(null);
-    if (user == null) {
+    try {
+      var authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+      var user = (UserEntity) authentication.getPrincipal();
+      return ResponseEntity.ok(buildAuthResponse(user.getEmail(), user.getRole()));
+    } catch (BadCredentialsException e) {
       return ResponseEntity.status(401).build();
     }
-    return ResponseEntity.ok(buildAuthResponse(user.getEmail(), user.getRole()));
   }
 
   @Override
@@ -37,10 +41,7 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
       if (!jwtService.isRefreshToken(claims)) {
         return ResponseEntity.status(401).build();
       }
-      var user = userRepository.findByEmail(claims.getSubject()).orElse(null);
-      if (user == null) {
-        return ResponseEntity.status(401).build();
-      }
+      var user = (UserEntity) userDetailsService.loadUserByUsername(claims.getSubject());
       return ResponseEntity.ok(buildAuthResponse(user.getEmail(), user.getRole()));
     } catch (Exception e) {
       return ResponseEntity.status(401).build();

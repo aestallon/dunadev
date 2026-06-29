@@ -21,6 +21,13 @@ import { AuthService } from '../../services/auth.service';
         </header>
 
         <div class="dashboard-grid">
+          <a routerLink="/manage/profile" class="dash-card dash-card-link">
+            <div class="dash-card-icon profile-icon"></div>
+            <h3>My Organisation</h3>
+            <p>Edit your organisation's name, description, and website.</p>
+            <span class="dash-card-action">Edit &rarr;</span>
+          </a>
+
           <a routerLink="/manage/events" class="dash-card dash-card-link">
             <div class="dash-card-icon events-icon"></div>
             <h3>My Events</h3>
@@ -103,6 +110,9 @@ import { AuthService } from '../../services/auth.service';
       height: 40px;
       border-radius: 10px;
       margin-bottom: 1.25rem;
+    }
+    .profile-icon {
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
     }
     .events-icon {
       background: linear-gradient(135deg, #dbeafe, #bfdbfe);

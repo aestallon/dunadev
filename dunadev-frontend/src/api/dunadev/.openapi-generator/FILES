@@ -5,6 +5,7 @@ api/api.ts
 api/authentication.service.ts
 api/locations.service.ts
 api/organiserEvents.service.ts
+api/organiserProfile.service.ts
 api/publicEvents.service.ts
 configuration.ts
 encoder.ts
@@ -22,7 +23,9 @@ model/locationRequest.ts
 model/locationSummary.ts
 model/loginRequest.ts
 model/models.ts
+model/organiserProfile.ts
 model/organiserSummary.ts
+model/organiserUpdateRequest.ts
 model/refreshRequest.ts
 param.ts
 variables.ts
