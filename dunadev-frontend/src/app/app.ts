@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
@@ -19,7 +19,7 @@ import { AuthService } from './services/auth.service';
           <a routerLink="/about" routerLinkActive="active">About</a>
           <a routerLink="/contact" routerLinkActive="active">Contact</a>
           @if (auth.isLoggedIn()) {
-            <a routerLink="/manage" routerLinkActive="active" class="nav-dashboard">
+            <a [routerLink]="dashboardLink()" routerLinkActive="active" class="nav-dashboard">
               <span class="nav-user-dot"></span>
               Dashboard
             </a>
@@ -337,6 +337,20 @@ export class App {
 
   readonly year = new Date().getFullYear();
   readonly menuOpen = signal(false);
+
+  readonly dashboardLink = computed(() => {
+    const isAdmin = this.auth.isAdmin();
+    if (isAdmin) {
+      return '/admin';
+    }
+
+    const isOrganiser = this.auth.isOrganiser();
+    if (isOrganiser) {
+      return '/organiser';
+    }
+
+    return '/login';
+  })
 
   constructor() {
     this.router.events.subscribe((e) => {
