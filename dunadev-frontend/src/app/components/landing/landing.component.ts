@@ -275,9 +275,9 @@ import { EventModalComponent } from '../shared/event-modal.component';
       margin: 0 auto;
       padding: 5rem 1.5rem;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 5fr 6fr;
       gap: 4rem;
-      align-items: center;
+      align-items: start;
       width: 100%;
     }
 
@@ -308,17 +308,13 @@ import { EventModalComponent } from '../shared/event-modal.component';
       font-size: 1.0625rem;
       color: #94a3b8;
       line-height: 1.75;
-      max-width: 440px;
+      max-width: 520px;
     }
 
-    /* Events panel — no box, just a dashed divider on the left */
+    /* Events panel — dashed left divider, no scroll */
     .hero-panel {
       border-left: 2px dashed rgba(255, 255, 255, 0.18);
       padding-left: 3rem;
-      max-height: 72vh;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.12) transparent;
     }
     .hero-panel-header {
       margin-bottom: 1.25rem;
@@ -344,15 +340,14 @@ import { EventModalComponent } from '../shared/event-modal.component';
       overflow: hidden;
       transition: background 0.2s, border-color 0.2s;
       cursor: pointer;
-      width: 320px;
-      height: fit-content;
+      width: 100%;
     }
     .hec:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(96, 165, 250, 0.35);
     }
     .hec-image {
-      width: max(100%, 320px);
+      width: 100%;
       height: 140px;
       overflow: hidden;
     }
@@ -429,6 +424,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
 
     /* Hero skeleton */
     .hec-skeleton {
+      width: 100%;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 12px;
@@ -734,19 +730,14 @@ import { EventModalComponent } from '../shared/event-modal.component';
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
-      .hero {
-        min-height: auto;
-      }
+      .hero { min-height: auto; }
       .hero-inner {
         grid-template-columns: 1fr;
         gap: 2.5rem;
         padding: 3.5rem 1.25rem;
       }
-      .hero-text p {
-        max-width: none;
-      }
+      .hero-text p { max-width: none; }
       .hero-panel {
-        max-height: none;
         border-left: none;
         border-top: 2px dashed rgba(255, 255, 255, 0.18);
         padding-left: 0;
