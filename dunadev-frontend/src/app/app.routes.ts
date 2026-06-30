@@ -18,6 +18,7 @@ import { AdminOrganiserEditComponent } from './components/admin/admin-organiser-
 import { AdminOrganiserLocationsComponent } from './components/admin/admin-organiser-locations.component';
 import { AdminEventEditComponent } from './components/admin/admin-event-edit.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { DocsComponent } from './components/docs/docs.component';
 import { authGuard, adminGuard } from './services/auth.guard';
 
 export const routes: Routes = [
@@ -37,6 +38,7 @@ export const routes: Routes = [
       { path: 'events/new', component: EventCreateComponent },
       { path: 'events/:id/edit', component: EventEditComponent },
       { path: 'password', component: ChangePasswordComponent },
+      { path: 'docs', component: DocsComponent },
     ],
   },
   {
@@ -48,6 +50,7 @@ export const routes: Routes = [
       { path: 'upcoming', component: AdminUpcomingComponent },
       { path: 'organisers', component: AdminOrganisersComponent },
       { path: 'password', component: ChangePasswordComponent },
+      { path: 'docs', component: DocsComponent },
       {
         path: 'organisers/:id',
         component: AdminOrganiserDetailComponent,
