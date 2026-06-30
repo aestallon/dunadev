@@ -12,6 +12,7 @@ import {
   EventRequest,
   EventLinkRequest,
 } from '../../../api/dunadev';
+import { ImageUploadComponent } from '../shared/image-upload.component';
 
 interface EventForm {
   title: string;
@@ -29,7 +30,7 @@ interface EventForm {
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent],
   template: `
     <div class="event-create-page">
       <div class="container">
@@ -178,6 +179,17 @@ interface EventForm {
                   </div>
                 }
               }
+            </div>
+
+            <!-- Cover Image -->
+            <div class="form-card">
+              <h3 class="section-title">Cover Image</h3>
+              <p class="hint">Optional. You can also add or change the image after creating the event.</p>
+              <app-image-upload
+                [uploading]="uploadingImage"
+                (fileSelected)="pendingImageFile.set($event)"
+                (removed)="pendingImageFile.set(null)"
+              />
             </div>
 
             <!-- Additional Links -->
@@ -519,6 +531,8 @@ export class EventCreateComponent implements OnInit {
   savingLocation = signal(false);
   saving = signal(false);
   error = signal<string | null>(null);
+  pendingImageFile = signal<File | null>(null);
+  uploadingImage = signal(false);
 
   ngOnInit() {
     this.locationsService.getMyLocations().subscribe({
@@ -626,7 +640,18 @@ export class EventCreateComponent implements OnInit {
     };
 
     this.eventsService.createEvent(request).subscribe({
-      next: () => this.router.navigate(['/manage/events']),
+      next: created => {
+        const file = this.pendingImageFile();
+        if (file) {
+          this.uploadingImage.set(true);
+          this.eventsService.uploadEventImage(created.id, file).subscribe({
+            next: () => this.router.navigate(['/manage/events']),
+            error: () => this.router.navigate(['/manage/events']),
+          });
+        } else {
+          this.router.navigate(['/manage/events']);
+        }
+      },
       error: () => {
         this.error.set('Failed to create event. Please try again.');
         this.saving.set(false);

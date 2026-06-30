@@ -58,6 +58,8 @@ public class EventSummary {
 
   private @Nullable LocationSummary location;
 
+  private @Nullable String coverImageUrl = null;
+
   @Valid
   private List<@Valid EventLink> links = new ArrayList<>();
 
@@ -318,6 +320,26 @@ public class EventSummary {
     this.location = location;
   }
 
+  public EventSummary coverImageUrl(@Nullable String coverImageUrl) {
+    this.coverImageUrl = coverImageUrl;
+    return this;
+  }
+
+  /**
+   * Relative URL of the event's cover image, served as a static resource.
+   * @return coverImageUrl
+   */
+  
+  @Schema(name = "coverImageUrl", description = "Relative URL of the event's cover image, served as a static resource.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("coverImageUrl")
+  public @Nullable String getCoverImageUrl() {
+    return coverImageUrl;
+  }
+
+  public void setCoverImageUrl(@Nullable String coverImageUrl) {
+    this.coverImageUrl = coverImageUrl;
+  }
+
   public EventSummary links(List<@Valid EventLink> links) {
     this.links = links;
     return this;
@@ -367,12 +389,13 @@ public class EventSummary {
         Objects.equals(this.status, eventSummary.status) &&
         Objects.equals(this.organiser, eventSummary.organiser) &&
         Objects.equals(this.location, eventSummary.location) &&
+        Objects.equals(this.coverImageUrl, eventSummary.coverImageUrl) &&
         Objects.equals(this.links, eventSummary.links);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, description, eventUrl, startsAt, endsAt, free, registrationRequired, registrationUrl, status, organiser, location, links);
+    return Objects.hash(id, title, description, eventUrl, startsAt, endsAt, free, registrationRequired, registrationUrl, status, organiser, location, coverImageUrl, links);
   }
 
   @Override
@@ -391,6 +414,7 @@ public class EventSummary {
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    organiser: ").append(toIndentedString(organiser)).append("\n");
     sb.append("    location: ").append(toIndentedString(location)).append("\n");
+    sb.append("    coverImageUrl: ").append(toIndentedString(coverImageUrl)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("}");
     return sb.toString();

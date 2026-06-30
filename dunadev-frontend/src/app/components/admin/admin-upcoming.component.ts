@@ -3,12 +3,15 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AdministrationService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { SearchBoxComponent } from '../shared/search-box.component';
+import { EventModalComponent } from '../shared/event-modal.component';
 
 @Component({
   selector: 'app-admin-upcoming',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, SearchBoxComponent],
+  imports: [CommonModule, RouterLink, DatePipe, SearchBoxComponent, EventModalComponent],
   template: `
+    <app-event-modal [event]="previewEvent()" (close)="previewEvent.set(null)" />
+
     <div class="page">
       <div class="container">
 
@@ -73,6 +76,9 @@ import { SearchBoxComponent } from '../shared/search-box.component';
                     }
                   </div>
                 </div>
+                <button class="btn btn-secondary btn-sm" (click)="previewEvent.set(event)">
+                  Preview
+                </button>
                 <a [routerLink]="['/admin/organisers', event.organiser.id, 'events', event.id, 'edit']"
                    class="btn btn-secondary btn-sm edit-btn">
                   Edit
@@ -162,6 +168,7 @@ export class AdminUpcomingComponent implements OnInit {
   readonly query = signal('');
   readonly allEvents = signal<EventSummary[]>([]);
   readonly loading = signal(true);
+  readonly previewEvent = signal<EventSummary | null>(null);
 
   readonly filtered = computed(() => {
     const q = this.query().trim().toLowerCase();

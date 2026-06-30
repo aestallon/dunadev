@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -38,6 +39,11 @@ public class OrganiserEventsApiDelegateImpl implements OrganiserEventsApiDelegat
   @Override
   public ResponseEntity<List<EventSummary>> getMyEvents() {
     return ResponseEntity.ok(organiserEventService.getMyEvents(currentEmail()));
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> uploadEventImage(Long id, MultipartFile file) {
+    return ResponseEntity.ok(organiserEventService.uploadImage(currentEmail(), id, file));
   }
 
   private static String currentEmail() {

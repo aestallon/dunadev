@@ -10,9 +10,11 @@ import com.aestallon.dunadev.rest.NotFoundException;
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
+import com.aestallon.dunadev.service.media.ImageStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -26,6 +28,7 @@ public class OrganiserEventService {
   private final EventRepository eventRepository;
   private final LocationRepository locationRepository;
   private final OrganiserRepository organiserRepository;
+  private final ImageStorageService imageStorageService;
 
   @Transactional(readOnly = true)
   public List<EventSummary> getMyEvents(String email) {
@@ -108,6 +111,16 @@ public class OrganiserEventService {
       }
     }
 
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  @Transactional
+  public EventSummary uploadImage(String email, Long eventId, MultipartFile file) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(eventId, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    var url = imageStorageService.storeImage(file);
+    event.setCoverImageUrl(url);
     return PublicEventService.toSummary(eventRepository.save(event));
   }
 

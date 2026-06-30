@@ -62,6 +62,9 @@ public class EventEntity {
   @Column(name = "cancellation_reason")
   private String cancellationReason;
 
+  @Column(name = "cover_image_url")
+  private String coverImageUrl;
+
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default
   private List<EventLinkEntity> links = new ArrayList<>();

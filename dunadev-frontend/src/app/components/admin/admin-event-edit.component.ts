@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AdministrationService, EventSummary, EventUpdateRequest, EventLinkRequest } from '../../../api/dunadev';
+import { ImageUploadComponent } from '../shared/image-upload.component';
 
 interface EditForm {
   title: string; description: string; eventUrl: string;
@@ -12,7 +13,7 @@ interface EditForm {
 @Component({
   selector: 'app-admin-event-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent],
   template: `
     <div class="event-edit-page">
       <div class="container">
@@ -113,6 +114,22 @@ interface EditForm {
                 }
               </div>
 
+              <!-- Cover Image -->
+              <div class="form-card">
+                <h3 class="section-title">Cover Image</h3>
+                @if (imageError()) {
+                  <div class="error-banner" style="margin-bottom:0.75rem">{{ imageError() }}</div>
+                }
+                @if (imageSuccess()) {
+                  <div class="success-banner">Image updated successfully.</div>
+                }
+                <app-image-upload
+                  [currentImageUrl]="event()?.coverImageUrl ?? null"
+                  [uploading]="uploadingImage"
+                  (fileSelected)="uploadImage($event)"
+                />
+              </div>
+
               <div class="form-actions">
                 <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="saving()">Cancel</button>
                 <button type="button" class="btn btn-primary" (click)="submit()"
@@ -173,6 +190,7 @@ interface EditForm {
     .btn-icon:hover { color: #dc2626; background: #fee2e2; }
     .btn-sm { padding: 0.375rem 0.875rem; font-size: 0.8125rem; }
     .form-actions { display: flex; gap: 0.75rem; }
+    .success-banner { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: calc(var(--radius) - 2px); padding: 0.75rem 1rem; font-size: 0.875rem; margin-bottom: 0.75rem; }
   `,
 })
 export class AdminEventEditComponent implements OnInit {
@@ -185,6 +203,9 @@ export class AdminEventEditComponent implements OnInit {
   loadError = signal<string | null>(null);
   saveError = signal<string | null>(null);
   saving = signal(false);
+  uploadingImage = signal(false);
+  imageError = signal<string | null>(null);
+  imageSuccess = signal(false);
   links = signal<{ label: string; url: string }[]>([]);
 
   form: EditForm = { title: '', description: '', eventUrl: '', free: true, registrationRequired: false, registrationUrl: '', visibleFrom: '' };
@@ -224,6 +245,24 @@ export class AdminEventEditComponent implements OnInit {
     this.adminService.updateAdminEvent(eid, request).subscribe({
       next: () => this.cancel(),
       error: err => { this.saveError.set(err?.error?.message ?? 'Failed to save.'); this.saving.set(false); },
+    });
+  }
+
+  uploadImage(file: File) {
+    const eid = Number(this.route.snapshot.paramMap.get('eid'));
+    this.uploadingImage.set(true);
+    this.imageError.set(null);
+    this.imageSuccess.set(false);
+    this.adminService.uploadAdminEventImage(eid, file).subscribe({
+      next: updated => {
+        this.event.set(updated);
+        this.uploadingImage.set(false);
+        this.imageSuccess.set(true);
+      },
+      error: () => {
+        this.imageError.set('Failed to upload image. Please try again.');
+        this.uploadingImage.set(false);
+      },
     });
   }
 

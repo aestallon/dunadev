@@ -10,12 +10,14 @@ import com.aestallon.dunadev.repository.UserRepository;
 import com.aestallon.dunadev.rest.NotFoundException;
 import com.aestallon.dunadev.rest.model.*;
 import com.aestallon.dunadev.service.mail.EmailService;
+import com.aestallon.dunadev.service.media.ImageStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
@@ -41,6 +43,7 @@ public class AdminService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
+  private final ImageStorageService imageStorageService;
 
   @Value("${dunadev.admin-email}")
   private String adminEmail;
@@ -191,6 +194,17 @@ public class AdminService {
     location.setWebsiteUrl(request.getWebsiteUrl());
     location.setHowToGetThere(request.getHowToGetThere());
     return LocationService.toSummary(locationRepository.save(location));
+  }
+
+  // ── Event image ───────────────────────────────────────────────────────────
+
+  @Transactional
+  public EventSummary uploadEventImage(Long eventId, MultipartFile file) {
+    var event = eventRepository.findByIdAdmin(eventId)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    var url = imageStorageService.storeImage(file);
+    event.setCoverImageUrl(url);
+    return PublicEventService.toSummary(eventRepository.save(event));
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import com.aestallon.dunadev.rest.model.ApiError;
+import com.aestallon.dunadev.service.media.ImageStorageException;
 import jakarta.persistence.PersistenceException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -43,6 +44,12 @@ public class RestExceptionHandler {
   public ResponseEntity<ApiError> illegalArgumentException(final IllegalArgumentException e,
                                                            final WebRequest request) {
     return errorOf(HttpStatus.BAD_REQUEST, e.getMessage(), request);
+  }
+
+  @ExceptionHandler(ImageStorageException.class)
+  public ResponseEntity<ApiError> imageStorageException(final ImageStorageException e,
+                                                        final WebRequest request) {
+    return errorOf(HttpStatus.INTERNAL_SERVER_ERROR, "File operation failed!", request);
   }
 
   @ExceptionHandler(PersistenceException.class)

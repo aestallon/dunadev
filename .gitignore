@@ -6,8 +6,10 @@
 **/node_modules
 **/.vscode
 dunadev-frontend/dist
+/media
 
 CLAUDE.md
 MEMORY.md
 ADMIN.md
+EVENT_DISPLAY.md
 .claude

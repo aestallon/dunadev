@@ -8,6 +8,7 @@ import {
   EventUpdateRequest,
   EventLinkRequest,
 } from '../../../api/dunadev';
+import { ImageUploadComponent } from '../shared/image-upload.component';
 
 interface EditForm {
   title: string;
@@ -22,7 +23,7 @@ interface EditForm {
 @Component({
   selector: 'app-event-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent],
   template: `
     <div class="event-edit-page">
       <div class="container">
@@ -128,6 +129,22 @@ interface EditForm {
                   <input type="datetime-local" [(ngModel)]="form.visibleFrom" name="visibleFrom">
                   <span class="hint">Leave empty to publish immediately.</span>
                 </div>
+              </div>
+
+              <!-- Cover Image -->
+              <div class="form-card">
+                <h3 class="section-title">Cover Image</h3>
+                @if (imageError()) {
+                  <div class="error-banner" style="margin-bottom:0.75rem">{{ imageError() }}</div>
+                }
+                @if (imageSuccess()) {
+                  <div class="success-banner">Image updated successfully.</div>
+                }
+                <app-image-upload
+                  [currentImageUrl]="event()?.coverImageUrl ?? null"
+                  [uploading]="uploadingImage"
+                  (fileSelected)="uploadImage($event)"
+                />
               </div>
 
               <!-- Links -->
@@ -366,6 +383,11 @@ interface EditForm {
       flex-shrink: 0;
     }
     .btn-icon:hover { color: #dc2626; background: #fee2e2; }
+    .success-banner {
+      background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;
+      border-radius: calc(var(--radius) - 2px); padding: 0.75rem 1rem;
+      font-size: 0.875rem; margin-bottom: 0.75rem;
+    }
   `,
 })
 export class EventEditComponent implements OnInit {
@@ -378,6 +400,9 @@ export class EventEditComponent implements OnInit {
   loadError = signal<string | null>(null);
   saveError = signal<string | null>(null);
   saving = signal(false);
+  uploadingImage = signal(false);
+  imageError = signal<string | null>(null);
+  imageSuccess = signal(false);
 
   form: EditForm = {
     title: '',
@@ -454,6 +479,24 @@ export class EventEditComponent implements OnInit {
         const msg = err?.error?.message;
         this.saveError.set(msg ?? 'Failed to save changes. Please try again.');
         this.saving.set(false);
+      },
+    });
+  }
+
+  uploadImage(file: File) {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.uploadingImage.set(true);
+    this.imageError.set(null);
+    this.imageSuccess.set(false);
+    this.eventsService.uploadEventImage(id, file).subscribe({
+      next: updated => {
+        this.event.set(updated);
+        this.uploadingImage.set(false);
+        this.imageSuccess.set(true);
+      },
+      error: () => {
+        this.imageError.set('Failed to upload image. Please try again.');
+        this.uploadingImage.set(false);
       },
     });
   }

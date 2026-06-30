@@ -178,4 +178,40 @@ public interface OrganiserEventsApi {
         return getDelegate().updateEvent(id, eventUpdateRequest);
     }
 
+
+    String PATH_UPLOAD_EVENT_IMAGE = "/api/events/{id}/image";
+    /**
+     * POST /api/events/{id}/image : Upload or replace the cover image of an event
+     *
+     * @param id  (required)
+     * @param file  (required)
+     * @return Image stored successfully. Returns the updated event summary. (status code 200)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     */
+    @Operation(
+        operationId = "uploadEventImage",
+        summary = "Upload or replace the cover image of an event",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Image stored successfully. Returns the updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = OrganiserEventsApi.PATH_UPLOAD_EVENT_IMAGE,
+        produces = { "application/json" },
+        consumes = { "multipart/form-data" }
+    )
+    default ResponseEntity<EventSummary> uploadEventImage(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "file", description = "", required = true) @RequestPart(value = "file", required = true) MultipartFile file
+    ) {
+        return getDelegate().uploadEventImage(id, file);
+    }
+
 }

@@ -60,6 +60,7 @@ public class PublicEventService {
     if (e.getLocation() != null) {
       summary.setLocation(toLocationSummary(e.getLocation()));
     }
+    summary.setCoverImageUrl(e.getCoverImageUrl());
     summary.setLinks(e.getLinks().stream().map(PublicEventService::toEventLink).toList());
     return summary;
   }

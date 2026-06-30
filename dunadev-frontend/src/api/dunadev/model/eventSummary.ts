@@ -32,6 +32,10 @@ export interface EventSummary {
     status: EventStatus;
     organiser: OrganiserSummary;
     location?: LocationSummary;
+    /**
+     * Relative URL of the event\'s cover image, served as a static resource.
+     */
+    coverImageUrl?: string | null;
     links?: Array<EventLink>;
 }
 

@@ -8,3 +8,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/003-add-organiser-status.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/changelog/004-add-event-cover-image.sql
+      relativeToChangelogFile: false

@@ -285,6 +285,42 @@ paths:
         '404':
           description: Event not found or not owned by the authenticated organiser.
 
+  /api/events/{id}/image:
+    post:
+      tags:
+        - Organiser Events
+      operationId: uploadEventImage
+      summary: Upload or replace the cover image of an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image stored successfully. Returns the updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+
   /api/events/my:
     get:
       tags:
@@ -526,6 +562,42 @@ paths:
                   $ref: '#/components/schemas/EventSummary'
         '403':
           description: Not an administrator.
+
+  /api/admin/events/{id}/image:
+    post:
+      tags:
+        - Administration
+      operationId: uploadAdminEventImage
+      summary: Upload or replace the cover image of any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image stored successfully. Returns the updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
 
   /api/admin/events/{id}:
     get:
@@ -784,6 +856,10 @@ components:
           $ref: '#/components/schemas/OrganiserSummary'
         location:
           $ref: '#/components/schemas/LocationSummary'
+        coverImageUrl:
+          type: string
+          nullable: true
+          description: Relative URL of the event's cover image, served as a static resource.
         links:
           type: array
           items:

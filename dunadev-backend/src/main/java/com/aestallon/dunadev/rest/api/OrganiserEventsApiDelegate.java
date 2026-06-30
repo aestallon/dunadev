@@ -40,7 +40,7 @@ public interface OrganiserEventsApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
+                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -63,7 +63,7 @@ public interface OrganiserEventsApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
+                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -85,7 +85,7 @@ public interface OrganiserEventsApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "[ { \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }, { \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" } ]";
+                    String exampleString = "[ { \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }, { \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" } ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }
@@ -112,7 +112,32 @@ public interface OrganiserEventsApiDelegate {
         getRequest().ifPresent(request -> {
             for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
+                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
+                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /api/events/{id}/image : Upload or replace the cover image of an event
+     *
+     * @param id  (required)
+     * @param file  (required)
+     * @return Image stored successfully. Returns the updated event summary. (status code 200)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     * @see OrganiserEventsApi#uploadEventImage
+     */
+    default ResponseEntity<EventSummary> uploadEventImage(Long id,
+        MultipartFile file) {
+        getRequest().ifPresent(request -> {
+            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
+                    String exampleString = "{ \"registrationRequired\" : true, \"eventUrl\" : \"eventUrl\", \"coverImageUrl\" : \"coverImageUrl\", \"description\" : \"description\", \"title\" : \"title\", \"organiser\" : { \"websiteUrl\" : \"websiteUrl\", \"name\" : \"name\", \"id\" : 6, \"logoUrl\" : \"logoUrl\" }, \"startsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"location\" : { \"address\" : \"address\", \"city\" : \"city\", \"websiteUrl\" : \"websiteUrl\", \"latitude\" : 5.962133916683182, \"name\" : \"name\", \"howToGetThere\" : \"howToGetThere\", \"id\" : 1, \"longitude\" : 5.637376656633329 }, \"links\" : [ { \"label\" : \"label\", \"url\" : \"url\" }, { \"label\" : \"label\", \"url\" : \"url\" } ], \"id\" : 0, \"free\" : true, \"endsAt\" : \"2000-01-23T04:56:07.000+00:00\", \"registrationUrl\" : \"registrationUrl\", \"status\" : \"SCHEDULED\" }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
                     break;
                 }

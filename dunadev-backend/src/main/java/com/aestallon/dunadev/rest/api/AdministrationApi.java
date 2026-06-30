@@ -385,4 +385,40 @@ public interface AdministrationApi {
         return getDelegate().updateAdminOrganiser(id, organiserUpdateRequest);
     }
 
+
+    String PATH_UPLOAD_ADMIN_EVENT_IMAGE = "/api/admin/events/{id}/image";
+    /**
+     * POST /api/admin/events/{id}/image : Upload or replace the cover image of any event
+     *
+     * @param id  (required)
+     * @param file  (required)
+     * @return Image stored successfully. Returns the updated event summary. (status code 200)
+     *         or Not an administrator. (status code 403)
+     *         or Event not found. (status code 404)
+     */
+    @Operation(
+        operationId = "uploadAdminEventImage",
+        summary = "Upload or replace the cover image of any event",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Image stored successfully. Returns the updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "403", description = "Not an administrator."),
+            @ApiResponse(responseCode = "404", description = "Event not found.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = AdministrationApi.PATH_UPLOAD_ADMIN_EVENT_IMAGE,
+        produces = { "application/json" },
+        consumes = { "multipart/form-data" }
+    )
+    default ResponseEntity<EventSummary> uploadAdminEventImage(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "file", description = "", required = true) @RequestPart(value = "file", required = true) MultipartFile file
+    ) {
+        return getDelegate().uploadAdminEventImage(id, file);
+    }
+
 }

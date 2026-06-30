@@ -2,12 +2,15 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
+import { EventModalComponent } from '../shared/event-modal.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe],
+  imports: [CommonModule, RouterLink, DatePipe, EventModalComponent],
   template: `
+    <app-event-modal [event]="selectedEvent()" (close)="selectedEvent.set(null)" />
+
     <div class="landing-page">
 
       <!-- ===== HERO ===== -->
@@ -54,7 +57,13 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
             } @else {
               <div class="hero-panel-list">
                 @for (event of upcomingEvents(); track event.id) {
-                  <div class="hec">
+                  <div class="hec" (click)="selectedEvent.set(event)" role="button" tabindex="0"
+                       (keydown.enter)="selectedEvent.set(event)">
+                    @if (event.coverImageUrl) {
+                      <div class="hec-image">
+                        <img [src]="event.coverImageUrl" [alt]="event.title" loading="lazy">
+                      </div>
+                    }
                     <div class="hec-header">
                       <span class="hec-badge">{{ statusLabel(event) }}</span>
                       <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
@@ -69,13 +78,10 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
                       <span class="hec-sep">·</span>
                       <span class="hec-meta-item">{{ event.startsAt | date: 'HH:mm' }}</span>
                     </div>
-                    @if (event.registrationRequired && event.registrationUrl) {
-                      <a [href]="event.registrationUrl" target="_blank" rel="noopener"
-                         class="hec-link">Register &rarr;</a>
-                    } @else if (event.eventUrl) {
-                      <a [href]="event.eventUrl" target="_blank" rel="noopener"
-                         class="hec-link">Details &rarr;</a>
-                    }
+                    <div class="hec-badges">
+                      @if (!event.free) { <span class="hec-pill">Paid</span> }
+                      @if (event.registrationRequired) { <span class="hec-pill">Registration required</span> }
+                    </div>
                   </div>
                 }
               </div>
@@ -128,7 +134,14 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
           } @else if (viewMode() === 'list') {
             <div class="event-timeline">
               @for (event of monthlyEvents(); track event.id) {
-                <div class="timeline-item" [class.cancelled]="event.status === cancelledStatus">
+                <div class="timeline-item" [class.cancelled]="event.status === cancelledStatus"
+                     (click)="selectedEvent.set(event)" role="button" tabindex="0"
+                     (keydown.enter)="selectedEvent.set(event)">
+                  @if (event.coverImageUrl) {
+                    <div class="timeline-thumb">
+                      <img [src]="event.coverImageUrl" [alt]="event.title" loading="lazy">
+                    </div>
+                  }
                   <div class="timeline-date">
                     <span class="day">{{ event.startsAt | date: 'd' }}</span>
                     <span class="month">{{ event.startsAt | date: 'EEE' }}</span>
@@ -143,26 +156,14 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
                       @if (!event.free) {
                         <span class="meta-item paid-meta">Paid</span>
                       }
+                      @if (event.registrationRequired) {
+                        <span class="meta-item reg-meta">Registration required</span>
+                      }
                     </div>
                     <h3>{{ event.title }}</h3>
                     @if (event.description) {
                       <p class="timeline-description">{{ event.description }}</p>
                     }
-                    <div class="timeline-actions">
-                      @if (event.registrationRequired && event.registrationUrl) {
-                        <a [href]="event.registrationUrl" target="_blank" rel="noopener"
-                           class="link-btn">Register &rarr;</a>
-                      } @else if (event.eventUrl) {
-                        <a [href]="event.eventUrl" target="_blank" rel="noopener"
-                           class="link-btn">View Details &rarr;</a>
-                      }
-                      @if (event.links && event.links.length > 0) {
-                        @for (link of event.links; track link.url) {
-                          <a [href]="link.url" target="_blank" rel="noopener"
-                             class="link-btn link-btn-secondary">{{ link.label }}</a>
-                        }
-                      }
-                    </div>
                   </div>
                 </div>
               }
@@ -185,7 +186,10 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
                         @for (event of cell.events; track event.id) {
                           <div class="calendar-event"
                                [class.cancelled]="event.status === cancelledStatus"
-                               [title]="event.title">
+                               [title]="event.title"
+                               (click)="selectedEvent.set(event)"
+                               role="button" tabindex="0"
+                               (keydown.enter)="selectedEvent.set(event)">
                             <span class="calendar-event-time">{{ event.startsAt | date: 'HH:mm' }}</span>
                             <span class="calendar-event-title">{{ event.title }}</span>
                           </div>
@@ -346,18 +350,45 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      padding: 1.125rem 1.25rem;
+      overflow: hidden;
       transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
     }
     .hec:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(96, 165, 250, 0.35);
+    }
+    .hec-image {
+      width: 100%;
+      height: 120px;
+      overflow: hidden;
+    }
+    .hec-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hec-header,
+    .hec-title,
+    .hec-meta,
+    .hec-badges {
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    .hec-header { padding-top: 1rem; }
+    .hec-badges { padding-bottom: 0.875rem; display: flex; gap: 0.375rem; flex-wrap: wrap; }
+    .hec-pill {
+      font-size: 0.5625rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 0.15rem 0.45rem; border-radius: 9999px;
+      background: rgba(255,255,255,0.1); color: #cbd5e1;
     }
     .hec-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.5rem;
+      padding-top: 1.125rem;
+      padding-bottom: 0;
     }
     .hec-badge {
       font-size: 0.625rem;
@@ -509,10 +540,27 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
       border-radius: var(--radius);
       padding: 1.25rem;
       transition: var(--transition);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
     }
     .timeline-item:hover {
       border-color: var(--primary);
       box-shadow: var(--shadow);
+    }
+    .timeline-thumb {
+      width: 100px;
+      min-width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      align-self: center;
+    }
+    .timeline-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .timeline-item.cancelled { opacity: 0.55; }
     .timeline-item.cancelled h3 { text-decoration: line-through; }
@@ -565,6 +613,15 @@ import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dun
     .paid-meta {
       background: #fef3c7;
       color: #92400e;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .reg-meta {
+      background: #fff7ed;
+      color: #c2410c;
       padding: 0.125rem 0.5rem;
       border-radius: 9999px;
       font-size: 0.6875rem;
@@ -785,6 +842,7 @@ export class LandingComponent implements OnInit {
   readonly cancelledStatus = EventStatus.CANCELLED;
   readonly weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  readonly selectedEvent = signal<EventSummary | null>(null);
   readonly upcomingEvents = signal<EventSummary[]>([]);
   readonly monthlyEvents = signal<EventSummary[]>([]);
   readonly loadingUpcoming = signal(true);
