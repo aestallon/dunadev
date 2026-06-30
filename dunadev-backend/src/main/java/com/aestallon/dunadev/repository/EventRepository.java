@@ -4,6 +4,7 @@ import com.aestallon.dunadev.entity.EventEntity;
 import com.aestallon.dunadev.entity.OrganiserEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.OffsetDateTime;
@@ -15,7 +16,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.status <> 'CANCELLED'
@@ -27,7 +28,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.startsAt >= :from AND e.startsAt < :to
@@ -40,7 +41,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.id = :id AND e.organiser = :organiser
@@ -49,7 +50,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.organiser = :organiser
@@ -59,7 +60,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.startsAt > :from AND e.startsAt <= :to
@@ -69,7 +70,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.organiser.id = :organiserId
@@ -79,7 +80,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
   @Query("""
       SELECT e FROM EventEntity e
-        JOIN FETCH e.organiser
+        LEFT JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
       WHERE e.id = :id
@@ -87,4 +88,12 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
   Optional<EventEntity> findByIdAdmin(Long id);
 
   long countByOrganiser(OrganiserEntity organiser);
+
+  @Modifying
+  @Query("DELETE FROM EventEntity e WHERE e.organiser = :organiser AND e.startsAt > :now")
+  void deleteFutureByOrganiser(OrganiserEntity organiser, OffsetDateTime now);
+
+  @Modifying
+  @Query("UPDATE EventEntity e SET e.organiser = null WHERE e.organiser = :organiser")
+  void detachOrganiserFromPastEvents(OrganiserEntity organiser);
 }

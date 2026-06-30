@@ -81,6 +81,21 @@ public interface AdministrationApiDelegate {
     }
 
     /**
+     * DELETE /api/admin/organisers/{id} : Permanently delete an organiser&#39;s account
+     * Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. 
+     *
+     * @param id  (required)
+     * @return Organiser deleted successfully. (status code 204)
+     *         or Not an administrator. (status code 403)
+     *         or Organiser not found. (status code 404)
+     * @see AdministrationApi#deleteAdminOrganiser
+     */
+    default ResponseEntity<Void> deleteAdminOrganiser(Long id) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /api/admin/events/{id} : Get any event by ID
      *
      * @param id  (required)

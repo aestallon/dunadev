@@ -39,6 +39,37 @@ public interface OrganiserProfileApi {
         return new OrganiserProfileApiDelegate() {};
     }
 
+    String PATH_DELETE_MY_ACCOUNT = "/api/organiser/me";
+    /**
+     * DELETE /api/organiser/me : Permanently delete the authenticated organiser&#39;s account
+     * Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. 
+     *
+     * @return Account deleted successfully. (status code 204)
+     *         or Not authenticated. (status code 401)
+     *         or Organiser profile not found. (status code 404)
+     */
+    @Operation(
+        operationId = "deleteMyAccount",
+        summary = "Permanently delete the authenticated organiser's account",
+        description = "Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. ",
+        tags = { "Organiser Profile" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Account deleted successfully."),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Organiser profile not found.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = OrganiserProfileApi.PATH_DELETE_MY_ACCOUNT
+    )
+    default ResponseEntity<Void> deleteMyAccount(
+        
+    ) {
+        return getDelegate().deleteMyAccount();
+    }
+
+
     String PATH_GET_MY_ORGANISER_PROFILE = "/api/organiser/me";
     /**
      * GET /api/organiser/me : Get the authenticated organiser&#39;s profile

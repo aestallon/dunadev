@@ -67,6 +67,9 @@ public class PublicEventService {
   }
 
   private static OrganiserSummary toOrganiserSummary(OrganiserEntity o) {
+    if (o == null) {
+      return new OrganiserSummary(-1L, "[Deleted Organiser]");
+    }
     var s = new OrganiserSummary(o.getId(), o.getName());
     s.setLogoUrl(o.getLogoUrl());
     s.setWebsiteUrl(o.getWebsiteUrl());

@@ -27,6 +27,20 @@ public interface OrganiserProfileApiDelegate {
     }
 
     /**
+     * DELETE /api/organiser/me : Permanently delete the authenticated organiser&#39;s account
+     * Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. 
+     *
+     * @return Account deleted successfully. (status code 204)
+     *         or Not authenticated. (status code 401)
+     *         or Organiser profile not found. (status code 404)
+     * @see OrganiserProfileApi#deleteMyAccount
+     */
+    default ResponseEntity<Void> deleteMyAccount() {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
      * GET /api/organiser/me : Get the authenticated organiser&#39;s profile
      *
      * @return The organiser&#39;s profile. (status code 200)

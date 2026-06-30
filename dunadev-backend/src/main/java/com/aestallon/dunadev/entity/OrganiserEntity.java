@@ -18,8 +18,8 @@ public class OrganiserEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user_id", nullable = false, unique = true)
+  @OneToOne(fetch = FetchType.LAZY, optional = true)
+  @JoinColumn(name = "user_id", nullable = true, unique = true)
   private UserEntity user;
 
   @Column(nullable = false)

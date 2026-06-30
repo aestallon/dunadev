@@ -47,6 +47,7 @@ public class AdminService {
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
   private final ImageStorageService imageStorageService;
+  private final OrganiserService organiserService;
 
   @Value("${dunadev.admin-email}")
   private String adminEmail;
@@ -101,6 +102,13 @@ public class AdminService {
     emailService.sendInvitation(request.getEmail(), request.getName(), rawPassword, adminEmail);
 
     return toSummary(organiser);
+  }
+
+  // ── Delete organiser ─────────────────────────────────────────────────────
+
+  @Transactional
+  public void deleteOrganiser(Long id) {
+    organiserService.deleteOrganiserById(id);
   }
 
   // ── Update organiser ──────────────────────────────────────────────────────

@@ -1,12 +1,13 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   OrganiserProfileService,
   OrganiserProfile,
   OrganiserUpdateRequest,
 } from '../../../api/dunadev';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-organiser-profile',
@@ -95,6 +96,39 @@ import {
                 <a routerLink="/manage/events" class="btn btn-secondary">Cancel</a>
               </div>
             </form>
+          </div>
+
+          <!-- Danger zone -->
+          <div class="danger-zone">
+            <h2 class="danger-title">Danger Zone</h2>
+
+            @if (deleteError()) {
+              <div class="error-banner">{{ deleteError() }}</div>
+            }
+
+            @if (!deleteConfirm()) {
+              <div class="danger-row">
+                <div class="danger-desc">
+                  <strong>Delete account</strong>
+                  <p>Permanently removes your login, deletes upcoming events, and anonymises past event records. This cannot be undone.</p>
+                </div>
+                <button type="button" class="btn btn-danger" (click)="deleteConfirm.set(true)">
+                  Delete account
+                </button>
+              </div>
+            } @else {
+              <div class="danger-confirm">
+                <p><strong>Are you absolutely sure?</strong> Your account and all upcoming events will be permanently deleted. Past events will remain visible but attributed to a deleted account.</p>
+                <div class="danger-confirm-actions">
+                  <button type="button" class="btn btn-secondary" [disabled]="deleting()" (click)="deleteConfirm.set(false)">
+                    Cancel
+                  </button>
+                  <button type="button" class="btn btn-danger" [disabled]="deleting()" (click)="doDeleteAccount()">
+                    {{ deleting() ? 'Deleting…' : 'Yes, delete my account' }}
+                  </button>
+                </div>
+              </div>
+            }
           </div>
         }
 
@@ -194,6 +228,31 @@ import {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
+    .danger-zone {
+      margin-top: 2rem;
+      border: 1px solid #fca5a5;
+      border-radius: var(--radius);
+      padding: 1.5rem 2rem;
+      background: #fff5f5;
+    }
+    .danger-title {
+      font-size: 1rem; font-weight: 700; color: #dc2626; margin: 0 0 1.25rem;
+    }
+    .danger-row {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem;
+    }
+    .danger-desc { flex: 1; }
+    .danger-desc strong { font-size: 0.9375rem; }
+    .danger-desc p { font-size: 0.875rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+    .danger-confirm p { font-size: 0.875rem; color: #7f1d1d; margin: 0 0 1rem; }
+    .danger-confirm-actions { display: flex; gap: 0.75rem; }
+    .btn-danger {
+      background: #dc2626; color: white; border: none; border-radius: var(--radius);
+      padding: 0.5625rem 1.125rem; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s; white-space: nowrap;
+    }
+    .btn-danger:hover:not(:disabled) { background: #b91c1c; }
+    .btn-danger:disabled { opacity: 0.5; cursor: default; }
     /* Spinner */
     .spinner {
       display: inline-block;
@@ -210,12 +269,18 @@ import {
 })
 export class OrganiserProfileComponent implements OnInit {
   private readonly profileService = inject(OrganiserProfileService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly loadError = signal<string | null>(null);
   readonly saveError = signal<string | null>(null);
   readonly saveSuccess = signal(false);
+
+  readonly deleteConfirm = signal(false);
+  readonly deleting = signal(false);
+  readonly deleteError = signal<string | null>(null);
 
   form: OrganiserUpdateRequest = { name: '' };
 
@@ -253,6 +318,22 @@ export class OrganiserProfileComponent implements OnInit {
       error: () => {
         this.saveError.set('Failed to save profile. Please try again.');
         this.saving.set(false);
+      },
+    });
+  }
+
+  doDeleteAccount() {
+    this.deleting.set(true);
+    this.deleteError.set(null);
+    this.profileService.deleteMyAccount().subscribe({
+      next: () => {
+        this.authService.logout();
+        this.router.navigate(['/']);
+      },
+      error: err => {
+        this.deleteError.set(err?.error?.message ?? 'Failed to delete account. Please try again.');
+        this.deleting.set(false);
+        this.deleteConfirm.set(false);
       },
     });
   }

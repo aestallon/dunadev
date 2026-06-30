@@ -51,4 +51,10 @@ public abstract class EmailService {
         "email/password-changed.html",
         Map.of("email", to, "changedAt", changedAt, "adminEmail", adminEmail));
   }
+
+  public boolean notifyAccountDeleted(String to, String orgName, String adminEmail) {
+    return deliver(to, "Your DunaDev account has been deleted",
+        "email/account-deleted.html",
+        Map.of("email", to, "orgName", orgName, "adminEmail", adminEmail));
+  }
 }

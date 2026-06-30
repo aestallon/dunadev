@@ -119,6 +119,38 @@ public interface AdministrationApi {
     }
 
 
+    String PATH_DELETE_ADMIN_ORGANISER = "/api/admin/organisers/{id}";
+    /**
+     * DELETE /api/admin/organisers/{id} : Permanently delete an organiser&#39;s account
+     * Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. 
+     *
+     * @param id  (required)
+     * @return Organiser deleted successfully. (status code 204)
+     *         or Not an administrator. (status code 403)
+     *         or Organiser not found. (status code 404)
+     */
+    @Operation(
+        operationId = "deleteAdminOrganiser",
+        summary = "Permanently delete an organiser's account",
+        description = "Deletes all future events, anonymises past events and locations, removes the user record, and sends a confirmation email. This action is irreversible. ",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Organiser deleted successfully."),
+            @ApiResponse(responseCode = "403", description = "Not an administrator."),
+            @ApiResponse(responseCode = "404", description = "Organiser not found.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = AdministrationApi.PATH_DELETE_ADMIN_ORGANISER
+    )
+    default ResponseEntity<Void> deleteAdminOrganiser(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        return getDelegate().deleteAdminOrganiser(id);
+    }
+
+
     String PATH_GET_ADMIN_EVENT = "/api/admin/events/{id}";
     /**
      * GET /api/admin/events/{id} : Get any event by ID

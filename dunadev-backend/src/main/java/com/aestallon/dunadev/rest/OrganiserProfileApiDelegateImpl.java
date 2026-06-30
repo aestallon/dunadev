@@ -25,6 +25,12 @@ public class OrganiserProfileApiDelegateImpl implements OrganiserProfileApiDeleg
     return ResponseEntity.ok(organiserService.updateMyProfile(currentEmail(), request));
   }
 
+  @Override
+  public ResponseEntity<Void> deleteMyAccount() {
+    organiserService.deleteMyAccount(currentEmail());
+    return ResponseEntity.noContent().build();
+  }
+
   private static String currentEmail() {
     return SecurityContextHolder.getContext().getAuthentication().getName();
   }

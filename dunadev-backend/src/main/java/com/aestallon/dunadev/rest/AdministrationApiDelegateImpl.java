@@ -77,6 +77,12 @@ public class AdministrationApiDelegateImpl implements AdministrationApiDelegate 
   }
 
   @Override
+  public ResponseEntity<Void> deleteAdminOrganiser(Long id) {
+    adminService.deleteOrganiser(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
   public ResponseEntity<Void> cancelAdminEvent(Long id) {
     adminService.cancelAdminEvent(id);
     return ResponseEntity.noContent().build();

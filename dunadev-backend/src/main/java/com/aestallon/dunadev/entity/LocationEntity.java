@@ -18,8 +18,8 @@ public class LocationEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "organiser_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @JoinColumn(name = "organiser_id", nullable = true)
   private OrganiserEntity organiser;
 
   @Column(nullable = false)

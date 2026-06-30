@@ -135,6 +135,21 @@ paths:
           description: Not authenticated.
         '404':
           description: Organiser profile not found.
+    delete:
+      tags:
+        - Organiser Profile
+      operationId: deleteMyAccount
+      summary: Permanently delete the authenticated organiser's account
+      description: >
+        Deletes all future events, anonymises past events and locations, removes
+        the user record, and sends a confirmation email. This action is irreversible.
+      responses:
+        '204':
+          description: Account deleted successfully.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Organiser profile not found.
 
   /api/events/upcoming:
     get:
@@ -566,6 +581,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrganiserProfile'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Organiser not found.
+    delete:
+      tags:
+        - Administration
+      operationId: deleteAdminOrganiser
+      summary: Permanently delete an organiser's account
+      description: >
+        Deletes all future events, anonymises past events and locations, removes
+        the user record, and sends a confirmation email. This action is irreversible.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Organiser deleted successfully.
         '403':
           description: Not an administrator.
         '404':
