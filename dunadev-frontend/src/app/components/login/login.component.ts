@@ -1,21 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../api/dunadev';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule, TranslatePipe],
   template: `
     <div class="login-page">
       <div class="login-card">
         <div class="login-header">
           <div class="login-icon">D</div>
-          <h1>Sign in to DunaDev</h1>
-          <p>For event organisers and administrators</p>
+          <h1>{{ 'login.title' | translate }}</h1>
+          <p>{{ 'login.subtitle' | translate }}</p>
         </div>
 
         @if (error()) {
@@ -24,26 +25,25 @@ import { AuthService } from '../../services/auth.service';
 
         <form (ngSubmit)="onSubmit()" class="login-form">
           <div class="form-group">
-            <label for="email">Email address</label>
+            <label for="email">{{ 'login.emailLabel' | translate }}</label>
             <input
               id="email"
               type="email"
               [(ngModel)]="email"
               name="email"
-              placeholder="you@example.com"
+              [placeholder]="'login.emailPlaceholder' | translate"
               required
               [disabled]="loading()"
             />
           </div>
 
           <div class="form-group">
-            <label for="password">Password</label>
+            <label for="password">{{ 'login.passwordLabel' | translate }}</label>
             <input
               id="password"
               type="password"
               [(ngModel)]="password"
               name="password"
-              placeholder="Enter your password"
               required
               [disabled]="loading()"
             />
@@ -56,9 +56,9 @@ import { AuthService } from '../../services/auth.service';
           >
             @if (loading()) {
               <span class="spinner"></span>
-              Signing in...
+              {{ 'login.submitting' | translate }}
             } @else {
-              Sign in
+              {{ 'login.submitBtn' | translate }}
             }
           </button>
         </form>
@@ -157,6 +157,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private readonly authApi = inject(AuthenticationService);
   private readonly authService = inject(AuthService);
+  private readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
 
   email = '';
@@ -178,9 +179,9 @@ export class LoginComponent {
       error: (err) => {
         this.loading.set(false);
         if (err.status === 401) {
-          this.error.set('Invalid email or password.');
+          this.error.set(this.i18n.t('login.invalidCredentials'));
         } else {
-          this.error.set('Something went wrong. Please try again.');
+          this.error.set(this.i18n.t('login.genericError'));
         }
       },
     });

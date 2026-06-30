@@ -2,6 +2,8 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AdministrationService, LocationSummary, LocationRequest } from '../../../api/dunadev';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface LocForm {
   name: string; address: string; city: string;
@@ -15,59 +17,69 @@ function emptyForm(): LocForm {
 @Component({
   selector: 'app-admin-organiser-locations',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   template: `
     <div class="tab-page">
 
       @if (loading()) {
-        <div class="loading-state">Loading locations…</div>
+        <div class="loading-state">{{ 'generic.loading' | translate }}</div>
       } @else if (locations().length === 0) {
-        <div class="empty-state">No locations for this organiser.</div>
+        <div class="empty-state">{{ 'adminLocations.noLocations' | translate }}</div>
       } @else {
         <div class="locations-list">
           @for (loc of locations(); track loc.id) {
             @if (editingId() === loc.id) {
               <div class="location-form-card">
-                <h3>Edit Location</h3>
+                <h3>{{ 'adminLocations.editTitle' | translate }}</h3>
                 <div class="form-grid">
                   <div class="form-group span-2">
-                    <label>Name <span class="required">*</span></label>
-                    <input type="text" [(ngModel)]="formData().name" placeholder="Venue name" />
+                    <label>{{ 'loc.nameLabel' | translate }}</label>
+                    <input type="text" [(ngModel)]="formData().name"
+                           [placeholder]="'loc.namePh' | translate" />
                   </div>
                   <div class="form-group">
-                    <label>Address</label>
-                    <input type="text" [(ngModel)]="formData().address" placeholder="Street address" />
+                    <label>{{ 'loc.addressLabel' | translate }}</label>
+                    <input type="text" [(ngModel)]="formData().address"
+                           [placeholder]="'loc.addressPh' | translate" />
                   </div>
                   <div class="form-group">
-                    <label>City</label>
-                    <input type="text" [(ngModel)]="formData().city" placeholder="City" />
+                    <label>{{ 'loc.cityLabel' | translate }}</label>
+                    <input type="text" [(ngModel)]="formData().city"
+                           [placeholder]="'loc.cityPh' | translate" />
                   </div>
                   <div class="form-group span-2">
-                    <label>Website URL</label>
-                    <input type="url" [(ngModel)]="formData().websiteUrl" placeholder="https://…" />
+                    <label>{{ 'loc.urlLabel' | translate }}</label>
+                    <input type="url" [(ngModel)]="formData().websiteUrl"
+                           [placeholder]="'loc.urlPh' | translate" />
                   </div>
                   <div class="form-group">
-                    <label>Latitude</label>
+                    <label>{{ 'loc.latLabel' | translate }}</label>
                     <input type="text" [(ngModel)]="formData().latitude" placeholder="47.4979" />
                   </div>
                   <div class="form-group">
-                    <label>Longitude</label>
+                    <label>{{ 'loc.lngLabel' | translate }}</label>
                     <input type="text" [(ngModel)]="formData().longitude" placeholder="19.0402" />
                   </div>
                   <div class="form-group span-2">
-                    <label>How to get there</label>
+                    <label>{{ 'loc.howLabel' | translate }}</label>
                     <textarea [(ngModel)]="formData().howToGetThere" rows="3"
-                              placeholder="e.g. Take tram 4/6 to Nyugati…"></textarea>
+                              [placeholder]="'loc.howPh' | translate"></textarea>
                   </div>
                 </div>
                 @if (saveError()) {
                   <div class="error-banner">{{ saveError() }}</div>
                 }
                 <div class="form-actions">
-                  <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+                  <button class="btn btn-secondary" (click)="cancelEdit()">
+                    {{ 'generic.cancel' | translate }}
+                  </button>
                   <button class="btn btn-primary" (click)="submitEdit(loc.id)"
                           [disabled]="saving() || !formData().name.trim()">
-                    @if (saving()) { <span class="spinner"></span> Saving… } @else { Save }
+                    @if (saving()) {
+                      <span class="spinner"></span> {{ 'generic.saving' | translate }}
+                    } @else {
+                      {{ 'generic.save' | translate }}
+                    }
                   </button>
                 </div>
               </div>
@@ -86,7 +98,9 @@ function emptyForm(): LocForm {
                     }
                   </div>
                 </div>
-                <button class="btn btn-secondary btn-sm" (click)="startEdit(loc)">Edit</button>
+                <button class="btn btn-secondary btn-sm" (click)="startEdit(loc)">
+                  {{ 'generic.edit' | translate }}
+                </button>
               </div>
             }
           }
@@ -134,6 +148,7 @@ function emptyForm(): LocForm {
 export class AdminOrganiserLocationsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly adminService = inject(AdministrationService);
+  private readonly i18n = inject(I18nService);
 
   private orgId = 0;
   readonly locations = signal<LocationSummary[]>([]);
@@ -183,7 +198,7 @@ export class AdminOrganiserLocationsComponent implements OnInit {
     this.saveError.set(null);
     this.adminService.updateAdminLocation(id, req).subscribe({
       next: () => { this.saving.set(false); this.cancelEdit(); this.loadLocations(); },
-      error: () => { this.saveError.set('Failed to save. Please try again.'); this.saving.set(false); },
+      error: () => { this.saveError.set(this.i18n.t('generic.saveError')); this.saving.set(false); },
     });
   }
 

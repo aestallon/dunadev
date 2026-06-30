@@ -3,11 +3,13 @@ import {CommonModule, DatePipe, NgOptimizedImage} from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { EventModalComponent } from '../shared/event-modal.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, EventModalComponent],
+  imports: [CommonModule, RouterLink, DatePipe, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="selectedEvent()" (close)="selectedEvent.set(null)"/>
 
@@ -26,18 +28,15 @@ import { EventModalComponent } from '../shared/event-modal.component';
         <div class="hero-inner">
           <!-- Left: title + hero text -->
           <div class="hero-text">
-            <span class="hero-eyebrow">Budapest · Tech Events</span>
-            <h1>Discover the <span class="text-gradient">Tech Community</span></h1>
-            <p>
-              Join local meetups, workshops, and conferences. Stay connected with fellow developers
-              in the heart of Hungary.
-            </p>
+            <span class="hero-eyebrow">{{ 'landing.eyebrow' | translate }}</span>
+            <h1 [innerHTML]="'landing.heroTitle' | translate"></h1>
+            <p>{{ 'landing.heroBody' | translate }}</p>
           </div>
 
           <!-- Right: upcoming events -->
           <div class="hero-panel">
             <div class="hero-panel-header">
-              <span class="panel-label">Coming Up Next</span>
+              <span class="panel-label">{{ 'landing.panelLabel' | translate }}</span>
             </div>
 
             @if (loadingUpcoming()) {
@@ -52,7 +51,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
               </div>
             } @else if (upcomingEvents().length === 0) {
               <div class="hero-empty">
-                <p>No upcoming events at the moment. Check back soon!</p>
+                <p>{{ 'landing.noUpcoming' | translate }}</p>
               </div>
             } @else {
               <div class="hero-panel-list">
@@ -72,7 +71,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
                         <span class="hec-badge">{{ statusLabel(event) }}</span>
                       }
                       @if (event.onNewLocation) {
-                        <span class="hec-badge hec-badge-relocated">On new location</span>
+                        <span class="hec-badge hec-badge-relocated">{{ 'badge.onNewLocation' | translate }}</span>
                       }
                       <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
                     </div>
@@ -88,10 +87,10 @@ import { EventModalComponent } from '../shared/event-modal.component';
                     </div>
                     <div class="hec-badges">
                       @if (!event.free) {
-                        <span class="hec-pill">Paid</span>
+                        <span class="hec-pill">{{ 'badge.paid' | translate }}</span>
                       }
                       @if (event.registrationRequired) {
-                        <span class="hec-pill">Registration required</span>
+                        <span class="hec-pill">{{ 'badge.regRequired' | translate }}</span>
                       }
                     </div>
                   </div>
@@ -110,7 +109,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
           <div class="month-panel-header">
             <div class="mph-left">
               <button class="mnav-btn" (click)="prevMonth()" [disabled]="!canGoPrev()"
-                      aria-label="Previous month">
+                      [attr.aria-label]="'landing.prevMonth' | translate">
                 <span class="chevron-left"></span>
               </button>
             </div>
@@ -120,9 +119,12 @@ import { EventModalComponent } from '../shared/event-modal.component';
             </div>
             <div class="mph-right">
               @if (canGoPrev()) {
-                <button class="today-link" (click)="goToCurrentMonth()">Today</button>
+                <button class="today-link" (click)="goToCurrentMonth()">
+                  {{ 'landing.today' | translate }}
+                </button>
               }
-              <button class="mnav-btn" (click)="nextMonth()" aria-label="Next month">
+              <button class="mnav-btn" (click)="nextMonth()"
+                      [attr.aria-label]="'landing.nextMonth' | translate">
                 <span class="chevron-right"></span>
               </button>
             </div>
@@ -143,7 +145,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
             </div>
           } @else if (monthlyEvents().length === 0) {
             <div class="empty-state">
-              <p>No events scheduled for {{ monthLabel() }}.</p>
+              <p>{{ 'landing.noMonthEvents' | translate }}</p>
             </div>
           } @else {
             <div class="month-grid">
@@ -185,19 +187,19 @@ import { EventModalComponent } from '../shared/event-modal.component';
                     </div>
                     <div class="mc-badges">
                       @if (!event.free) {
-                        <span class="mc-pill mc-paid">Paid</span>
+                        <span class="mc-pill mc-paid">{{ 'badge.paid' | translate }}</span>
                       }
                       @if (event.registrationRequired) {
-                        <span class="mc-pill mc-reg">Registration required</span>
+                        <span class="mc-pill mc-reg">{{ 'badge.regRequired' | translate }}</span>
                       }
                       @if (event.status === 'CANCELLED') {
-                        <span class="mc-pill mc-cancelled">Cancelled</span>
+                        <span class="mc-pill mc-cancelled">{{ 'badge.cancelled' | translate }}</span>
                       } @else {
                         @if (event.status === 'RESCHEDULED') {
-                          <span class="mc-pill mc-rescheduled">On new date</span>
+                          <span class="mc-pill mc-rescheduled">{{ 'badge.onNewDate' | translate }}</span>
                         }
                         @if (event.onNewLocation) {
-                          <span class="mc-pill mc-relocated">On new location</span>
+                          <span class="mc-pill mc-relocated">{{ 'badge.onNewLocation' | translate }}</span>
                         }
                       }
                     </div>
@@ -767,6 +769,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
 })
 export class LandingComponent implements OnInit {
   private readonly publicEventsService = inject(PublicEventsService);
+  private readonly i18n = inject(I18nService);
 
   readonly cancelledStatus = EventStatus.CANCELLED;
 
@@ -801,11 +804,11 @@ export class LandingComponent implements OnInit {
   statusLabel(event: EventSummary): string {
     switch (event.status) {
       case EventStatus.RESCHEDULED:
-        return 'On new date';
+        return this.i18n.t('badge.onNewDate');
       case EventStatus.CANCELLED:
-        return 'Cancelled';
+        return this.i18n.t('badge.cancelled');
       default:
-        return 'Upcoming';
+        return '';
     }
   }
 

@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdministrationService, AdminOrganiserSummary } from '../../../api/dunadev';
 import { SearchBoxComponent } from '../shared/search-box.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2'];
 
@@ -21,57 +23,63 @@ function orgColor(name: string): string {
 @Component({
   selector: 'app-admin-organisers',
   standalone: true,
-  imports: [RouterLink, SearchBoxComponent, FormsModule],
+  imports: [RouterLink, SearchBoxComponent, FormsModule, TranslatePipe],
   template: `
     <div class="page">
       <div class="container">
 
         <div class="page-header">
           <div class="header-left">
-            <h1>Organisers</h1>
+            <h1>{{ 'adminOrgs.title' | translate }}</h1>
             <span class="count-chip">{{ filtered().length }}</span>
           </div>
           <button class="btn btn-primary" (click)="toggleInviteForm()">
-            @if (showInviteForm()) { Cancel } @else { + Invite Organiser }
+            @if (showInviteForm()) {
+              {{ 'generic.cancel' | translate }}
+            } @else {
+              + {{ 'adminOrgs.inviteBtn' | translate }}
+            }
           </button>
         </div>
 
         <!-- Invite form panel -->
         @if (showInviteForm()) {
           <div class="invite-panel">
-            <h2 class="invite-title">New Organiser Invitation</h2>
-            <p class="invite-hint">
-              A temporary password will be generated and emailed to the provided address.
-            </p>
+            <h2 class="invite-title">{{ 'adminOrgs.inviteTitle' | translate }}</h2>
+            <p class="invite-hint">{{ 'adminOrgs.inviteHint' | translate }}</p>
             @if (inviteError()) {
               <div class="error-banner">{{ inviteError() }}</div>
             }
             @if (inviteSuccess()) {
-              <div class="success-banner">
-                Invitation sent to <strong>{{ inviteSuccess() }}</strong>.
+              <div class="success-banner"
+                   [innerHTML]="'adminOrgs.inviteSent' | translate : { email: inviteSuccess()! }">
               </div>
             }
             <div class="invite-form">
               <div class="form-group">
-                <label>Organisation name <span class="required">*</span></label>
-                <input type="text" [(ngModel)]="inviteName" placeholder="e.g. Budapest.js"
+                <label>{{ 'adminOrgs.nameLabel' | translate }} <span class="required">*</span></label>
+                <input type="text" [(ngModel)]="inviteName" [placeholder]="'adminOrgs.namePh' | translate"
                        [disabled]="inviting()" name="inviteName">
               </div>
               <div class="form-group">
-                <label>Email address <span class="required">*</span></label>
+                <label>{{ 'adminOrgs.emailLabel' | translate }} <span class="required">*</span></label>
                 <input type="email" [(ngModel)]="inviteEmail" placeholder="organiser@example.com"
                        [disabled]="inviting()" name="inviteEmail">
               </div>
               <button class="btn btn-primary" (click)="submitInvite()"
                       [disabled]="inviting() || !inviteName.trim() || !inviteEmail.trim()">
-                @if (inviting()) { <span class="spinner"></span> Sending… } @else { Send Invitation }
+                @if (inviting()) {
+                  <span class="spinner"></span> {{ 'adminOrgs.sending' | translate }}
+                } @else {
+                  {{ 'adminOrgs.sendBtn' | translate }}
+                }
               </button>
             </div>
           </div>
         }
 
         <app-search-box
-          placeholder="Search by name or email…"
+          [placeholder]="'adminOrgs.searchPh' | translate"
           (queryChange)="query.set($event)"
           class="search-row"
         />
@@ -89,9 +97,9 @@ function orgColor(name: string): string {
         } @else if (filtered().length === 0) {
           <div class="empty-state">
             @if (query()) {
-              No organisers match <strong>«{{ query() }}»</strong>.
+              {{ 'adminOrgs.noMatch' | translate : { q: query() } }}
             } @else {
-              No organisers yet. Use <em>Invite Organiser</em> above to add one.
+              {{ 'adminOrgs.empty' | translate }}
             }
           </div>
         } @else {
@@ -105,7 +113,7 @@ function orgColor(name: string): string {
                   <span class="status-badge"
                         [class.badge-invited]="org.status === 'INVITED'"
                         [class.badge-active]="org.status === 'ACTIVE'">
-                    {{ org.status === 'INVITED' ? 'Invited' : 'Active' }}
+                    {{ (org.status === 'INVITED' ? 'adminOrgs.statusInvited' : 'adminOrgs.statusActive') | translate }}
                   </span>
                 </div>
                 <div class="org-name">{{ org.name }}</div>
@@ -113,13 +121,13 @@ function orgColor(name: string): string {
                   <div class="org-url">{{ org.websiteUrl }}</div>
                 }
                 <div class="org-counts">
-                  <span>{{ org.eventCount }} event{{ org.eventCount !== 1 ? 's' : '' }}</span>
+                  <span>{{ org.eventCount }} {{ (org.eventCount !== 1 ? 'adminOrgs.events' : 'adminOrgs.event') | translate }}</span>
                   <span class="sep">·</span>
-                  <span>{{ org.locationCount }} location{{ org.locationCount !== 1 ? 's' : '' }}</span>
+                  <span>{{ org.locationCount }} {{ (org.locationCount !== 1 ? 'adminOrgs.locations' : 'adminOrgs.location') | translate }}</span>
                 </div>
                 <div class="org-email">{{ org.userEmail }}</div>
                 <a [routerLink]="['/admin/organisers', org.id]" class="btn btn-secondary btn-sm view-btn">
-                  View
+                  {{ 'adminOrgs.viewBtn' | translate }}
                 </a>
               </div>
             }
@@ -229,6 +237,7 @@ function orgColor(name: string): string {
 })
 export class AdminOrganisersComponent implements OnInit {
   private readonly adminService = inject(AdministrationService);
+  private readonly i18n = inject(I18nService);
 
   readonly skeletons = [1, 2, 3, 4, 5, 6];
   readonly query = signal('');
@@ -287,8 +296,8 @@ export class AdminOrganisersComponent implements OnInit {
         error: err => {
           this.inviteError.set(
             err?.status === 409
-              ? 'That email address is already registered.'
-              : 'Failed to send invitation. Please try again.'
+              ? this.i18n.t('adminOrgs.emailExists')
+              : this.i18n.t('adminOrgs.inviteError')
           );
           this.inviting.set(false);
         },

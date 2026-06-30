@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TranslatePipe],
   template: `
     <div class="manage-layout" [class.sidebar-collapsed]="collapsed()">
 
@@ -12,17 +13,17 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
         <nav class="sidebar-nav">
 
           <a routerLink="upcoming" routerLinkActive="nav-active" (click)="onNavClick()"
-             title="Upcoming Events">
+             [title]="'admin.upcoming' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span class="nav-text">Upcoming</span>
+            <span class="nav-text">{{ 'admin.upcoming' | translate }}</span>
           </a>
 
           <a routerLink="organisers" routerLinkActive="nav-active" (click)="onNavClick()"
-             title="Organisers">
+             [title]="'admin.organisers' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -30,11 +31,11 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
-            <span class="nav-text">Organisers</span>
+            <span class="nav-text">{{ 'admin.organisers' | translate }}</span>
           </a>
 
           <a routerLink="docs" routerLinkActive="nav-active" (click)="onNavClick()"
-             title="Documentation">
+             [title]="'admin.docs' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -43,19 +44,19 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
               <line x1="16" y1="17" x2="8" y2="17"/>
               <polyline points="10 9 9 9 8 9"/>
             </svg>
-            <span class="nav-text">Documentation</span>
+            <span class="nav-text">{{ 'admin.docs' | translate }}</span>
           </a>
 
         </nav>
 
         <a routerLink="password" routerLinkActive="nav-active" (click)="onNavClick()"
-           class="change-pwd-link" title="Change Password">
+           class="change-pwd-link" [title]="'admin.password' | translate">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          <span class="nav-text">Change Password</span>
+          <span class="nav-text">{{ 'admin.password' | translate }}</span>
         </a>
 
         <div class="sidebar-footer">
@@ -63,12 +64,12 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } fro
             <span class="role-chip">ADMIN</span>
           </div>
           <button class="collapse-btn" (click)="toggleSidebar()"
-                  [title]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+                  [title]="'admin.collapse' | translate">
             <svg class="collapse-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
-            <span class="nav-text">Collapse</span>
+            <span class="nav-text">{{ 'admin.collapse' | translate }}</span>
           </button>
         </div>
       </aside>

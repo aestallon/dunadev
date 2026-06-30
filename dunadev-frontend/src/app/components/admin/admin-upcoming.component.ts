@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { AdministrationService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { SearchBoxComponent } from '../shared/search-box.component';
 import { EventModalComponent } from '../shared/event-modal.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-upcoming',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, SearchBoxComponent, EventModalComponent],
+  imports: [CommonModule, RouterLink, DatePipe, SearchBoxComponent, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="previewEvent()" (close)="previewEvent.set(null)" />
 
@@ -16,7 +17,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
       <div class="container">
 
         <div class="page-header">
-          <h1>Upcoming Events</h1>
+          <h1>{{ 'adminUpcoming.title' | translate }}</h1>
           <div class="day-filter">
             @for (d of dayOptions; track d) {
               <button class="day-btn" [class.active]="days() === d" (click)="setDays(d)">
@@ -27,19 +28,19 @@ import { EventModalComponent } from '../shared/event-modal.component';
         </div>
 
         <app-search-box
-          placeholder="Filter by title, organiser, or location…"
+          [placeholder]="'adminUpcoming.filterPh' | translate"
           (queryChange)="query.set($event)"
           class="search-row"
         />
 
         @if (loading()) {
-          <div class="loading-state">Loading upcoming events…</div>
+          <div class="loading-state">{{ 'generic.loading' | translate }}</div>
         } @else if (filtered().length === 0) {
           <div class="empty-state">
             @if (query()) {
-              No upcoming events match <strong>«{{ query() }}»</strong>.
+              {{ 'adminUpcoming.noMatch' | translate : { q: query() } }}
             } @else {
-              No upcoming events in the next {{ days() }} days.
+              {{ 'adminUpcoming.empty' | translate : { days: days().toString() } }}
             }
           </div>
         } @else {
@@ -54,9 +55,9 @@ import { EventModalComponent } from '../shared/event-modal.component';
                   <div class="event-title-row">
                     <span class="event-title">{{ event.title }}</span>
                     @if (event.status === 'CANCELLED') {
-                      <span class="status-badge cancelled-badge">Cancelled</span>
+                      <span class="status-badge cancelled-badge">{{ 'badge.cancelled' | translate }}</span>
                     } @else if (event.status === 'RESCHEDULED') {
-                      <span class="status-badge rescheduled-badge">Rescheduled</span>
+                      <span class="status-badge rescheduled-badge">{{ 'badge.onNewDate' | translate }}</span>
                     }
                   </div>
                   <div class="event-meta">
@@ -70,18 +71,18 @@ import { EventModalComponent } from '../shared/event-modal.component';
                     }
                     <span class="sep">·</span>
                     @if (event.free) {
-                      <span class="badge free">Free</span>
+                      <span class="badge free">{{ 'badge.free' | translate }}</span>
                     } @else {
-                      <span class="badge paid">Paid</span>
+                      <span class="badge paid">{{ 'badge.paid' | translate }}</span>
                     }
                   </div>
                 </div>
                 <button class="btn btn-secondary btn-sm" (click)="previewEvent.set(event)">
-                  Preview
+                  {{ 'generic.preview' | translate }}
                 </button>
                 <a [routerLink]="['/admin/organisers', event.organiser.id, 'events', event.id, 'edit']"
                    class="btn btn-secondary btn-sm edit-btn">
-                  Edit
+                  {{ 'generic.edit' | translate }}
                 </a>
               </div>
             }

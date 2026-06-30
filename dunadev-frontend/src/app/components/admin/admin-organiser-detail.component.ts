@@ -1,11 +1,12 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { AdministrationService } from '../../../api/dunadev';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-organiser-detail',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TranslatePipe],
   template: `
     <div class="detail-page">
 
@@ -15,7 +16,7 @@ import { AdministrationService } from '../../../api/dunadev';
                stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
-          Organisers
+          {{ 'admin.organisers' | translate }}
         </a>
         @if (loadingName()) {
           <div class="name-sk"></div>
@@ -25,9 +26,9 @@ import { AdministrationService } from '../../../api/dunadev';
       </div>
 
       <nav class="tab-bar">
-        <a routerLink="events" routerLinkActive="tab-active">Events</a>
-        <a routerLink="locations" routerLinkActive="tab-active">Locations</a>
-        <a routerLink="edit" routerLinkActive="tab-active">Profile</a>
+        <a routerLink="events" routerLinkActive="tab-active">{{ 'detailTab.events' | translate }}</a>
+        <a routerLink="locations" routerLinkActive="tab-active">{{ 'detailTab.locations' | translate }}</a>
+        <a routerLink="edit" routerLinkActive="tab-active">{{ 'detailTab.profile' | translate }}</a>
       </nav>
 
       <div class="tab-content">

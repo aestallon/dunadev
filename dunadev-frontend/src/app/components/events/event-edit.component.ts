@@ -11,6 +11,8 @@ import {
   LocationSummary,
 } from '../../../api/dunadev';
 import { ImageUploadComponent } from '../shared/image-upload.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface EditForm {
   title: string;
@@ -25,21 +27,23 @@ interface EditForm {
 @Component({
   selector: 'app-event-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent, TranslatePipe],
   template: `
     <div class="event-edit-page">
       <div class="container">
         <header class="page-header">
           <div>
-            <a routerLink="/manage/events" class="back-link">&larr; Events</a>
-            <h1>Edit Event</h1>
+            <a routerLink="/manage/events" class="back-link">
+              &larr; {{ 'sidebar.events' | translate }}
+            </a>
+            <h1>{{ 'eventEdit.title' | translate }}</h1>
           </div>
         </header>
 
         @if (loadError()) {
           <div class="error-banner">{{ loadError() }}</div>
         } @else if (loading()) {
-          <div class="loading-state">Loading event…</div>
+          <div class="loading-state">{{ 'generic.loading' | translate }}</div>
         } @else {
           @if (saveError()) {
             <div class="error-banner">{{ saveError() }}</div>
@@ -48,20 +52,20 @@ interface EditForm {
           <div class="edit-layout">
             <!-- ── Context panel (read-only) ── -->
             <div class="context-card">
-              <h3 class="section-title">Fixed details</h3>
-              <p class="context-hint">Date, time, and location cannot be changed here.</p>
+              <h3 class="section-title">{{ 'eventEdit.fixedDetails' | translate }}</h3>
+              <p class="context-hint">{{ 'eventEdit.fixedHint' | translate }}</p>
 
               <dl class="detail-list">
-                <dt>Starts at</dt>
+                <dt>{{ 'eventForm.startsAt' | translate }}</dt>
                 <dd>{{ event()!.startsAt | date:'EEE, d MMM yyyy · HH:mm' }}</dd>
 
                 @if (event()!.endsAt) {
-                  <dt>Ends at</dt>
+                  <dt>{{ 'eventForm.endsAt' | translate }}</dt>
                   <dd>{{ event()!.endsAt | date:'HH:mm' }}</dd>
                 }
 
                 @if (event()!.location) {
-                  <dt>Location</dt>
+                  <dt>{{ 'eventEdit.location' | translate }}</dt>
                   <dd>
                     {{ event()!.location!.name }}
                     @if (event()!.location!.city) {
@@ -77,70 +81,70 @@ interface EditForm {
 
               <!-- Basic Info -->
               <div class="form-card">
-                <h3 class="section-title">Basic Info</h3>
+                <h3 class="section-title">{{ 'eventCreate.basicInfo' | translate }}</h3>
 
                 <div class="form-group">
-                  <label>Title <span class="required">*</span></label>
+                  <label>{{ 'eventForm.titleLabel' | translate }} <span class="required">*</span></label>
                   <input type="text" [(ngModel)]="form.title" name="title"
-                         placeholder="Event title" autocomplete="off">
+                         [placeholder]="'eventForm.titlePh' | translate" autocomplete="off">
                 </div>
 
                 <div class="form-group">
-                  <label>Description</label>
+                  <label>{{ 'eventForm.descLabel' | translate }}</label>
                   <textarea [(ngModel)]="form.description" name="description"
-                            rows="4" placeholder="What's this event about?"></textarea>
+                            rows="4" [placeholder]="'eventForm.descPh' | translate"></textarea>
                 </div>
 
                 <div class="form-group">
-                  <label>Event page URL</label>
+                  <label>{{ 'eventForm.urlLabel' | translate }}</label>
                   <input type="url" [(ngModel)]="form.eventUrl" name="eventUrl"
-                         placeholder="https://example.com/event">
+                         [placeholder]="'eventForm.urlPh' | translate">
                 </div>
               </div>
 
               <!-- Attendance -->
               <div class="form-card">
-                <h3 class="section-title">Attendance</h3>
+                <h3 class="section-title">{{ 'eventCreate.attendance' | translate }}</h3>
 
                 <div class="check-group">
                   <label class="check-label">
                     <input type="checkbox" [(ngModel)]="form.free" name="free">
-                    <span>Free entry</span>
+                    <span>{{ 'eventForm.freeEntry' | translate }}</span>
                   </label>
                   <label class="check-label">
                     <input type="checkbox" [(ngModel)]="form.registrationRequired"
                            name="registrationRequired">
-                    <span>Registration required</span>
+                    <span>{{ 'eventForm.regRequired' | translate }}</span>
                   </label>
                 </div>
 
                 @if (form.registrationRequired) {
                   <div class="form-group mt-1">
-                    <label>Registration URL</label>
+                    <label>{{ 'eventForm.regUrl' | translate }}</label>
                     <input type="url" [(ngModel)]="form.registrationUrl" name="registrationUrl"
-                           placeholder="https://example.com/register">
+                           [placeholder]="'eventForm.regUrlPh' | translate">
                   </div>
                 }
               </div>
 
               <!-- Visibility -->
               <div class="form-card">
-                <h3 class="section-title">Visibility</h3>
+                <h3 class="section-title">{{ 'eventEdit.visibility' | translate }}</h3>
                 <div class="form-group">
-                  <label>Visible from</label>
+                  <label>{{ 'eventForm.visibleFrom' | translate }}</label>
                   <input type="datetime-local" [(ngModel)]="form.visibleFrom" name="visibleFrom">
-                  <span class="hint">Leave empty to publish immediately.</span>
+                  <span class="hint">{{ 'eventForm.visibleFromHint' | translate }}</span>
                 </div>
               </div>
 
               <!-- Cover Image -->
               <div class="form-card">
-                <h3 class="section-title">Cover Image</h3>
+                <h3 class="section-title">{{ 'eventCreate.coverImage' | translate }}</h3>
                 @if (imageError()) {
                   <div class="error-banner" style="margin-bottom:0.75rem">{{ imageError() }}</div>
                 }
                 @if (imageSuccess()) {
-                  <div class="success-banner">Image updated successfully.</div>
+                  <div class="success-banner">{{ 'eventEdit.imageSuccess' | translate }}</div>
                 }
                 <app-image-upload
                   [currentImageUrl]="event()?.coverImageUrl ?? null"
@@ -152,14 +156,14 @@ interface EditForm {
               <!-- Links -->
               <div class="form-card">
                 <div class="section-header">
-                  <h3 class="section-title">Additional Links</h3>
+                  <h3 class="section-title">{{ 'eventCreate.links' | translate }}</h3>
                   <button type="button" class="btn btn-secondary btn-sm" (click)="addLink()">
-                    + Add link
+                    + {{ 'eventCreate.addLink' | translate }}
                   </button>
                 </div>
 
                 @if (links().length === 0) {
-                  <p class="muted">No additional links.</p>
+                  <p class="muted">{{ 'eventEdit.noLinks' | translate }}</p>
                 } @else {
                   @for (link of links(); track $index; let i = $index) {
                     <div class="link-row">
@@ -167,14 +171,14 @@ interface EditForm {
                              [ngModel]="link.label"
                              (ngModelChange)="updateLink(i, 'label', $event)"
                              name="linkLabel{{ i }}"
-                             placeholder="Label (e.g. Slides, Meetup)">
+                             [placeholder]="'eventForm.linkLabelPh' | translate">
                       <input type="url"
                              [ngModel]="link.url"
                              (ngModelChange)="updateLink(i, 'url', $event)"
                              name="linkUrl{{ i }}"
                              placeholder="https://…">
                       <button type="button" class="btn-icon" (click)="removeLink(i)"
-                              title="Remove link">✕</button>
+                              [title]="'eventCreate.removeLink' | translate">✕</button>
                     </div>
                   }
                 }
@@ -183,39 +187,39 @@ interface EditForm {
               <!-- Event Controls -->
               @if (isFuture(event()!.startsAt) && event()!.status !== 'CANCELLED') {
                 <div class="form-card controls-card">
-                  <h3 class="section-title">Event Controls</h3>
-                  <p class="context-hint">These actions directly affect how the event appears publicly and may be irreversible.</p>
+                  <h3 class="section-title">{{ 'eventControls.title' | translate }}</h3>
+                  <p class="context-hint">{{ 'eventControls.hint' | translate }}</p>
 
                   @if (alterError()) { <div class="error-banner" style="margin-bottom:0.75rem">{{ alterError() }}</div> }
                   @if (alterSuccess()) { <div class="success-banner">{{ alterSuccess() }}</div> }
 
                   <div class="control-block">
-                    <div class="control-label">Reschedule</div>
+                    <div class="control-label">{{ 'eventControls.reschedule' | translate }}</div>
                     <div class="control-body">
                       <div class="control-fields">
                         <div class="form-group">
-                          <label>New start</label>
+                          <label>{{ 'eventControls.newStart' | translate }}</label>
                           <input type="datetime-local" [(ngModel)]="rescheduleStartsAt" name="rescStartsAt">
                         </div>
                         <div class="form-group">
-                          <label>New end (optional)</label>
+                          <label>{{ 'eventControls.newEnd' | translate }}</label>
                           <input type="datetime-local" [(ngModel)]="rescheduleEndsAt" name="rescEndsAt">
                         </div>
                       </div>
                       <button type="button" class="btn btn-warning"
                               [disabled]="altering() || !rescheduleStartsAt" (click)="doReschedule()">
-                        {{ altering() ? 'Saving…' : 'Reschedule' }}
+                        {{ (altering() ? 'generic.saving' : 'eventControls.reschedule') | translate }}
                       </button>
                     </div>
                   </div>
 
                   <div class="control-block">
-                    <div class="control-label">Change Location</div>
+                    <div class="control-label">{{ 'eventControls.relocate' | translate }}</div>
                     <div class="control-body">
                       <div class="form-group">
-                        <label>New location</label>
+                        <label>{{ 'eventControls.newLoc' | translate }}</label>
                         <select [(ngModel)]="relocateLocationId" name="relocLoc">
-                          <option [ngValue]="null" disabled>Select a location…</option>
+                          <option [ngValue]="null" disabled>{{ 'eventForm.selectLoc' | translate }}</option>
                           @for (loc of availableLocations(); track loc.id) {
                             <option [ngValue]="loc.id">{{ loc.name }}</option>
                           }
@@ -223,25 +227,27 @@ interface EditForm {
                       </div>
                       <button type="button" class="btn btn-secondary"
                               [disabled]="altering() || relocateLocationId === null" (click)="doRelocate()">
-                        {{ altering() ? 'Saving…' : 'Change Location' }}
+                        {{ (altering() ? 'generic.saving' : 'eventControls.relocate') | translate }}
                       </button>
                     </div>
                   </div>
 
                   <div class="control-block danger-block">
-                    <div class="control-label">Cancel Event</div>
+                    <div class="control-label">{{ 'eventControls.cancelLabel' | translate }}</div>
                     <div class="control-body">
                       @if (!cancelConfirm()) {
-                        <p class="control-hint">May permanently delete the event if performed early enough.</p>
+                        <p class="control-hint">{{ 'eventControls.cancelHint' | translate }}</p>
                         <button type="button" class="btn btn-danger" (click)="cancelConfirm.set(true)">
-                          Cancel Event
+                          {{ 'eventControls.cancelBtn' | translate }}
                         </button>
                       } @else {
-                        <p class="control-hint"><strong>Are you sure?</strong> This cannot be undone.</p>
+                        <p class="control-hint" [innerHTML]="'eventControls.cancelConfirm' | translate"></p>
                         <div class="confirm-row">
-                          <button type="button" class="btn btn-secondary" (click)="cancelConfirm.set(false)">Keep Event</button>
+                          <button type="button" class="btn btn-secondary" (click)="cancelConfirm.set(false)">
+                            {{ 'eventControls.keepBtn' | translate }}
+                          </button>
                           <button type="button" class="btn btn-danger" [disabled]="altering()" (click)="doCancel()">
-                            {{ altering() ? 'Cancelling…' : 'Yes, Cancel' }}
+                            {{ (altering() ? 'eventControls.cancelling' : 'eventControls.confirmCancel') | translate }}
                           </button>
                         </div>
                       }
@@ -254,11 +260,11 @@ interface EditForm {
               <div class="form-actions">
                 <button type="button" class="btn btn-secondary" (click)="cancel()"
                         [disabled]="saving()">
-                  Cancel
+                  {{ 'generic.cancel' | translate }}
                 </button>
                 <button type="button" class="btn btn-primary" (click)="submit()"
                         [disabled]="saving() || !form.title.trim()">
-                  {{ saving() ? 'Saving…' : 'Save Changes' }}
+                  {{ (saving() ? 'generic.saving' : 'eventEdit.saveBtn') | translate }}
                 </button>
               </div>
             </div>
@@ -506,6 +512,7 @@ export class EventEditComponent implements OnInit {
   private readonly locationsService = inject(LocationsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly i18n = inject(I18nService);
 
   event = signal<EventSummary | null>(null);
   loading = signal(true);
@@ -556,7 +563,7 @@ export class EventEditComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.loadError.set('Event not found or you do not have permission to edit it.');
+        this.loadError.set(this.i18n.t('eventEdit.loadError'));
         this.loading.set(false);
       },
     });
@@ -602,7 +609,7 @@ export class EventEditComponent implements OnInit {
       next: () => this.router.navigate(['/manage/events']),
       error: err => {
         const msg = err?.error?.message;
-        this.saveError.set(msg ?? 'Failed to save changes. Please try again.');
+        this.saveError.set(msg ?? this.i18n.t('eventEdit.saveError'));
         this.saving.set(false);
       },
     });
@@ -620,7 +627,7 @@ export class EventEditComponent implements OnInit {
         this.imageSuccess.set(true);
       },
       error: () => {
-        this.imageError.set('Failed to upload image. Please try again.');
+        this.imageError.set(this.i18n.t('eventEdit.imageError'));
         this.uploadingImage.set(false);
       },
     });
@@ -649,10 +656,10 @@ export class EventEditComponent implements OnInit {
         this.rescheduleStartsAt = '';
         this.rescheduleEndsAt = '';
         this.altering.set(false);
-        this.alterSuccess.set('Event rescheduled successfully.');
+        this.alterSuccess.set(this.i18n.t('eventControls.rescheduled'));
       },
       error: err => {
-        this.alterError.set(err?.error?.message ?? 'Failed to reschedule event.');
+        this.alterError.set(err?.error?.message ?? this.i18n.t('eventControls.rescheduleError'));
         this.altering.set(false);
       },
     });
@@ -668,10 +675,10 @@ export class EventEditComponent implements OnInit {
       next: updated => {
         this.event.set(updated);
         this.altering.set(false);
-        this.alterSuccess.set('Location updated successfully.');
+        this.alterSuccess.set(this.i18n.t('eventControls.relocated'));
       },
       error: err => {
-        this.alterError.set(err?.error?.message ?? 'Failed to change location.');
+        this.alterError.set(err?.error?.message ?? this.i18n.t('eventControls.relocateError'));
         this.altering.set(false);
       },
     });
@@ -684,7 +691,7 @@ export class EventEditComponent implements OnInit {
     this.eventsService.cancelEvent(id).subscribe({
       next: () => this.router.navigate(['/manage/events']),
       error: err => {
-        this.alterError.set(err?.error?.message ?? 'Failed to cancel event.');
+        this.alterError.set(err?.error?.message ?? this.i18n.t('eventControls.cancelError'));
         this.altering.set(false);
         this.cancelConfirm.set(false);
       },

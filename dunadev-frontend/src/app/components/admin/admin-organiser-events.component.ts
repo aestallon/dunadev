@@ -4,27 +4,29 @@ import { AdministrationService, EventSummary, EventStatus } from '../../../api/d
 import { SearchBoxComponent } from '../shared/search-box.component';
 import { EventCardComponent } from '../shared/event-card.component';
 import { EventModalComponent } from '../shared/event-modal.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-organiser-events',
   standalone: true,
-  imports: [SearchBoxComponent, EventCardComponent, EventModalComponent],
+  imports: [SearchBoxComponent, EventCardComponent, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="previewEvent()" (close)="previewEvent.set(null)" />
 
     <div class="tab-page">
       <div class="tab-toolbar">
-        <app-search-box placeholder="Filter events…" (queryChange)="query.set($event)" />
+        <app-search-box [placeholder]="'adminEvents.filterPh' | translate"
+                        (queryChange)="query.set($event)" />
       </div>
 
       @if (loading()) {
-        <div class="loading-state">Loading events…</div>
+        <div class="loading-state">{{ 'generic.loading' | translate }}</div>
       } @else if (filtered().length === 0) {
         <div class="empty-state">
           @if (query()) {
-            No events match <strong>«{{ query() }}»</strong>.
+            {{ 'adminEvents.noMatch' | translate : { q: query() } }}
           } @else {
-            No events for this organiser.
+            {{ 'adminEvents.noEvents' | translate }}
           }
         </div>
       } @else {

@@ -1,11 +1,13 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { I18nService } from './services/i18n.service';
+import { TranslatePipe } from './pipes/translate.pipe';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <nav class="navbar">
       <div class="nav-container">
@@ -16,19 +18,24 @@ import { AuthService } from './services/auth.service';
 
         <!-- Desktop links -->
         <div class="nav-links">
-          <a routerLink="/about" routerLinkActive="active">About</a>
-          <a routerLink="/contact" routerLinkActive="active">Contact</a>
+          <a routerLink="/about" routerLinkActive="active">{{ 'nav.about' | translate }}</a>
+          <a routerLink="/contact" routerLinkActive="active">{{ 'nav.contact' | translate }}</a>
           @if (auth.isLoggedIn()) {
             <a [routerLink]="dashboardLink()" routerLinkActive="active" class="nav-dashboard">
               <span class="nav-user-dot"></span>
-              Dashboard
+              {{ 'nav.dashboard' | translate }}
             </a>
-            <button class="btn btn-secondary btn-sm" (click)="logout()">Sign out</button>
+            <button class="btn btn-secondary btn-sm" (click)="logout()">
+              {{ 'nav.signOut' | translate }}
+            </button>
           } @else {
             <a routerLink="/login" routerLinkActive="active" class="btn btn-primary btn-sm nav-signin">
-              Sign in
+              {{ 'nav.signIn' | translate }}
             </a>
           }
+          <button class="lang-toggle" (click)="i18n.toggleLocale()" [title]="i18n.t('nav.langSwitch')">
+            {{ 'nav.langSwitch' | translate }}
+          </button>
         </div>
 
         <!-- Hamburger button (mobile only) -->
@@ -43,19 +50,28 @@ import { AuthService } from './services/auth.service';
       <!-- Mobile dropdown -->
       @if (menuOpen()) {
         <div class="mobile-menu">
-          <a routerLink="/about" routerLinkActive="mobile-active" (click)="closeMenu()">About</a>
-          <a routerLink="/contact" routerLinkActive="mobile-active" (click)="closeMenu()">Contact</a>
+          <a routerLink="/about" routerLinkActive="mobile-active" (click)="closeMenu()">
+            {{ 'nav.about' | translate }}
+          </a>
+          <a routerLink="/contact" routerLinkActive="mobile-active" (click)="closeMenu()">
+            {{ 'nav.contact' | translate }}
+          </a>
           @if (auth.isLoggedIn()) {
             <a routerLink="/manage" routerLinkActive="mobile-active" class="mobile-dashboard"
                (click)="closeMenu()">
               <span class="nav-user-dot"></span>
-              Dashboard
+              {{ 'nav.dashboard' | translate }}
             </a>
-            <button class="btn btn-secondary mobile-signout" (click)="logout()">Sign out</button>
+            <button class="btn btn-secondary mobile-signout" (click)="logout()">
+              {{ 'nav.signOut' | translate }}
+            </button>
           } @else {
             <a routerLink="/login" routerLinkActive="mobile-active" class="btn btn-primary mobile-signin"
-               (click)="closeMenu()">Sign in</a>
+               (click)="closeMenu()">{{ 'nav.signIn' | translate }}</a>
           }
+          <button class="lang-toggle mobile-lang" (click)="i18n.toggleLocale()">
+            {{ 'nav.langSwitch' | translate }}
+          </button>
         </div>
         <div class="mobile-backdrop" (click)="closeMenu()"></div>
       }
@@ -72,14 +88,14 @@ import { AuthService } from './services/auth.service';
             <span class="footer-logo-icon">D</span>
             <span class="footer-name">DunaDev</span>
           </div>
-          <p class="footer-tagline">Budapest's tech event calendar — never miss a meetup.</p>
+          <p class="footer-tagline">{{ 'footer.tagline' | translate }}</p>
         </div>
         <nav class="footer-links">
-          <a routerLink="/">Events</a>
-          <a routerLink="/about">About</a>
-          <a routerLink="/contact">Contact</a>
+          <a routerLink="/">{{ 'footer.events' | translate }}</a>
+          <a routerLink="/about">{{ 'footer.about' | translate }}</a>
+          <a routerLink="/contact">{{ 'footer.contact' | translate }}</a>
         </nav>
-        <p class="footer-copy">&copy; {{ year }} DunaDev. All rights reserved.</p>
+        <p class="footer-copy" [innerHTML]="'footer.copy' | translate : { year: year.toString() }"></p>
       </div>
     </footer>
   `,
@@ -172,6 +188,30 @@ import { AuthService } from './services/auth.service';
     .nav-signin:hover {
       background: var(--primary-hover) !important;
       color: white !important;
+    }
+
+    /* Language toggle */
+    .lang-toggle {
+      padding: 0.375rem 0.625rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      line-height: 1;
+    }
+    .lang-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(37, 99, 235, 0.05);
+    }
+    .mobile-lang {
+      align-self: flex-start;
+      margin-top: 0.25rem;
     }
 
     /* Hamburger button */
@@ -333,6 +373,7 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
   protected readonly auth = inject(AuthService);
+  protected readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
 
   readonly year = new Date().getFullYear();
@@ -350,7 +391,7 @@ export class App {
     }
 
     return '/login';
-  })
+  });
 
   constructor() {
     this.router.events.subscribe((e) => {

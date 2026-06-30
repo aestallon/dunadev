@@ -1,8 +1,10 @@
 import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-image-upload',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <div class="upload-area"
          [class.has-preview]="previewUrl()"
@@ -20,7 +22,7 @@ import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
         <label class="upload-label" [for]="inputId">
           <span class="upload-icon">🖼️</span>
           <span class="upload-text">
-            <strong>Click to upload</strong> or drag and drop
+            <strong>{{ 'imageUpload.hint' | translate }}</strong>
           </span>
           <span class="upload-hint">PNG, JPG, WEBP — recommended 1200×630</span>
           <input [id]="inputId" type="file" accept="image/*" class="file-input"
@@ -29,7 +31,7 @@ import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
       }
 
       @if (uploading()) {
-        <div class="upload-progress">Uploading…</div>
+        <div class="upload-progress">{{ 'imageUpload.uploading' | translate }}</div>
       }
     </div>
   `,

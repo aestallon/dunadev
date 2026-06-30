@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LocationsService, LocationSummary, LocationRequest } from '../../../api/dunadev';
 import * as L from 'leaflet';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface LocationForm {
   name: string;
@@ -41,62 +43,68 @@ const BUDAPEST_LNG = 19.0402;
 @Component({
   selector: 'app-locations',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="locations-page">
       <div class="container">
         <header class="page-header">
           <div>
-            <a routerLink="/manage" class="back-link">&larr; Dashboard</a>
-            <h1>My Locations</h1>
+            <a routerLink="/manage" class="back-link">&larr; {{ 'nav.dashboard' | translate }}</a>
+            <h1>{{ 'locations.title' | translate }}</h1>
           </div>
           @if (!showCreateForm()) {
-            <button class="btn btn-primary" (click)="startCreate()">New Location</button>
+            <button class="btn btn-primary" (click)="startCreate()">
+              {{ 'locations.newBtn' | translate }}
+            </button>
           }
         </header>
 
         @if (showCreateForm()) {
           <div class="location-form-card">
-            <h3>New Location</h3>
+            <h3>{{ 'locations.newTitle' | translate }}</h3>
             <ng-container
               *ngTemplateOutlet="locationFormTpl; context: { $implicit: 'create' }"
             ></ng-container>
             <div class="form-actions">
-              <button class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+              <button class="btn btn-secondary" (click)="cancelForm()">
+                {{ 'generic.cancel' | translate }}
+              </button>
               <button
                 class="btn btn-primary"
                 (click)="submitCreate()"
                 [disabled]="!formData().name.trim()"
               >
-                Create
+                {{ 'locations.createBtn' | translate }}
               </button>
             </div>
           </div>
         }
 
         @if (loading()) {
-          <div class="loading-state">Loading locations...</div>
+          <div class="loading-state">{{ 'generic.loading' | translate }}</div>
         } @else if (locations().length === 0 && !showCreateForm()) {
           <div class="empty-state">
-            <p>You have no locations yet. Create one to get started.</p>
+            <p>{{ 'locations.empty' | translate }}</p>
           </div>
         } @else {
           <div class="locations-list">
             @for (loc of locations(); track loc.id) {
               @if (editingId() === loc.id) {
                 <div class="location-form-card">
-                  <h3>Edit Location</h3>
+                  <h3>{{ 'locations.editTitle' | translate }}</h3>
                   <ng-container
                     *ngTemplateOutlet="locationFormTpl; context: { $implicit: 'edit' }"
                   ></ng-container>
                   <div class="form-actions">
-                    <button class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+                    <button class="btn btn-secondary" (click)="cancelForm()">
+                      {{ 'generic.cancel' | translate }}
+                    </button>
                     <button
                       class="btn btn-primary"
                       (click)="submitEdit(loc.id)"
                       [disabled]="!formData().name.trim()"
                     >
-                      Save
+                      {{ 'generic.save' | translate }}
                     </button>
                   </div>
                 </div>
@@ -120,9 +128,11 @@ const BUDAPEST_LNG = 19.0402;
                     </div>
                   </div>
                   <div class="location-actions">
-                    <button class="btn btn-secondary btn-sm" (click)="startEdit(loc)">Edit</button>
+                    <button class="btn btn-secondary btn-sm" (click)="startEdit(loc)">
+                      {{ 'generic.edit' | translate }}
+                    </button>
                     <button class="btn btn-danger btn-sm" (click)="confirmDelete(loc)">
-                      Delete
+                      {{ 'generic.delete' | translate }}
                     </button>
                   </div>
                 </div>
@@ -134,15 +144,15 @@ const BUDAPEST_LNG = 19.0402;
         @if (deletingLocation()) {
           <div class="modal-overlay" (click)="cancelDelete()">
             <div class="modal" (click)="$event.stopPropagation()">
-              <h3>Delete Location</h3>
-              <p>
-                Are you sure you want to delete
-                <strong>{{ deletingLocation()!.name }}</strong
-                >? If it has been used in events it will be deactivated instead.
-              </p>
+              <h3>{{ 'locations.deleteTitle' | translate }}</h3>
+              <p [innerHTML]="'locations.deleteConfirm' | translate : { name: deletingLocation()!.name }"></p>
               <div class="modal-actions">
-                <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-                <button class="btn btn-danger" (click)="executeDelete()">Delete</button>
+                <button class="btn btn-secondary" (click)="cancelDelete()">
+                  {{ 'generic.cancel' | translate }}
+                </button>
+                <button class="btn btn-danger" (click)="executeDelete()">
+                  {{ 'generic.delete' | translate }}
+                </button>
               </div>
             </div>
           </div>
@@ -153,50 +163,50 @@ const BUDAPEST_LNG = 19.0402;
     <ng-template #locationFormTpl let-prefix>
       <div class="form-grid">
         <div class="form-group span-2">
-          <label [for]="prefix + '-name'">Name *</label>
+          <label [for]="prefix + '-name'">{{ 'loc.nameLabel' | translate }}</label>
           <input
             [id]="prefix + '-name'"
             type="text"
             [(ngModel)]="formData().name"
-            placeholder="Venue name"
+            [placeholder]="'loc.namePh' | translate"
           />
         </div>
         <div class="form-group">
-          <label [for]="prefix + '-address'">Address</label>
+          <label [for]="prefix + '-address'">{{ 'loc.addressLabel' | translate }}</label>
           <input
             [id]="prefix + '-address'"
             type="text"
             [(ngModel)]="formData().address"
-            placeholder="Street address"
+            [placeholder]="'loc.addressPh' | translate"
           />
         </div>
         <div class="form-group">
-          <label [for]="prefix + '-city'">City</label>
+          <label [for]="prefix + '-city'">{{ 'loc.cityLabel' | translate }}</label>
           <input
             [id]="prefix + '-city'"
             type="text"
             [(ngModel)]="formData().city"
-            placeholder="City"
+            [placeholder]="'loc.cityPh' | translate"
           />
         </div>
         <div class="form-group span-2">
-          <label [for]="prefix + '-url'">Website URL</label>
+          <label [for]="prefix + '-url'">{{ 'loc.urlLabel' | translate }}</label>
           <input
             [id]="prefix + '-url'"
             type="text"
             [(ngModel)]="formData().websiteUrl"
-            placeholder="https://..."
+            [placeholder]="'loc.urlPh' | translate"
           />
         </div>
         <div class="form-group span-2 map-section">
-          <label>Pin on map</label>
+          <label>{{ 'loc.mapLabel' | translate }}</label>
           <button class="btn btn-secondary btn-sm map-toggle" (click)="toggleMap()">
-            {{ mapExpanded() ? 'Hide map' : 'Show map' }}
+            {{ (mapExpanded() ? 'loc.hideMap' : 'loc.showMap') | translate }}
           </button>
           @if (formData().latitude || formData().longitude) {
             <span class="coords-display">
               {{ formData().latitude }}, {{ formData().longitude }}
-              <button class="btn-link" (click)="clearPin()">Clear pin</button>
+              <button class="btn-link" (click)="clearPin()">{{ 'loc.clearPin' | translate }}</button>
             </span>
           }
           @if (mapExpanded()) {
@@ -204,11 +214,11 @@ const BUDAPEST_LNG = 19.0402;
           }
         </div>
         <div class="form-group span-2">
-          <label [for]="prefix + '-directions'">How to get there</label>
+          <label [for]="prefix + '-directions'">{{ 'loc.howLabel' | translate }}</label>
           <textarea
             [id]="prefix + '-directions'"
             [(ngModel)]="formData().howToGetThere"
-            placeholder="e.g. Take tram 4/6 to Nyugati, walk 5 minutes north..."
+            [placeholder]="'loc.howPh' | translate"
             rows="3"
           ></textarea>
         </div>

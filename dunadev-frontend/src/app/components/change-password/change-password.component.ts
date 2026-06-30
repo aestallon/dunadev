@@ -1,20 +1,22 @@
 import { Component, inject, signal, computed, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../../api/dunadev';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface PasswordRule {
-  label: string;
+  label: Signal<string>;
   passed: Signal<boolean>;
 }
 
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   template: `
     <div class="page">
       <div class="card">
-        <h1 class="page-title">Change Password</h1>
+        <h1 class="page-title">{{ 'password.title' | translate }}</h1>
 
         @if (success()) {
           <div class="banner success-banner">
@@ -23,7 +25,7 @@ interface PasswordRule {
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
               <polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            Password changed successfully. You can continue working.
+            {{ 'password.success' | translate }}
           </div>
         }
 
@@ -34,25 +36,25 @@ interface PasswordRule {
         <form (ngSubmit)="submit()" class="form" autocomplete="off">
 
           <div class="form-group">
-            <label for="current">Current password</label>
+            <label for="current">{{ 'password.currentLabel' | translate }}</label>
             <input id="current" type="password"
                    [ngModel]="current()" (ngModelChange)="current.set($event)"
                    name="current" autocomplete="current-password"
-                   placeholder="Enter your current password"
+                   [placeholder]="'password.currentPh' | translate"
                    [disabled]="saving()">
           </div>
 
           <div class="form-group">
-            <label for="newPwd">New password</label>
+            <label for="newPwd">{{ 'password.newLabel' | translate }}</label>
             <input id="newPwd" type="password"
                    [ngModel]="newPwd()" (ngModelChange)="newPwd.set($event)"
                    name="newPwd" autocomplete="new-password"
-                   placeholder="Choose a new password"
+                   [placeholder]="'password.newPh' | translate"
                    [disabled]="saving()">
 
             @if (newPwd().length > 0) {
               <ul class="rules-list">
-                @for (rule of passwordRules; track rule.label) {
+                @for (rule of passwordRules; track rule.label()) {
                   <li class="rule" [class.rule-ok]="rule.passed()" [class.rule-fail]="!rule.passed()">
                     <svg class="rule-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -63,7 +65,7 @@ interface PasswordRule {
                         <line x1="6" y1="6" x2="18" y2="18"/>
                       }
                     </svg>
-                    {{ rule.label }}
+                    {{ rule.label() }}
                   </li>
                 }
               </ul>
@@ -71,22 +73,26 @@ interface PasswordRule {
           </div>
 
           <div class="form-group">
-            <label for="confirm">Confirm new password</label>
+            <label for="confirm">{{ 'password.confirmLabel' | translate }}</label>
             <input id="confirm" type="password"
                    [ngModel]="confirm()" (ngModelChange)="confirm.set($event)"
                    name="confirm" autocomplete="new-password"
-                   placeholder="Repeat your new password"
+                   [placeholder]="'password.confirmPh' | translate"
                    [disabled]="saving()">
             @if (confirm().length > 0 && !passwordsMatch()) {
-              <span class="mismatch-hint">Passwords do not match.</span>
+              <span class="mismatch-hint">{{ 'password.mismatch' | translate }}</span>
             }
           </div>
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary"
                     [disabled]="saving() || !canSubmit()">
-              @if (saving()) { <span class="spinner"></span> Saving… }
-              @else { Change Password }
+              @if (saving()) {
+                <span class="spinner"></span>
+                {{ 'password.submitting' | translate }}
+              } @else {
+                {{ 'password.submitBtn' | translate }}
+              }
             </button>
           </div>
 
@@ -140,6 +146,7 @@ interface PasswordRule {
 })
 export class ChangePasswordComponent {
   private readonly accountService = inject(AccountService);
+  private readonly i18n = inject(I18nService);
 
   readonly current = signal('');
   readonly newPwd  = signal('');
@@ -155,10 +162,10 @@ export class ChangePasswordComponent {
   private readonly ruleHasLower  = computed(() => /[a-z]/.test(this.newPwd()));
 
   readonly passwordRules: PasswordRule[] = [
-    { label: 'At least 8 characters',        passed: this.ruleMinLength },
-    { label: 'Contains a number',             passed: this.ruleHasDigit  },
-    { label: 'Contains an uppercase letter',  passed: this.ruleHasUpper  },
-    { label: 'Contains a lowercase letter',   passed: this.ruleHasLower  },
+    { label: computed(() => this.i18n.t('password.rules.minLength')), passed: this.ruleMinLength },
+    { label: computed(() => this.i18n.t('password.rules.digit')),     passed: this.ruleHasDigit  },
+    { label: computed(() => this.i18n.t('password.rules.uppercase')), passed: this.ruleHasUpper  },
+    { label: computed(() => this.i18n.t('password.rules.digit')),     passed: this.ruleHasLower  },
   ];
 
   readonly passwordsMatch = computed(() => this.newPwd() === this.confirm());
@@ -187,8 +194,8 @@ export class ChangePasswordComponent {
         error: err => {
           this.serverError.set(
             err?.status === 400
-              ? 'Current password is incorrect.'
-              : 'Something went wrong. Please try again.'
+              ? this.i18n.t('password.mismatch')
+              : this.i18n.t('generic.error')
           );
           this.saving.set(false);
         },

@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <div class="contact-page">
       <div class="container">
         <header class="page-header">
-          <span class="eyebrow">Contact</span>
-          <h1>Get in Touch</h1>
-          <p class="lead">
-            Have a question, want to list your events, or just want to say hello? We'd love to hear
-            from you.
-          </p>
+          <span class="eyebrow">{{ 'contact.eyebrow' | translate }}</span>
+          <h1>{{ 'contact.title' | translate }}</h1>
+          <p class="lead">{{ 'contact.lead' | translate }}</p>
         </header>
 
         <div class="contact-grid">

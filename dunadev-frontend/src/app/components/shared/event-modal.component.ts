@@ -14,12 +14,13 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { EventSummary } from '../../../api/dunadev';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-event-modal',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   template: `
     @if (event) {
       <div class="modal-backdrop" (click)="close.emit()" (keydown.escape)="close.emit()">
@@ -34,26 +35,26 @@ import * as L from 'leaflet';
 
           <div class="modal-body">
             <!-- Close button -->
-            <button class="close-btn" (click)="close.emit()" aria-label="Close">✕</button>
+            <button class="close-btn" (click)="close.emit()" [attr.aria-label]="'modal.close' | translate">✕</button>
 
             <!-- Status badges -->
             <div class="modal-badges">
               @if (event.free) {
-                <span class="badge badge-free">Free</span>
+                <span class="badge badge-free">{{ 'badge.free' | translate }}</span>
               } @else {
-                <span class="badge badge-paid">Paid</span>
+                <span class="badge badge-paid">{{ 'badge.paid' | translate }}</span>
               }
               @if (event.registrationRequired) {
-                <span class="badge badge-reg">Registration required</span>
+                <span class="badge badge-reg">{{ 'badge.regRequired' | translate }}</span>
               }
               @if (event.status === 'CANCELLED') {
-                <span class="badge badge-cancelled">Cancelled</span>
+                <span class="badge badge-cancelled">{{ 'badge.cancelled' | translate }}</span>
               } @else {
                 @if (event.status === 'RESCHEDULED') {
-                  <span class="badge badge-rescheduled">On new date</span>
+                  <span class="badge badge-rescheduled">{{ 'badge.onNewDate' | translate }}</span>
                 }
                 @if (event.onNewLocation) {
-                  <span class="badge badge-relocated">On new location</span>
+                  <span class="badge badge-relocated">{{ 'badge.onNewLocation' | translate }}</span>
                 }
               }
             </div>
@@ -65,7 +66,7 @@ import * as L from 'leaflet';
             <!-- Date, time, location row -->
             <div class="modal-when-where">
               <div class="info-block">
-                <span class="info-label">When</span>
+                <span class="info-label">{{ 'modal.when' | translate }}</span>
                 <span class="info-value">{{ event.startsAt | date:'EEEE, MMMM d, y' }}</span>
                 <span class="info-value">
                   {{ event.startsAt | date:'HH:mm' }}
@@ -74,7 +75,7 @@ import * as L from 'leaflet';
               </div>
               @if (event.location) {
                 <div class="info-block">
-                  <span class="info-label">Where</span>
+                  <span class="info-label">{{ 'modal.where' | translate }}</span>
                   <span class="info-value location-name">{{ event.location.name }}</span>
                   @if (event.location.address || event.location.city) {
                     <span class="info-value location-addr">
@@ -104,7 +105,7 @@ import * as L from 'leaflet';
                 @if (event.eventUrl || event.registrationUrl) {
                   <a [href]="event.registrationUrl || event.eventUrl" target="_blank" rel="noopener"
                      class="btn btn-primary cta-btn">
-                    {{ event.registrationRequired ? 'Register now' : 'Get tickets' }} &rarr;
+                    {{ event.registrationRequired ? ('modal.registerBtn' | translate) : 'Get tickets' }} &rarr;
                   </a>
                 }
               </div>
@@ -129,7 +130,7 @@ import * as L from 'leaflet';
             <!-- Additional links -->
             @if (event.links && event.links.length > 0) {
               <div class="modal-section links-section">
-                <h4 class="section-label">Links</h4>
+                <h4 class="section-label">{{ 'modal.links' | translate }}</h4>
                 <div class="link-list">
                   @for (link of event.links; track link.url) {
                     <a [href]="link.url" target="_blank" rel="noopener" class="extra-link">
@@ -143,7 +144,7 @@ import * as L from 'leaflet';
             <!-- Map -->
             @if (event.location?.latitude && event.location?.longitude) {
               <div class="modal-section">
-                <h4 class="section-label">Location</h4>
+                <h4 class="section-label">{{ 'modal.where' | translate }}</h4>
                 <div #mapRef class="map-container"></div>
                 @if (event.location?.howToGetThere) {
                   <p class="how-to-get-there">{{ event.location!.howToGetThere }}</p>

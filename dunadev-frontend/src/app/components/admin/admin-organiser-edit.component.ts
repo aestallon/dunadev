@@ -2,11 +2,13 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AdministrationService, OrganiserProfile, OrganiserUpdateRequest } from '../../../api/dunadev';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-admin-organiser-edit',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   template: `
     <div class="tab-page">
 
@@ -19,7 +21,7 @@ import { AdministrationService, OrganiserProfile, OrganiserUpdateRequest } from 
       } @else {
         <div class="card">
           @if (saveSuccess()) {
-            <div class="success-banner">Profile saved successfully.</div>
+            <div class="success-banner">{{ 'adminProfile.saveSuccess' | translate }}</div>
           }
           @if (saveError()) {
             <div class="error-banner">{{ saveError() }}</div>
@@ -27,28 +29,33 @@ import { AdministrationService, OrganiserProfile, OrganiserUpdateRequest } from 
 
           <form (ngSubmit)="save()" class="profile-form">
             <div class="form-group">
-              <label for="name">Organisation name <span class="required">*</span></label>
+              <label for="name">{{ 'adminProfile.nameLabel' | translate }}</label>
               <input id="name" type="text" [(ngModel)]="form.name" name="name"
-                     placeholder="e.g. Budapest.js" required [disabled]="saving()" />
+                     [placeholder]="'adminProfile.namePh' | translate"
+                     required [disabled]="saving()" />
             </div>
 
             <div class="form-group">
-              <label for="description">Description</label>
+              <label for="description">{{ 'adminProfile.descLabel' | translate }}</label>
               <textarea id="description" [(ngModel)]="form.description" name="description"
-                        rows="5" placeholder="A short description…" [disabled]="saving()"></textarea>
+                        rows="5" [placeholder]="'adminProfile.descPh' | translate"
+                        [disabled]="saving()"></textarea>
             </div>
 
             <div class="form-group">
-              <label for="websiteUrl">Website URL</label>
+              <label for="websiteUrl">{{ 'adminProfile.urlLabel' | translate }}</label>
               <input id="websiteUrl" type="url" [(ngModel)]="form.websiteUrl" name="websiteUrl"
-                     placeholder="https://example.com" [disabled]="saving()" />
+                     [placeholder]="'adminProfile.urlPh' | translate" [disabled]="saving()" />
             </div>
 
             <div class="form-actions">
               <button type="submit" class="btn btn-primary"
                       [disabled]="saving() || !form.name">
-                @if (saving()) { <span class="spinner"></span> Saving… }
-                @else { Save changes }
+                @if (saving()) {
+                  <span class="spinner"></span> {{ 'adminProfile.savingBtn' | translate }}
+                } @else {
+                  {{ 'adminProfile.saveBtn' | translate }}
+                }
               </button>
             </div>
           </form>
@@ -79,6 +86,7 @@ import { AdministrationService, OrganiserProfile, OrganiserUpdateRequest } from 
 export class AdminOrganiserEditComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly adminService = inject(AdministrationService);
+  private readonly i18n = inject(I18nService);
 
   private orgId = 0;
   readonly loading = signal(true);
@@ -109,7 +117,7 @@ export class AdminOrganiserEditComponent implements OnInit {
         this.saving.set(false);
         this.saveSuccess.set(true);
       },
-      error: () => { this.saveError.set('Failed to save. Please try again.'); this.saving.set(false); },
+      error: () => { this.saveError.set(this.i18n.t('adminProfile.saveError')); this.saving.set(false); },
     });
   }
 }

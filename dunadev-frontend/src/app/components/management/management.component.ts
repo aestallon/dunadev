@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { OrganiserProfileService } from '../../../api/dunadev';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-management',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, TranslatePipe],
   template: `
     <div class="manage-layout" [class.sidebar-collapsed]="collapsed()">
 
@@ -33,7 +34,8 @@ import { OrganiserProfileService } from '../../../api/dunadev';
             </a>
           }
 
-          <a routerLink="events" routerLinkActive="nav-active" (click)="onNavClick()" title="Events">
+          <a routerLink="events" routerLinkActive="nav-active" (click)="onNavClick()"
+             [title]="'sidebar.events' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -41,32 +43,34 @@ import { OrganiserProfileService } from '../../../api/dunadev';
               <line x1="8" y1="2" x2="8" y2="6"/>
               <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
-            <span class="nav-text">Events</span>
+            <span class="nav-text">{{ 'sidebar.events' | translate }}</span>
           </a>
 
-          <a routerLink="locations" routerLinkActive="nav-active" (click)="onNavClick()" title="Locations">
+          <a routerLink="locations" routerLinkActive="nav-active" (click)="onNavClick()"
+             [title]="'sidebar.locations' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
-            <span class="nav-text">Locations</span>
+            <span class="nav-text">{{ 'sidebar.locations' | translate }}</span>
           </a>
 
           @if (authService.isAdmin()) {
-            <span class="nav-disabled" title="Administration">
+            <span class="nav-disabled" [title]="'sidebar.admin' | translate">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
               <span class="nav-text">
-                Administration
-                <span class="soon-badge">Soon</span>
+                {{ 'sidebar.admin' | translate }}
+                <span class="soon-badge">{{ 'sidebar.soon' | translate }}</span>
               </span>
             </span>
           }
 
-          <a routerLink="docs" routerLinkActive="nav-active" (click)="onNavClick()" title="Documentation">
+          <a routerLink="docs" routerLinkActive="nav-active" (click)="onNavClick()"
+             [title]="'sidebar.docs' | translate">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -75,20 +79,20 @@ import { OrganiserProfileService } from '../../../api/dunadev';
               <line x1="16" y1="17" x2="8" y2="17"/>
               <polyline points="10 9 9 9 8 9"/>
             </svg>
-            <span class="nav-text">Documentation</span>
+            <span class="nav-text">{{ 'sidebar.docs' | translate }}</span>
           </a>
 
         </nav>
 
         <!-- Change-password link sits between nav and footer -->
         <a routerLink="password" routerLinkActive="nav-active" (click)="onNavClick()"
-           class="change-pwd-link" title="Change Password">
+           class="change-pwd-link" [title]="'sidebar.password' | translate">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          <span class="nav-text">Change Password</span>
+          <span class="nav-text">{{ 'sidebar.password' | translate }}</span>
         </a>
 
         <!-- Footer: role chip + collapse toggle -->
@@ -97,12 +101,12 @@ import { OrganiserProfileService } from '../../../api/dunadev';
             <span class="role-chip">{{ authService.role() }}</span>
           </div>
           <button class="collapse-btn" (click)="toggleSidebar()"
-                  [title]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+                  [title]="'sidebar.collapse' | translate">
             <svg class="collapse-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
-            <span class="nav-text">Collapse</span>
+            <span class="nav-text">{{ 'sidebar.collapse' | translate }}</span>
           </button>
         </div>
       </aside>

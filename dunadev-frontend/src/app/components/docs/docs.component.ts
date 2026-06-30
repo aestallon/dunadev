@@ -1,14 +1,19 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-docs',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <div class="docs-page">
       <div class="docs-header">
-        <h1>Documentation</h1>
-        <p class="docs-subtitle">Reference materials for DunaDev {{ isAdmin() ? 'administrators' : 'organisers' }}.</p>
+        <h1>{{ 'docs.title' | translate }}</h1>
+        <p class="docs-subtitle">
+          {{ isAdmin() ? ('docs.subtitle.admin' | translate) : ('docs.subtitle.organiser' | translate) }}
+        </p>
       </div>
 
       <div class="docs-grid">
@@ -25,13 +30,10 @@ import { AuthService } from '../../services/auth.service';
             </svg>
           </div>
           <div class="doc-body">
-            <h2 class="doc-title">Functional Specification</h2>
-            <p class="doc-desc">
-              Full description of DunaDev's features, business rules, and intended behaviour.
-              Intended for anyone who wants a deep understanding of how the system works.
-            </p>
+            <h2 class="doc-title">{{ 'docs.specTitle' | translate }}</h2>
+            <p class="doc-desc">{{ 'docs.specDesc' | translate }}</p>
             <div class="doc-footer">
-              <span class="coming-soon-badge">Coming Soon</span>
+              <span class="coming-soon-badge">{{ 'docs.comingSoon' | translate }}</span>
             </div>
           </div>
         </div>
@@ -46,15 +48,14 @@ import { AuthService } from '../../services/auth.service';
             </svg>
           </div>
           <div class="doc-body">
-            <h2 class="doc-title">{{ isAdmin() ? 'Administrator' : 'Organiser' }} User Manual</h2>
+            <h2 class="doc-title">
+              {{ isAdmin() ? ('docs.manualTitle.admin' | translate) : ('docs.manualTitle.organiser' | translate) }}
+            </h2>
             <p class="doc-desc">
-              Step-by-step guide covering everything
-              {{ isAdmin()
-                ? 'administrators need to manage organisers, events, and system configuration.'
-                : 'organisers need to create and manage events and locations on DunaDev.' }}
+              {{ isAdmin() ? ('docs.manualDesc.admin' | translate) : ('docs.manualDesc.organiser' | translate) }}
             </p>
             <div class="doc-footer">
-              <span class="coming-soon-badge">Coming Soon</span>
+              <span class="coming-soon-badge">{{ 'docs.comingSoon' | translate }}</span>
             </div>
           </div>
         </div>

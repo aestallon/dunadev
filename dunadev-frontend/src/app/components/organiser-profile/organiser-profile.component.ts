@@ -7,22 +7,24 @@ import {
   OrganiserProfile,
   OrganiserUpdateRequest,
 } from '../../../api/dunadev';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-organiser-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="profile-page">
       <div class="container">
 
         <div class="page-header">
           <div class="breadcrumb">
-            <a routerLink="/manage/events">Events</a>
+            <a routerLink="/manage/events">{{ 'sidebar.events' | translate }}</a>
             <span class="breadcrumb-sep">/</span>
-            <span>Organisation</span>
+            <span>{{ 'profile.breadcrumb' | translate }}</span>
           </div>
-          <h1>Organisation</h1>
+          <h1>{{ 'profile.title' | translate }}</h1>
         </div>
 
         @if (loading()) {
@@ -36,7 +38,7 @@ import {
         } @else {
           <div class="card">
             @if (saveSuccess()) {
-              <div class="success-banner">Profile saved successfully.</div>
+              <div class="success-banner">{{ 'profile.saveSuccess' | translate }}</div>
             }
             @if (saveError()) {
               <div class="error-banner">{{ saveError() }}</div>
@@ -44,38 +46,38 @@ import {
 
             <form (ngSubmit)="save()" class="profile-form">
               <div class="form-group">
-                <label for="name">Organisation name <span class="required">*</span></label>
+                <label for="name">{{ 'profile.nameLabel' | translate }}</label>
                 <input
                   id="name"
                   type="text"
                   [(ngModel)]="form.name"
                   name="name"
-                  placeholder="e.g. Budapest.js"
+                  [placeholder]="'profile.namePh' | translate"
                   required
                   [disabled]="saving()"
                 />
               </div>
 
               <div class="form-group">
-                <label for="description">Description</label>
+                <label for="description">{{ 'profile.descLabel' | translate }}</label>
                 <textarea
                   id="description"
                   [(ngModel)]="form.description"
                   name="description"
                   rows="5"
-                  placeholder="A short description of your organisation and the events you run…"
+                  [placeholder]="'profile.descPh' | translate"
                   [disabled]="saving()"
                 ></textarea>
               </div>
 
               <div class="form-group">
-                <label for="websiteUrl">Website URL</label>
+                <label for="websiteUrl">{{ 'profile.urlLabel' | translate }}</label>
                 <input
                   id="websiteUrl"
                   type="url"
                   [(ngModel)]="form.websiteUrl"
                   name="websiteUrl"
-                  placeholder="https://example.com"
+                  [placeholder]="'profile.urlPh' | translate"
                   [disabled]="saving()"
                 />
               </div>
@@ -87,12 +89,14 @@ import {
                   [disabled]="saving() || !form.name"
                 >
                   @if (saving()) {
-                    <span class="spinner"></span> Saving…
+                    <span class="spinner"></span> {{ 'profile.savingBtn' | translate }}
                   } @else {
-                    Save changes
+                    {{ 'profile.saveBtn' | translate }}
                   }
                 </button>
-                <a routerLink="/manage/events" class="btn btn-secondary">Cancel</a>
+                <a routerLink="/manage/events" class="btn btn-secondary">
+                  {{ 'profile.cancelBtn' | translate }}
+                </a>
               </div>
             </form>
           </div>
@@ -210,6 +214,7 @@ import {
 })
 export class OrganiserProfileComponent implements OnInit {
   private readonly profileService = inject(OrganiserProfileService);
+  private readonly i18n = inject(I18nService);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -230,7 +235,7 @@ export class OrganiserProfileComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.loadError.set('Failed to load profile. Please try again.');
+        this.loadError.set(this.i18n.t('profile.loadError'));
         this.loading.set(false);
       },
     });
@@ -251,7 +256,7 @@ export class OrganiserProfileComponent implements OnInit {
         this.saveSuccess.set(true);
       },
       error: () => {
-        this.saveError.set('Failed to save profile. Please try again.');
+        this.saveError.set(this.i18n.t('profile.saveError'));
         this.saving.set(false);
       },
     });

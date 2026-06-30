@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { EventSummary } from '../../../api/dunadev';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-event-card',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, TranslatePipe],
   template: `
     <div class="event-card"
          [class.cancelled]="event.status === 'CANCELLED'"
@@ -47,21 +48,21 @@ import { EventSummary } from '../../../api/dunadev';
 
         <div class="card-badges">
           @if (event.free) {
-            <span class="badge badge-free">Free</span>
+            <span class="badge badge-free">{{ 'badge.free' | translate }}</span>
           } @else {
-            <span class="badge badge-paid">Paid</span>
+            <span class="badge badge-paid">{{ 'badge.paid' | translate }}</span>
           }
           @if (event.registrationRequired) {
-            <span class="badge badge-reg">Registration required</span>
+            <span class="badge badge-reg">{{ 'badge.regRequired' | translate }}</span>
           }
           @if (event.status === 'CANCELLED') {
-            <span class="badge badge-cancelled">Cancelled</span>
+            <span class="badge badge-cancelled">{{ 'badge.cancelled' | translate }}</span>
           } @else {
             @if (event.status === 'RESCHEDULED') {
-              <span class="badge badge-rescheduled">On new date</span>
+              <span class="badge badge-rescheduled">{{ 'badge.onNewDate' | translate }}</span>
             }
             @if (event.onNewLocation) {
-              <span class="badge badge-relocated">On new location</span>
+              <span class="badge badge-relocated">{{ 'badge.onNewLocation' | translate }}</span>
             }
           }
         </div>
@@ -70,12 +71,12 @@ import { EventSummary } from '../../../api/dunadev';
           <div class="card-actions" (click)="$event.stopPropagation()">
             @if (showPreview) {
               <button class="btn btn-secondary btn-xs" (click)="cardClick.emit(event)">
-                Preview
+                {{ 'card.preview' | translate }}
               </button>
             }
             @if (editLink) {
               <a [href]="editLink" class="btn btn-secondary btn-xs" (click)="$event.stopPropagation()">
-                Edit
+                {{ 'card.edit' | translate }}
               </a>
             }
           </div>

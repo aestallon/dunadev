@@ -13,6 +13,8 @@ import {
   EventLinkRequest,
 } from '../../../api/dunadev';
 import { ImageUploadComponent } from '../shared/image-upload.component';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 interface EventForm {
   title: string;
@@ -30,14 +32,16 @@ interface EventForm {
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent, TranslatePipe],
   template: `
     <div class="event-create-page">
       <div class="container">
         <header class="page-header">
           <div>
-            <a routerLink="/manage/events" class="back-link">&larr; Events</a>
-            <h1>New Event</h1>
+            <a routerLink="/manage/events" class="back-link">
+              &larr; {{ 'sidebar.events' | translate }}
+            </a>
+            <h1>{{ 'eventCreate.title' | translate }}</h1>
           </div>
         </header>
 
@@ -51,86 +55,86 @@ interface EventForm {
 
             <!-- Basic Info -->
             <div class="form-card">
-              <h3 class="section-title">Basic Info</h3>
+              <h3 class="section-title">{{ 'eventCreate.basicInfo' | translate }}</h3>
 
               <div class="form-group">
-                <label>Title <span class="required">*</span></label>
+                <label>{{ 'eventForm.titleLabel' | translate }}</label>
                 <input type="text" [(ngModel)]="form.title" name="title"
-                       placeholder="Event title" autocomplete="off">
+                       [placeholder]="'eventForm.titlePh' | translate" autocomplete="off">
               </div>
 
               <div class="form-group">
-                <label>Description</label>
+                <label>{{ 'eventForm.descLabel' | translate }}</label>
                 <textarea [(ngModel)]="form.description" name="description"
-                          rows="4" placeholder="What's this event about?"></textarea>
+                          rows="4" [placeholder]="'eventForm.descPh' | translate"></textarea>
               </div>
 
               <div class="form-group">
-                <label>Event page URL</label>
+                <label>{{ 'eventForm.urlLabel' | translate }}</label>
                 <input type="url" [(ngModel)]="form.eventUrl" name="eventUrl"
-                       placeholder="https://example.com/event">
+                       [placeholder]="'eventForm.urlPh' | translate">
               </div>
             </div>
 
             <!-- Date & Time -->
             <div class="form-card">
-              <h3 class="section-title">Date &amp; Time</h3>
+              <h3 class="section-title">{{ 'eventCreate.dateTime' | translate }}</h3>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label>Starts at <span class="required">*</span></label>
+                  <label>{{ 'eventForm.startsAt' | translate }} <span class="required">*</span></label>
                   <input type="datetime-local" [(ngModel)]="form.startsAt" name="startsAt"
                          (ngModelChange)="onStartsAtChange()">
                 </div>
                 <div class="form-group">
-                  <label>Ends at</label>
+                  <label>{{ 'eventForm.endsAt' | translate }}</label>
                   <input type="datetime-local" [(ngModel)]="form.endsAt" name="endsAt">
                 </div>
               </div>
 
               <div class="form-group">
-                <label>Visible from</label>
+                <label>{{ 'eventForm.visibleFrom' | translate }}</label>
                 <input type="datetime-local" [(ngModel)]="form.visibleFrom" name="visibleFrom">
-                <span class="hint">Leave empty to publish immediately once saved.</span>
+                <span class="hint">{{ 'eventForm.visibleFromHint' | translate }}</span>
               </div>
             </div>
 
             <!-- Registration -->
             <div class="form-card">
-              <h3 class="section-title">Attendance</h3>
+              <h3 class="section-title">{{ 'eventCreate.attendance' | translate }}</h3>
 
               <div class="check-group">
                 <label class="check-label">
                   <input type="checkbox" [(ngModel)]="form.free" name="free">
-                  <span>Free entry</span>
+                  <span>{{ 'eventForm.freeEntry' | translate }}</span>
                 </label>
                 <label class="check-label">
                   <input type="checkbox" [(ngModel)]="form.registrationRequired" name="registrationRequired">
-                  <span>Registration required</span>
+                  <span>{{ 'eventForm.regRequired' | translate }}</span>
                 </label>
               </div>
 
               @if (form.registrationRequired) {
                 <div class="form-group mt-1">
-                  <label>Registration URL</label>
+                  <label>{{ 'eventForm.regUrl' | translate }}</label>
                   <input type="url" [(ngModel)]="form.registrationUrl" name="registrationUrl"
-                         placeholder="https://example.com/register">
+                         [placeholder]="'eventForm.regUrlPh' | translate">
                 </div>
               }
             </div>
 
             <!-- Location -->
             <div class="form-card">
-              <h3 class="section-title">Location <span class="required">*</span></h3>
+              <h3 class="section-title">{{ 'eventCreate.location' | translate }}</h3>
 
               @if (loadingLocations()) {
-                <p class="muted">Loading your locations…</p>
+                <p class="muted">{{ 'eventCreate.loadingLocs' | translate }}</p>
               } @else {
                 @if (locations().length > 0) {
                   <div class="form-group">
-                    <label>Select location</label>
+                    <label>{{ 'eventForm.selectLoc' | translate }}</label>
                     <select [(ngModel)]="form.locationId" name="locationId">
-                      <option [ngValue]="null">— Pick a location —</option>
+                      <option [ngValue]="null">{{ 'eventForm.pickLoc' | translate }}</option>
                       @for (loc of locations(); track loc.id) {
                         <option [ngValue]="loc.id">
                           {{ loc.name }}{{ loc.city ? ' — ' + loc.city : '' }}
@@ -143,37 +147,37 @@ interface EventForm {
                 @if (!showQuickLocation()) {
                   <button type="button" class="btn btn-secondary btn-sm"
                           (click)="showQuickLocation.set(true)">
-                    + Create new location
+                    + {{ 'eventCreate.newLoc' | translate }}
                   </button>
                 } @else {
                   <div class="quick-location">
-                    <p class="quick-location-title">Quick location</p>
+                    <p class="quick-location-title">{{ 'eventCreate.quickLoc' | translate }}</p>
                     <div class="form-group">
-                      <label>Name <span class="required">*</span></label>
+                      <label>{{ 'loc.nameLabel' | translate }}</label>
                       <input type="text" [(ngModel)]="quickLoc.name" name="qlName"
-                             placeholder="Venue name" autocomplete="off">
+                             [placeholder]="'loc.namePh' | translate" autocomplete="off">
                     </div>
                     <div class="form-row">
                       <div class="form-group">
-                        <label>City</label>
+                        <label>{{ 'loc.cityLabel' | translate }}</label>
                         <input type="text" [(ngModel)]="quickLoc.city" name="qlCity"
                                placeholder="Budapest" autocomplete="off">
                       </div>
                       <div class="form-group">
-                        <label>Address</label>
+                        <label>{{ 'loc.addressLabel' | translate }}</label>
                         <input type="text" [(ngModel)]="quickLoc.address" name="qlAddress"
-                               placeholder="Street &amp; number" autocomplete="off">
+                               [placeholder]="'loc.addressPh' | translate" autocomplete="off">
                       </div>
                     </div>
                     <div class="inline-actions">
                       <button type="button" class="btn btn-secondary btn-sm"
                               (click)="cancelQuickLocation()" [disabled]="savingLocation()">
-                        Cancel
+                        {{ 'generic.cancel' | translate }}
                       </button>
                       <button type="button" class="btn btn-primary btn-sm"
                               (click)="saveQuickLocation()"
                               [disabled]="!quickLoc.name.trim() || savingLocation()">
-                        {{ savingLocation() ? 'Saving…' : 'Save Location' }}
+                        {{ (savingLocation() ? 'generic.saving' : 'eventCreate.saveLoc') | translate }}
                       </button>
                     </div>
                   </div>
@@ -183,8 +187,8 @@ interface EventForm {
 
             <!-- Cover Image -->
             <div class="form-card">
-              <h3 class="section-title">Cover Image</h3>
-              <p class="hint">Optional. You can also add or change the image after creating the event.</p>
+              <h3 class="section-title">{{ 'eventCreate.coverImage' | translate }}</h3>
+              <p class="hint">{{ 'eventCreate.coverImageHint' | translate }}</p>
               <app-image-upload
                 [uploading]="uploadingImage"
                 (fileSelected)="pendingImageFile.set($event)"
@@ -195,14 +199,14 @@ interface EventForm {
             <!-- Additional Links -->
             <div class="form-card">
               <div class="section-header">
-                <h3 class="section-title">Additional Links</h3>
+                <h3 class="section-title">{{ 'eventCreate.links' | translate }}</h3>
                 <button type="button" class="btn btn-secondary btn-sm" (click)="addLink()">
-                  + Add link
+                  + {{ 'eventCreate.addLink' | translate }}
                 </button>
               </div>
 
               @if (links().length === 0) {
-                <p class="muted">No additional links. Add slide decks, meetup pages, etc.</p>
+                <p class="muted">{{ 'eventCreate.noLinks' | translate }}</p>
               } @else {
                 @for (link of links(); track $index; let i = $index) {
                   <div class="link-row">
@@ -210,14 +214,14 @@ interface EventForm {
                            [ngModel]="link.label"
                            (ngModelChange)="updateLink(i, 'label', $event)"
                            name="linkLabel{{ i }}"
-                           placeholder="Label (e.g. Slides, Meetup)">
+                           [placeholder]="'eventForm.linkLabelPh' | translate">
                     <input type="url"
                            [ngModel]="link.url"
                            (ngModelChange)="updateLink(i, 'url', $event)"
                            name="linkUrl{{ i }}"
                            placeholder="https://…">
                     <button type="button" class="btn-icon" (click)="removeLink(i)"
-                            title="Remove link">✕</button>
+                            [title]="'eventCreate.removeLink' | translate">✕</button>
                   </div>
                 }
               }
@@ -227,11 +231,11 @@ interface EventForm {
             <div class="form-actions">
               <button type="button" class="btn btn-secondary" (click)="cancel()"
                       [disabled]="saving()">
-                Cancel
+                {{ 'generic.cancel' | translate }}
               </button>
               <button type="button" class="btn btn-primary" (click)="submit()"
                       [disabled]="saving() || !isValid()">
-                {{ saving() ? 'Creating…' : 'Create Event' }}
+                {{ (saving() ? 'eventCreate.creating' : 'eventCreate.createBtn') | translate }}
               </button>
             </div>
           </div>
@@ -239,13 +243,13 @@ interface EventForm {
           <!-- ── Sidebar ── -->
           <aside class="sidebar">
             <div class="sidebar-card">
-              <h3>Events this week</h3>
+              <h3>{{ 'eventCreate.weekTitle' | translate }}</h3>
               @if (!form.startsAt) {
-                <p class="sidebar-hint">Select a start date to see what else is on that week.</p>
+                <p class="sidebar-hint">{{ 'eventCreate.weekHint' | translate }}</p>
               } @else if (loadingWeek()) {
-                <p class="sidebar-hint">Loading…</p>
+                <p class="sidebar-hint">{{ 'generic.loading' | translate }}</p>
               } @else if (weekEvents().length === 0) {
-                <p class="sidebar-hint">No other events found for this week.</p>
+                <p class="sidebar-hint">{{ 'eventCreate.weekEmpty' | translate }}</p>
               } @else {
                 <ul class="week-list">
                   @for (ev of weekEvents(); track ev.id) {
@@ -504,6 +508,7 @@ export class EventCreateComponent implements OnInit {
   private readonly locationsService = inject(LocationsService);
   private readonly publicEventsService = inject(PublicEventsService);
   private readonly router = inject(Router);
+  private readonly i18n = inject(I18nService);
 
   // Form state (plain mutable — works cleanly with ngModel)
   form: EventForm = {
@@ -653,7 +658,7 @@ export class EventCreateComponent implements OnInit {
         }
       },
       error: () => {
-        this.error.set('Failed to create event. Please try again.');
+        this.error.set(this.i18n.t('eventCreate.error'));
         this.saving.set(false);
       },
     });

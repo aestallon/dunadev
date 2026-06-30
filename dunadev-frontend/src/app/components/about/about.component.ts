@@ -1,47 +1,38 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   template: `
     <div class="about-page">
       <div class="container">
         <header class="page-header">
-          <span class="eyebrow">About</span>
-          <h1>Budapest's Tech Event Calendar</h1>
-          <p class="lead">
-            DunaDev is a community-driven calendar that aggregates tech meetups, workshops, and
-            conferences happening in and around Budapest, Hungary.
-          </p>
+          <span class="eyebrow">{{ 'about.eyebrow' | translate }}</span>
+          <h1>{{ 'about.title' | translate }}</h1>
+          <p class="lead">{{ 'about.lead' | translate }}</p>
         </header>
 
         <div class="about-grid">
           <div class="about-card">
             <div class="about-card-icon mission-icon"></div>
-            <h3>Our Mission</h3>
-            <p>
-              To make it effortless for developers, designers, and tech enthusiasts to discover
-              local events, connect with the community, and never miss a great meetup.
-            </p>
+            <h3>{{ 'about.mission.title' | translate }}</h3>
+            <p>{{ 'about.mission.body' | translate }}</p>
           </div>
           <div class="about-card">
             <div class="about-card-icon community-icon"></div>
-            <h3>For the Community</h3>
-            <p>
-              Events are submitted and managed by verified organisers. Every listing is curated
-              to keep the calendar relevant, accurate, and up to date.
-            </p>
+            <h3>{{ 'about.community.title' | translate }}</h3>
+            <p>{{ 'about.community.body' | translate }}</p>
           </div>
           <div class="about-card">
             <div class="about-card-icon organiser-icon"></div>
-            <h3>Are You an Organiser?</h3>
-            <p>
-              If you run tech events in Budapest and would like to list them here, get in touch.
-              Organiser accounts are invitation-only to maintain quality.
-            </p>
-            <a routerLink="/contact" class="btn btn-secondary btn-sm">Get in touch</a>
+            <h3>{{ 'about.organiser.title' | translate }}</h3>
+            <p>{{ 'about.organiser.body' | translate }}</p>
+            <a routerLink="/contact" class="btn btn-secondary btn-sm">
+              {{ 'about.organiser.cta' | translate }}
+            </a>
           </div>
         </div>
       </div>

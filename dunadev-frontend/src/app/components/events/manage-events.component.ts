@@ -3,29 +3,34 @@ import { RouterLink } from '@angular/router';
 import { OrganiserEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { EventCardComponent } from '../shared/event-card.component';
 import { EventModalComponent } from '../shared/event-modal.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-manage-events',
   standalone: true,
-  imports: [RouterLink, EventCardComponent, EventModalComponent],
+  imports: [RouterLink, EventCardComponent, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="previewEvent()" (close)="previewEvent.set(null)" />
 
     <div class="events-page">
       <div class="container">
         <header class="page-header">
-          <h1>Events</h1>
-          <a routerLink="/manage/events/new" class="btn btn-primary">+ New Event</a>
+          <h1>{{ 'manageEvents.title' | translate }}</h1>
+          <a routerLink="/manage/events/new" class="btn btn-primary">
+            + {{ 'manageEvents.newBtn' | translate }}
+          </a>
         </header>
 
         @if (loading()) {
-          <div class="loading-state">Loading events…</div>
+          <div class="loading-state">{{ 'generic.loading' | translate }}</div>
         } @else if (events().length === 0) {
           <div class="empty-state">
             <div class="empty-icon"></div>
-            <h3>No events yet</h3>
-            <p>Create your first event to get started.</p>
-            <a routerLink="/manage/events/new" class="btn btn-primary">Create Event</a>
+            <h3>{{ 'manageEvents.empty' | translate }}</h3>
+            <p>{{ 'manageEvents.newFirst' | translate }}</p>
+            <a routerLink="/manage/events/new" class="btn btn-primary">
+              {{ 'manageEvents.newBtn' | translate }}
+            </a>
           </div>
         } @else {
           <div class="events-grid">
