@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import {
   OrganiserEventsService,
+  LocationsService,
   EventSummary,
   EventUpdateRequest,
   EventLinkRequest,
+  LocationSummary,
 } from '../../../api/dunadev';
 import { ImageUploadComponent } from '../shared/image-upload.component';
 
@@ -177,6 +179,76 @@ interface EditForm {
                   }
                 }
               </div>
+
+              <!-- Event Controls -->
+              @if (isFuture(event()!.startsAt) && event()!.status !== 'CANCELLED') {
+                <div class="form-card controls-card">
+                  <h3 class="section-title">Event Controls</h3>
+                  <p class="context-hint">These actions directly affect how the event appears publicly and may be irreversible.</p>
+
+                  @if (alterError()) { <div class="error-banner" style="margin-bottom:0.75rem">{{ alterError() }}</div> }
+                  @if (alterSuccess()) { <div class="success-banner">{{ alterSuccess() }}</div> }
+
+                  <div class="control-block">
+                    <div class="control-label">Reschedule</div>
+                    <div class="control-body">
+                      <div class="control-fields">
+                        <div class="form-group">
+                          <label>New start</label>
+                          <input type="datetime-local" [(ngModel)]="rescheduleStartsAt" name="rescStartsAt">
+                        </div>
+                        <div class="form-group">
+                          <label>New end (optional)</label>
+                          <input type="datetime-local" [(ngModel)]="rescheduleEndsAt" name="rescEndsAt">
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-warning"
+                              [disabled]="altering() || !rescheduleStartsAt" (click)="doReschedule()">
+                        {{ altering() ? 'Saving…' : 'Reschedule' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="control-block">
+                    <div class="control-label">Change Location</div>
+                    <div class="control-body">
+                      <div class="form-group">
+                        <label>New location</label>
+                        <select [(ngModel)]="relocateLocationId" name="relocLoc">
+                          <option [ngValue]="null" disabled>Select a location…</option>
+                          @for (loc of availableLocations(); track loc.id) {
+                            <option [ngValue]="loc.id">{{ loc.name }}</option>
+                          }
+                        </select>
+                      </div>
+                      <button type="button" class="btn btn-secondary"
+                              [disabled]="altering() || relocateLocationId === null" (click)="doRelocate()">
+                        {{ altering() ? 'Saving…' : 'Change Location' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="control-block danger-block">
+                    <div class="control-label">Cancel Event</div>
+                    <div class="control-body">
+                      @if (!cancelConfirm()) {
+                        <p class="control-hint">May permanently delete the event if performed early enough.</p>
+                        <button type="button" class="btn btn-danger" (click)="cancelConfirm.set(true)">
+                          Cancel Event
+                        </button>
+                      } @else {
+                        <p class="control-hint"><strong>Are you sure?</strong> This cannot be undone.</p>
+                        <div class="confirm-row">
+                          <button type="button" class="btn btn-secondary" (click)="cancelConfirm.set(false)">Keep Event</button>
+                          <button type="button" class="btn btn-danger" [disabled]="altering()" (click)="doCancel()">
+                            {{ altering() ? 'Cancelling…' : 'Yes, Cancel' }}
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
 
               <!-- Actions -->
               <div class="form-actions">
@@ -388,10 +460,50 @@ interface EditForm {
       border-radius: calc(var(--radius) - 2px); padding: 0.75rem 1rem;
       font-size: 0.875rem; margin-bottom: 0.75rem;
     }
+    select {
+      width: 100%; padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+      font-size: 0.875rem; background: white; color: var(--text); box-sizing: border-box;
+    }
+    select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+    /* Event Controls card */
+    .controls-card { border-left: 3px solid #f59e0b; }
+    .control-block {
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .control-block:first-of-type { border-top: none; padding-top: 0.25rem; }
+    .danger-block { border-top-color: #fca5a5; }
+    .control-label {
+      font-size: 0.8125rem; font-weight: 700; color: var(--text-main);
+      text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.625rem;
+    }
+    .danger-block .control-label { color: #dc2626; }
+    .control-body { display: flex; flex-direction: column; gap: 0.625rem; }
+    .control-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 640px) { .control-fields { grid-template-columns: 1fr; } }
+    .control-hint { font-size: 0.8125rem; color: var(--text-muted); margin: 0; }
+    .confirm-row { display: flex; gap: 0.5rem; }
+    .btn-warning {
+      background: #f59e0b; color: white; border: none; border-radius: var(--radius);
+      padding: 0.5625rem 1.125rem; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s; align-self: flex-start;
+    }
+    .btn-warning:hover:not(:disabled) { background: #d97706; }
+    .btn-warning:disabled { opacity: 0.5; cursor: default; }
+    .btn-danger {
+      background: #dc2626; color: white; border: none; border-radius: var(--radius);
+      padding: 0.5625rem 1.125rem; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s; align-self: flex-start;
+    }
+    .btn-danger:hover:not(:disabled) { background: #b91c1c; }
+    .btn-danger:disabled { opacity: 0.5; cursor: default; }
   `,
 })
 export class EventEditComponent implements OnInit {
   private readonly eventsService = inject(OrganiserEventsService);
+  private readonly locationsService = inject(LocationsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -403,6 +515,15 @@ export class EventEditComponent implements OnInit {
   uploadingImage = signal(false);
   imageError = signal<string | null>(null);
   imageSuccess = signal(false);
+
+  altering = signal(false);
+  alterError = signal<string | null>(null);
+  alterSuccess = signal<string | null>(null);
+  cancelConfirm = signal(false);
+  rescheduleStartsAt = '';
+  rescheduleEndsAt = '';
+  relocateLocationId: number | null = null;
+  availableLocations = signal<LocationSummary[]>([]);
 
   form: EditForm = {
     title: '',
@@ -431,12 +552,16 @@ export class EventEditComponent implements OnInit {
           visibleFrom: '',
         };
         this.links.set((ev.links ?? []).map(l => ({ label: l.label, url: l.url })));
+        this.relocateLocationId = ev.location?.id ?? null;
         this.loading.set(false);
       },
       error: () => {
         this.loadError.set('Event not found or you do not have permission to edit it.');
         this.loading.set(false);
       },
+    });
+    this.locationsService.getMyLocations().subscribe({
+      next: locs => this.availableLocations.set(locs),
     });
   }
 
@@ -503,5 +628,66 @@ export class EventEditComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/manage/events']);
+  }
+
+  isFuture(startsAt: string): boolean {
+    return new Date(startsAt) > new Date();
+  }
+
+  doReschedule() {
+    if (!this.rescheduleStartsAt) return;
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.altering.set(true);
+    this.alterError.set(null);
+    this.alterSuccess.set(null);
+    this.eventsService.rescheduleEvent(id, {
+      startsAt: new Date(this.rescheduleStartsAt).toISOString(),
+      endsAt: this.rescheduleEndsAt ? new Date(this.rescheduleEndsAt).toISOString() : null,
+    }).subscribe({
+      next: updated => {
+        this.event.set(updated);
+        this.rescheduleStartsAt = '';
+        this.rescheduleEndsAt = '';
+        this.altering.set(false);
+        this.alterSuccess.set('Event rescheduled successfully.');
+      },
+      error: err => {
+        this.alterError.set(err?.error?.message ?? 'Failed to reschedule event.');
+        this.altering.set(false);
+      },
+    });
+  }
+
+  doRelocate() {
+    if (this.relocateLocationId === null) return;
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.altering.set(true);
+    this.alterError.set(null);
+    this.alterSuccess.set(null);
+    this.eventsService.relocateEvent(id, { locationId: this.relocateLocationId }).subscribe({
+      next: updated => {
+        this.event.set(updated);
+        this.altering.set(false);
+        this.alterSuccess.set('Location updated successfully.');
+      },
+      error: err => {
+        this.alterError.set(err?.error?.message ?? 'Failed to change location.');
+        this.altering.set(false);
+      },
+    });
+  }
+
+  doCancel() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.altering.set(true);
+    this.alterError.set(null);
+    this.eventsService.cancelEvent(id).subscribe({
+      next: () => this.router.navigate(['/manage/events']),
+      error: err => {
+        this.alterError.set(err?.error?.message ?? 'Failed to cancel event.');
+        this.altering.set(false);
+        this.cancelConfirm.set(false);
+      },
+    });
   }
 }

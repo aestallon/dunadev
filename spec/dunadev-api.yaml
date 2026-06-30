@@ -321,6 +321,95 @@ paths:
         '404':
           description: Event not found or not owned by the authenticated organiser.
 
+  /api/events/{id}/cancel:
+    post:
+      tags:
+        - Organiser Events
+      operationId: cancelEvent
+      summary: Cancel an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Event cancelled or deleted.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is in an unalterable state.
+
+  /api/events/{id}/reschedule:
+    post:
+      tags:
+        - Organiser Events
+      operationId: rescheduleEvent
+      summary: Reschedule an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRescheduleRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/events/{id}/relocate:
+    post:
+      tags:
+        - Organiser Events
+      operationId: relocateEvent
+      summary: Change the location of an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRelocateRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is cancelled.
+
   /api/events/my:
     get:
       tags:
@@ -599,6 +688,95 @@ paths:
         '404':
           description: Event not found.
 
+  /api/admin/events/{id}/cancel:
+    post:
+      tags:
+        - Administration
+      operationId: cancelAdminEvent
+      summary: Cancel any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Event cancelled or deleted.
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is in an unalterable state.
+
+  /api/admin/events/{id}/reschedule:
+    post:
+      tags:
+        - Administration
+      operationId: rescheduleAdminEvent
+      summary: Reschedule any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRescheduleRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/admin/events/{id}/relocate:
+    post:
+      tags:
+        - Administration
+      operationId: relocateAdminEvent
+      summary: Change the location of any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRelocateRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is cancelled.
+
   /api/admin/events/{id}:
     get:
       tags:
@@ -860,6 +1038,10 @@ components:
           type: string
           nullable: true
           description: Relative URL of the event's cover image, served as a static resource.
+        onNewLocation:
+          type: boolean
+          nullable: true
+          description: True when the event was relocated after the critical-day threshold.
         links:
           type: array
           items:
@@ -1057,6 +1239,26 @@ components:
           type: string
         url:
           type: string
+
+    EventRescheduleRequest:
+      type: object
+      required: [startsAt]
+      properties:
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    EventRelocateRequest:
+      type: object
+      required: [locationId]
+      properties:
+        locationId:
+          type: integer
+          format: int64
 
     EventUpdateRequest:
       type: object

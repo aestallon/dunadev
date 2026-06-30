@@ -62,6 +62,10 @@ public class EventEntity {
   @Column(name = "cancellation_reason")
   private String cancellationReason;
 
+  @Column(name = "on_new_location", nullable = false)
+  @Builder.Default
+  private boolean onNewLocation = false;
+
   @Column(name = "cover_image_url")
   private String coverImageUrl;
 

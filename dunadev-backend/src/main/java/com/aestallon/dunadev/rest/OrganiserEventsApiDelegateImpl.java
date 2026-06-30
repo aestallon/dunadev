@@ -1,6 +1,8 @@
 package com.aestallon.dunadev.rest;
 
 import com.aestallon.dunadev.rest.api.OrganiserEventsApiDelegate;
+import com.aestallon.dunadev.rest.model.EventRescheduleRequest;
+import com.aestallon.dunadev.rest.model.EventRelocateRequest;
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
@@ -44,6 +46,22 @@ public class OrganiserEventsApiDelegateImpl implements OrganiserEventsApiDelegat
   @Override
   public ResponseEntity<EventSummary> uploadEventImage(Long id, MultipartFile file) {
     return ResponseEntity.ok(organiserEventService.uploadImage(currentEmail(), id, file));
+  }
+
+  @Override
+  public ResponseEntity<Void> cancelEvent(Long id) {
+    organiserEventService.cancelEvent(currentEmail(), id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> rescheduleEvent(Long id, EventRescheduleRequest req) {
+    return ResponseEntity.ok(organiserEventService.rescheduleEvent(currentEmail(), id, req));
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> relocateEvent(Long id, EventRelocateRequest req) {
+    return ResponseEntity.ok(organiserEventService.relocateEvent(currentEmail(), id, req));
   }
 
   private static String currentEmail() {

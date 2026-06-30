@@ -1,5 +1,6 @@
 package com.aestallon.dunadev.service;
 
+import com.aestallon.dunadev.entity.EventEntity;
 import com.aestallon.dunadev.entity.EventLinkEntity;
 import com.aestallon.dunadev.entity.OrganiserEntity;
 import com.aestallon.dunadev.entity.UserEntity;
@@ -9,6 +10,8 @@ import com.aestallon.dunadev.repository.OrganiserRepository;
 import com.aestallon.dunadev.repository.UserRepository;
 import com.aestallon.dunadev.rest.NotFoundException;
 import com.aestallon.dunadev.rest.model.*;
+import com.aestallon.dunadev.rest.model.EventRescheduleRequest;
+import com.aestallon.dunadev.rest.model.EventRelocateRequest;
 import com.aestallon.dunadev.service.mail.EmailService;
 import com.aestallon.dunadev.service.media.ImageStorageService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,9 @@ public class AdminService {
 
   @Value("${dunadev.admin-email}")
   private String adminEmail;
+
+  @Value("${dunadev.event-critical-days}")
+  private int ecdDays;
 
   // ── List ──────────────────────────────────────────────────────────────────
 
@@ -168,6 +174,68 @@ public class AdminService {
       }
     }
     return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  // ── Event alteration ─────────────────────────────────────────────────────
+
+  @Transactional
+  public void cancelAdminEvent(Long id) {
+    var event = eventRepository.findByIdAdmin(id)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot cancel a past or ongoing event");
+    }
+    if (now.isBefore(criticalThreshold(event))) {
+      eventRepository.delete(event);
+    } else {
+      event.setStatus("CANCELLED");
+      eventRepository.save(event);
+    }
+  }
+
+  @Transactional
+  public EventSummary rescheduleAdminEvent(Long id, EventRescheduleRequest req) {
+    var event = eventRepository.findByIdAdmin(id)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    if ("CANCELLED".equals(event.getStatus())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot reschedule a cancelled event");
+    }
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot reschedule a past or ongoing event");
+    }
+    var originalThreshold = criticalThreshold(event);
+    event.setStartsAt(req.getStartsAt());
+    event.setEndsAt(req.getEndsAt());
+    if (!now.isBefore(originalThreshold)) {
+      event.setStatus("RESCHEDULED");
+    }
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  @Transactional
+  public EventSummary relocateAdminEvent(Long id, EventRelocateRequest req) {
+    var event = eventRepository.findByIdAdmin(id)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    if ("CANCELLED".equals(event.getStatus())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot relocate a cancelled event");
+    }
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot relocate a past or ongoing event");
+    }
+    var location = locationRepository.findById(req.getLocationId())
+        .orElseThrow(() -> new NotFoundException("Location not found"));
+    event.setLocation(location);
+    if (!now.isBefore(criticalThreshold(event))) {
+      event.setOnNewLocation(true);
+    }
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  private OffsetDateTime criticalThreshold(EventEntity event) {
+    return event.getStartsAt().minusDays(ecdDays);
   }
 
   // ── Locations ─────────────────────────────────────────────────────────────

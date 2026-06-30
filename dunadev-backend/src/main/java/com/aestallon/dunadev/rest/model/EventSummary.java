@@ -60,6 +60,8 @@ public class EventSummary {
 
   private @Nullable String coverImageUrl = null;
 
+  private @Nullable Boolean onNewLocation = null;
+
   @Valid
   private List<@Valid EventLink> links = new ArrayList<>();
 
@@ -340,6 +342,26 @@ public class EventSummary {
     this.coverImageUrl = coverImageUrl;
   }
 
+  public EventSummary onNewLocation(@Nullable Boolean onNewLocation) {
+    this.onNewLocation = onNewLocation;
+    return this;
+  }
+
+  /**
+   * True when the event was relocated after the critical-day threshold.
+   * @return onNewLocation
+   */
+  
+  @Schema(name = "onNewLocation", description = "True when the event was relocated after the critical-day threshold.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("onNewLocation")
+  public @Nullable Boolean getOnNewLocation() {
+    return onNewLocation;
+  }
+
+  public void setOnNewLocation(@Nullable Boolean onNewLocation) {
+    this.onNewLocation = onNewLocation;
+  }
+
   public EventSummary links(List<@Valid EventLink> links) {
     this.links = links;
     return this;
@@ -390,12 +412,13 @@ public class EventSummary {
         Objects.equals(this.organiser, eventSummary.organiser) &&
         Objects.equals(this.location, eventSummary.location) &&
         Objects.equals(this.coverImageUrl, eventSummary.coverImageUrl) &&
+        Objects.equals(this.onNewLocation, eventSummary.onNewLocation) &&
         Objects.equals(this.links, eventSummary.links);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, description, eventUrl, startsAt, endsAt, free, registrationRequired, registrationUrl, status, organiser, location, coverImageUrl, links);
+    return Objects.hash(id, title, description, eventUrl, startsAt, endsAt, free, registrationRequired, registrationUrl, status, organiser, location, coverImageUrl, onNewLocation, links);
   }
 
   @Override
@@ -415,6 +438,7 @@ public class EventSummary {
     sb.append("    organiser: ").append(toIndentedString(organiser)).append("\n");
     sb.append("    location: ").append(toIndentedString(location)).append("\n");
     sb.append("    coverImageUrl: ").append(toIndentedString(coverImageUrl)).append("\n");
+    sb.append("    onNewLocation: ").append(toIndentedString(onNewLocation)).append("\n");
     sb.append("    links: ").append(toIndentedString(links)).append("\n");
     sb.append("}");
     return sb.toString();

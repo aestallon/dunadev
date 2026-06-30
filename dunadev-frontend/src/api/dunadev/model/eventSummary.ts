@@ -36,6 +36,10 @@ export interface EventSummary {
      * Relative URL of the event\'s cover image, served as a static resource.
      */
     coverImageUrl?: string | null;
+    /**
+     * True when the event was relocated after the critical-day threshold.
+     */
+    onNewLocation?: boolean | null;
     links?: Array<EventLink>;
 }
 

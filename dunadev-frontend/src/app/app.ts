@@ -346,7 +346,7 @@ export class App {
 
     const isOrganiser = this.auth.isOrganiser();
     if (isOrganiser) {
-      return '/organiser';
+      return '/manage';
     }
 
     return '/login';

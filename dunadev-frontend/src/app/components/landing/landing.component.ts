@@ -68,7 +68,12 @@ import { EventModalComponent } from '../shared/event-modal.component';
                       }
                     </div>
                     <div class="hec-header">
-                      <span class="hec-badge">{{ statusLabel(event) }}</span>
+                      @if (event.status === 'RESCHEDULED' || event.status === 'CANCELLED') {
+                        <span class="hec-badge">{{ statusLabel(event) }}</span>
+                      }
+                      @if (event.onNewLocation) {
+                        <span class="hec-badge hec-badge-relocated">On new location</span>
+                      }
                       <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
                     </div>
                     <div class="hec-title">{{ event.title }}</div>
@@ -187,8 +192,13 @@ import { EventModalComponent } from '../shared/event-modal.component';
                       }
                       @if (event.status === 'CANCELLED') {
                         <span class="mc-pill mc-cancelled">Cancelled</span>
-                      } @else if (event.status === 'RESCHEDULED') {
-                        <span class="mc-pill mc-rescheduled">Rescheduled</span>
+                      } @else {
+                        @if (event.status === 'RESCHEDULED') {
+                          <span class="mc-pill mc-rescheduled">On new date</span>
+                        }
+                        @if (event.onNewLocation) {
+                          <span class="mc-pill mc-relocated">On new location</span>
+                        }
                       }
                     </div>
                   </div>
@@ -388,6 +398,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
       padding: 0.1875rem 0.5rem;
       border-radius: 9999px;
     }
+    .hec-badge-relocated { color: #a78bfa; background: rgba(167, 139, 250, 0.15); }
     .hec-date {
       font-size: 0.75rem;
       color: #94a3b8;
@@ -668,6 +679,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
     .mc-reg         { background: #fff7ed; color: #c2410c; }
     .mc-cancelled   { background: #fee2e2; color: #dc2626; }
     .mc-rescheduled { background: #fef3c7; color: #d97706; }
+    .mc-relocated   { background: #ede9fe; color: #7c3aed; }
 
     /* ===== SKELETON (monthly grid) ===== */
     .sk-card { pointer-events: none; }
@@ -789,7 +801,7 @@ export class LandingComponent implements OnInit {
   statusLabel(event: EventSummary): string {
     switch (event.status) {
       case EventStatus.RESCHEDULED:
-        return 'Rescheduled';
+        return 'On new date';
       case EventStatus.CANCELLED:
         return 'Cancelled';
       default:

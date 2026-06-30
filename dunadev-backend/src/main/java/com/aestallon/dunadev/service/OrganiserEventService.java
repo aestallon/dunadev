@@ -7,14 +7,19 @@ import com.aestallon.dunadev.repository.EventRepository;
 import com.aestallon.dunadev.repository.LocationRepository;
 import com.aestallon.dunadev.repository.OrganiserRepository;
 import com.aestallon.dunadev.rest.NotFoundException;
+import com.aestallon.dunadev.rest.model.EventRescheduleRequest;
+import com.aestallon.dunadev.rest.model.EventRelocateRequest;
 import com.aestallon.dunadev.rest.model.EventRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import com.aestallon.dunadev.service.media.ImageStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -29,6 +34,9 @@ public class OrganiserEventService {
   private final LocationRepository locationRepository;
   private final OrganiserRepository organiserRepository;
   private final ImageStorageService imageStorageService;
+
+  @Value("${dunadev.event-critical-days}")
+  private int ecdDays;
 
   @Transactional(readOnly = true)
   public List<EventSummary> getMyEvents(String email) {
@@ -122,6 +130,69 @@ public class OrganiserEventService {
     var url = imageStorageService.storeImage(file);
     event.setCoverImageUrl(url);
     return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  @Transactional
+  public void cancelEvent(String email, Long id) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(id, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot cancel a past or ongoing event");
+    }
+    if (now.isBefore(criticalThreshold(event))) {
+      eventRepository.delete(event);
+    } else {
+      event.setStatus("CANCELLED");
+      eventRepository.save(event);
+    }
+  }
+
+  @Transactional
+  public EventSummary rescheduleEvent(String email, Long id, EventRescheduleRequest req) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(id, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    if ("CANCELLED".equals(event.getStatus())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot reschedule a cancelled event");
+    }
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot reschedule a past or ongoing event");
+    }
+    var originalThreshold = criticalThreshold(event);
+    event.setStartsAt(req.getStartsAt());
+    event.setEndsAt(req.getEndsAt());
+    if (!now.isBefore(originalThreshold)) {
+      event.setStatus("RESCHEDULED");
+    }
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  @Transactional
+  public EventSummary relocateEvent(String email, Long id, EventRelocateRequest req) {
+    var organiser = resolveOrganiser(email);
+    var event = eventRepository.findByIdAndOrganiser(id, organiser)
+        .orElseThrow(() -> new NotFoundException("Event not found"));
+    if ("CANCELLED".equals(event.getStatus())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot relocate a cancelled event");
+    }
+    var now = OffsetDateTime.now(ZoneOffset.UTC);
+    if (!now.isBefore(event.getStartsAt())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot relocate a past or ongoing event");
+    }
+    var location = locationRepository.findByIdAndOrganiser(req.getLocationId(), organiser)
+        .orElseThrow(() -> new NotFoundException("Location not found"));
+    event.setLocation(location);
+    if (!now.isBefore(criticalThreshold(event))) {
+      event.setOnNewLocation(true);
+    }
+    return PublicEventService.toSummary(eventRepository.save(event));
+  }
+
+  private OffsetDateTime criticalThreshold(EventEntity event) {
+    return event.getStartsAt().minusDays(ecdDays);
   }
 
   private OrganiserEntity resolveOrganiser(String email) {

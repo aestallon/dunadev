@@ -8,6 +8,8 @@ package com.aestallon.dunadev.rest.api;
 import com.aestallon.dunadev.rest.model.AdminOrganiserCreateRequest;
 import com.aestallon.dunadev.rest.model.AdminOrganiserSummary;
 import com.aestallon.dunadev.rest.model.ApiError;
+import com.aestallon.dunadev.rest.model.EventRelocateRequest;
+import com.aestallon.dunadev.rest.model.EventRescheduleRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import com.aestallon.dunadev.rest.model.LocationRequest;
@@ -46,6 +48,38 @@ public interface AdministrationApi {
     default AdministrationApiDelegate getDelegate() {
         return new AdministrationApiDelegate() {};
     }
+
+    String PATH_CANCEL_ADMIN_EVENT = "/api/admin/events/{id}/cancel";
+    /**
+     * POST /api/admin/events/{id}/cancel : Cancel any event
+     *
+     * @param id  (required)
+     * @return Event cancelled or deleted. (status code 204)
+     *         or Not an administrator. (status code 403)
+     *         or Event not found. (status code 404)
+     *         or Event has already started or is in an unalterable state. (status code 409)
+     */
+    @Operation(
+        operationId = "cancelAdminEvent",
+        summary = "Cancel any event",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Event cancelled or deleted."),
+            @ApiResponse(responseCode = "403", description = "Not an administrator."),
+            @ApiResponse(responseCode = "404", description = "Event not found."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is in an unalterable state.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = AdministrationApi.PATH_CANCEL_ADMIN_EVENT
+    )
+    default ResponseEntity<Void> cancelAdminEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        return getDelegate().cancelAdminEvent(id);
+    }
+
 
     String PATH_CREATE_ADMIN_ORGANISER = "/api/admin/organisers";
     /**
@@ -275,6 +309,82 @@ public interface AdministrationApi {
         
     ) {
         return getDelegate().listAdminOrganisers();
+    }
+
+
+    String PATH_RELOCATE_ADMIN_EVENT = "/api/admin/events/{id}/relocate";
+    /**
+     * POST /api/admin/events/{id}/relocate : Change the location of any event
+     *
+     * @param id  (required)
+     * @param eventRelocateRequest  (required)
+     * @return Updated event summary. (status code 200)
+     *         or Not an administrator. (status code 403)
+     *         or Event not found. (status code 404)
+     *         or Event has already started or is cancelled. (status code 409)
+     */
+    @Operation(
+        operationId = "relocateAdminEvent",
+        summary = "Change the location of any event",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "403", description = "Not an administrator."),
+            @ApiResponse(responseCode = "404", description = "Event not found."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is cancelled.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = AdministrationApi.PATH_RELOCATE_ADMIN_EVENT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> relocateAdminEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "EventRelocateRequest", description = "", required = true) @Valid @RequestBody EventRelocateRequest eventRelocateRequest
+    ) {
+        return getDelegate().relocateAdminEvent(id, eventRelocateRequest);
+    }
+
+
+    String PATH_RESCHEDULE_ADMIN_EVENT = "/api/admin/events/{id}/reschedule";
+    /**
+     * POST /api/admin/events/{id}/reschedule : Reschedule any event
+     *
+     * @param id  (required)
+     * @param eventRescheduleRequest  (required)
+     * @return Updated event summary. (status code 200)
+     *         or Not an administrator. (status code 403)
+     *         or Event not found. (status code 404)
+     *         or Event has already started or is cancelled. (status code 409)
+     */
+    @Operation(
+        operationId = "rescheduleAdminEvent",
+        summary = "Reschedule any event",
+        tags = { "Administration" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "403", description = "Not an administrator."),
+            @ApiResponse(responseCode = "404", description = "Event not found."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is cancelled.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = AdministrationApi.PATH_RESCHEDULE_ADMIN_EVENT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> rescheduleAdminEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "EventRescheduleRequest", description = "", required = true) @Valid @RequestBody EventRescheduleRequest eventRescheduleRequest
+    ) {
+        return getDelegate().rescheduleAdminEvent(id, eventRescheduleRequest);
     }
 
 

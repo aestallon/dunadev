@@ -56,8 +56,13 @@ import { EventSummary } from '../../../api/dunadev';
           }
           @if (event.status === 'CANCELLED') {
             <span class="badge badge-cancelled">Cancelled</span>
-          } @else if (event.status === 'RESCHEDULED') {
-            <span class="badge badge-rescheduled">Rescheduled</span>
+          } @else {
+            @if (event.status === 'RESCHEDULED') {
+              <span class="badge badge-rescheduled">On new date</span>
+            }
+            @if (event.onNewLocation) {
+              <span class="badge badge-relocated">On new location</span>
+            }
           }
         </div>
 
@@ -187,6 +192,7 @@ import { EventSummary } from '../../../api/dunadev';
     .badge-reg         { background: #fff7ed; color: #c2410c; }
     .badge-cancelled   { background: #fee2e2; color: #dc2626; }
     .badge-rescheduled { background: #fef3c7; color: #92400e; }
+    .badge-relocated   { background: #ede9fe; color: #7c3aed; }
 
     .card-actions {
       display: flex;

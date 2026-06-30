@@ -19,7 +19,9 @@ model/apiError.ts
 model/authResponse.ts
 model/eventLink.ts
 model/eventLinkRequest.ts
+model/eventRelocateRequest.ts
 model/eventRequest.ts
+model/eventRescheduleRequest.ts
 model/eventStatus.ts
 model/eventSummary.ts
 model/eventUpdateRequest.ts

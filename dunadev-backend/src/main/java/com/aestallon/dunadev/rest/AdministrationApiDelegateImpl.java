@@ -75,4 +75,20 @@ public class AdministrationApiDelegateImpl implements AdministrationApiDelegate 
                                                              LocationRequest locationRequest) {
     return ResponseEntity.ok(adminService.updateLocationById(id, locationRequest));
   }
+
+  @Override
+  public ResponseEntity<Void> cancelAdminEvent(Long id) {
+    adminService.cancelAdminEvent(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> rescheduleAdminEvent(Long id, EventRescheduleRequest req) {
+    return ResponseEntity.ok(adminService.rescheduleAdminEvent(id, req));
+  }
+
+  @Override
+  public ResponseEntity<EventSummary> relocateAdminEvent(Long id, EventRelocateRequest req) {
+    return ResponseEntity.ok(adminService.relocateAdminEvent(id, req));
+  }
 }

@@ -5,7 +5,9 @@
  */
 package com.aestallon.dunadev.rest.api;
 
+import com.aestallon.dunadev.rest.model.EventRelocateRequest;
 import com.aestallon.dunadev.rest.model.EventRequest;
+import com.aestallon.dunadev.rest.model.EventRescheduleRequest;
 import com.aestallon.dunadev.rest.model.EventSummary;
 import com.aestallon.dunadev.rest.model.EventUpdateRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
@@ -39,6 +41,38 @@ public interface OrganiserEventsApi {
     default OrganiserEventsApiDelegate getDelegate() {
         return new OrganiserEventsApiDelegate() {};
     }
+
+    String PATH_CANCEL_EVENT = "/api/events/{id}/cancel";
+    /**
+     * POST /api/events/{id}/cancel : Cancel an event
+     *
+     * @param id  (required)
+     * @return Event cancelled or deleted. (status code 204)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     *         or Event has already started or is in an unalterable state. (status code 409)
+     */
+    @Operation(
+        operationId = "cancelEvent",
+        summary = "Cancel an event",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Event cancelled or deleted."),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is in an unalterable state.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = OrganiserEventsApi.PATH_CANCEL_EVENT
+    )
+    default ResponseEntity<Void> cancelEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id
+    ) {
+        return getDelegate().cancelEvent(id);
+    }
+
 
     String PATH_CREATE_EVENT = "/api/events";
     /**
@@ -136,6 +170,82 @@ public interface OrganiserEventsApi {
         
     ) {
         return getDelegate().getMyEvents();
+    }
+
+
+    String PATH_RELOCATE_EVENT = "/api/events/{id}/relocate";
+    /**
+     * POST /api/events/{id}/relocate : Change the location of an event
+     *
+     * @param id  (required)
+     * @param eventRelocateRequest  (required)
+     * @return Updated event summary. (status code 200)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     *         or Event has already started or is cancelled. (status code 409)
+     */
+    @Operation(
+        operationId = "relocateEvent",
+        summary = "Change the location of an event",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is cancelled.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = OrganiserEventsApi.PATH_RELOCATE_EVENT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> relocateEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "EventRelocateRequest", description = "", required = true) @Valid @RequestBody EventRelocateRequest eventRelocateRequest
+    ) {
+        return getDelegate().relocateEvent(id, eventRelocateRequest);
+    }
+
+
+    String PATH_RESCHEDULE_EVENT = "/api/events/{id}/reschedule";
+    /**
+     * POST /api/events/{id}/reschedule : Reschedule an event
+     *
+     * @param id  (required)
+     * @param eventRescheduleRequest  (required)
+     * @return Updated event summary. (status code 200)
+     *         or Not authenticated. (status code 401)
+     *         or Event not found or not owned by the authenticated organiser. (status code 404)
+     *         or Event has already started or is cancelled. (status code 409)
+     */
+    @Operation(
+        operationId = "rescheduleEvent",
+        summary = "Reschedule an event",
+        tags = { "Organiser Events" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated event summary.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = EventSummary.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Not authenticated."),
+            @ApiResponse(responseCode = "404", description = "Event not found or not owned by the authenticated organiser."),
+            @ApiResponse(responseCode = "409", description = "Event has already started or is cancelled.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = OrganiserEventsApi.PATH_RESCHEDULE_EVENT,
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    default ResponseEntity<EventSummary> rescheduleEvent(
+        @NotNull @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Long id,
+        @Parameter(name = "EventRescheduleRequest", description = "", required = true) @Valid @RequestBody EventRescheduleRequest eventRescheduleRequest
+    ) {
+        return getDelegate().rescheduleEvent(id, eventRescheduleRequest);
     }
 
 

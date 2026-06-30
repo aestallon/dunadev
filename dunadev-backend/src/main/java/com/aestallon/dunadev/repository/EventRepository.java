@@ -30,8 +30,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
         JOIN FETCH e.organiser
         LEFT JOIN FETCH e.location
         LEFT JOIN FETCH e.links
-      WHERE e.status <> 'CANCELLED'
-        AND e.startsAt >= :from AND e.startsAt < :to
+      WHERE e.startsAt >= :from AND e.startsAt < :to
         AND (e.visibleFrom IS NULL OR e.visibleFrom <= :now)
       ORDER BY e.startsAt ASC
       """)
