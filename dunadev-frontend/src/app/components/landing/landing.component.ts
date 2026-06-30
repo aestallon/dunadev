@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import {CommonModule, DatePipe, NgOptimizedImage} from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { EventModalComponent } from '../shared/event-modal.component';
@@ -9,7 +9,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
   standalone: true,
   imports: [CommonModule, RouterLink, DatePipe, EventModalComponent],
   template: `
-    <app-event-modal [event]="selectedEvent()" (close)="selectedEvent.set(null)" />
+    <app-event-modal [event]="selectedEvent()" (close)="selectedEvent.set(null)"/>
 
     <div class="landing-page">
 
@@ -34,7 +34,7 @@ import { EventModalComponent } from '../shared/event-modal.component';
             </p>
           </div>
 
-          <!-- Right: upcoming events panel -->
+          <!-- Right: upcoming events -->
           <div class="hero-panel">
             <div class="hero-panel-header">
               <span class="panel-label">Coming Up Next</span>
@@ -59,11 +59,14 @@ import { EventModalComponent } from '../shared/event-modal.component';
                 @for (event of upcomingEvents(); track event.id) {
                   <div class="hec" (click)="selectedEvent.set(event)" role="button" tabindex="0"
                        (keydown.enter)="selectedEvent.set(event)">
-                    @if (event.coverImageUrl) {
-                      <div class="hec-image">
+
+                    <div class="hec-image">
+                      @if (event.coverImageUrl) {
                         <img [src]="event.coverImageUrl" [alt]="event.title" loading="lazy">
-                      </div>
-                    }
+                      } @else {
+                        <img src="random_code.webp" [alt]="event.title" loading="lazy">
+                      }
+                    </div>
                     <div class="hec-header">
                       <span class="hec-badge">{{ statusLabel(event) }}</span>
                       <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
@@ -79,8 +82,12 @@ import { EventModalComponent } from '../shared/event-modal.component';
                       <span class="hec-meta-item">{{ event.startsAt | date: 'HH:mm' }}</span>
                     </div>
                     <div class="hec-badges">
-                      @if (!event.free) { <span class="hec-pill">Paid</span> }
-                      @if (event.registrationRequired) { <span class="hec-pill">Registration required</span> }
+                      @if (!event.free) {
+                        <span class="hec-pill">Paid</span>
+                      }
+                      @if (event.registrationRequired) {
+                        <span class="hec-pill">Registration required</span>
+                      }
                     </div>
                   </div>
                 }
@@ -93,36 +100,38 @@ import { EventModalComponent } from '../shared/event-modal.component';
       <!-- ===== MONTHLY SECTION + CTA ===== -->
       <div class="container">
 
-        <!-- Monthly event list -->
+        <!-- Monthly event grid -->
         <section class="monthly-section">
-          <div class="section-header">
-            <h2>{{ monthLabel() }}</h2>
-            <div class="month-nav">
-              <button class="btn btn-secondary btn-icon" (click)="prevMonth()"
-                      [disabled]="!canGoPrev()">
+          <div class="month-panel-header">
+            <div class="mph-left">
+              <button class="mnav-btn" (click)="prevMonth()" [disabled]="!canGoPrev()"
+                      aria-label="Previous month">
                 <span class="chevron-left"></span>
               </button>
-              <button class="btn btn-secondary btn-sm" (click)="goToCurrentMonth()">Today</button>
-              <button class="btn btn-secondary btn-icon" (click)="nextMonth()">
+            </div>
+            <div class="mph-center">
+              <span class="mph-name">{{ selectedDate() | date:'MMMM' }}</span>
+              <span class="mph-year">{{ selectedDate() | date:'yyyy' }}</span>
+            </div>
+            <div class="mph-right">
+              @if (canGoPrev()) {
+                <button class="today-link" (click)="goToCurrentMonth()">Today</button>
+              }
+              <button class="mnav-btn" (click)="nextMonth()" aria-label="Next month">
                 <span class="chevron-right"></span>
               </button>
-              <div class="view-toggle">
-                <button class="toggle-btn" [class.active]="viewMode() === 'list'"
-                        (click)="viewMode.set('list')">List</button>
-                <button class="toggle-btn" [class.active]="viewMode() === 'calendar'"
-                        (click)="viewMode.set('calendar')">Calendar</button>
-              </div>
             </div>
           </div>
 
           @if (loadingMonthly()) {
-            <div class="loading-timeline">
-              @for (i of [1, 2, 3]; track i) {
-                <div class="skeleton-timeline-item">
-                  <div class="skeleton-date-box"></div>
-                  <div class="skeleton-content">
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line"></div>
+            <div class="month-grid">
+              @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+                <div class="month-card sk-card">
+                  <div class="sk-img"></div>
+                  <div class="sk-body">
+                    <div class="sk-line short"></div>
+                    <div class="sk-line"></div>
+                    <div class="sk-line medium"></div>
                   </div>
                 </div>
               }
@@ -131,74 +140,60 @@ import { EventModalComponent } from '../shared/event-modal.component';
             <div class="empty-state">
               <p>No events scheduled for {{ monthLabel() }}.</p>
             </div>
-          } @else if (viewMode() === 'list') {
-            <div class="event-timeline">
+          } @else {
+            <div class="month-grid">
               @for (event of monthlyEvents(); track event.id) {
-                <div class="timeline-item" [class.cancelled]="event.status === cancelledStatus"
+                <div class="month-card" [class.cancelled]="event.status === cancelledStatus"
                      (click)="selectedEvent.set(event)" role="button" tabindex="0"
                      (keydown.enter)="selectedEvent.set(event)">
-                  @if (event.coverImageUrl) {
-                    <div class="timeline-thumb">
+                  <div class="mc-image">
+                    @if (event.coverImageUrl) {
                       <img [src]="event.coverImageUrl" [alt]="event.title" loading="lazy">
-                    </div>
-                  }
-                  <div class="timeline-date">
-                    <span class="day">{{ event.startsAt | date: 'd' }}</span>
-                    <span class="month">{{ event.startsAt | date: 'EEE' }}</span>
+                    } @else {
+                      <img src="random_code.webp" [alt]="event.title" loading="lazy">
+                    }
                   </div>
-                  <div class="timeline-content">
-                    <div class="event-meta">
-                      <span class="meta-item time-meta">{{ event.startsAt | date: 'HH:mm' }}@if (event.endsAt) { &ndash; {{ event.endsAt | date: 'HH:mm' }}}</span>
-                      @if (event.location) {
-                        <span class="meta-item location-meta">{{ event.location.name }}</span>
+                  <div class="mc-date-row">
+                    <div class="mc-date">
+                      <span class="mc-day">{{ event.startsAt | date:'d' }}</span>
+                      <div class="mc-day-detail">
+                        <span class="mc-dow">{{ event.startsAt | date:'EEE' }}</span>
+                        <span class="mc-mon">{{ event.startsAt | date:'MMM yyyy' }}</span>
+                      </div>
+                    </div>
+                    <span class="mc-time">
+                      {{ event.startsAt | date:'HH:mm' }}
+                      @if (event.endsAt) {
+                        &ndash; {{ event.endsAt | date:'HH:mm' }}
                       }
-                      <span class="meta-item organiser-meta">{{ event.organiser.name }}</span>
+                    </span>
+                  </div>
+
+                  <div class="mc-body">
+                    <div class="mc-title">{{ event.title }}</div>
+                    <div class="mc-meta">
+                      <span class="mc-org">{{ event.organiser.name }}</span>
+                      @if (event.location) {
+                        <span class="mc-sep">·</span>
+                        <span>{{ event.location.name }}</span>
+                      }
+                    </div>
+                    <div class="mc-badges">
                       @if (!event.free) {
-                        <span class="meta-item paid-meta">Paid</span>
+                        <span class="mc-pill mc-paid">Paid</span>
                       }
                       @if (event.registrationRequired) {
-                        <span class="meta-item reg-meta">Registration required</span>
+                        <span class="mc-pill mc-reg">Registration required</span>
+                      }
+                      @if (event.status === 'CANCELLED') {
+                        <span class="mc-pill mc-cancelled">Cancelled</span>
+                      } @else if (event.status === 'RESCHEDULED') {
+                        <span class="mc-pill mc-rescheduled">Rescheduled</span>
                       }
                     </div>
-                    <h3>{{ event.title }}</h3>
-                    @if (event.description) {
-                      <p class="timeline-description">{{ event.description }}</p>
-                    }
                   </div>
                 </div>
               }
-            </div>
-          } @else {
-            <!-- Calendar grid view -->
-            <div class="calendar-grid">
-              <div class="calendar-header-row">
-                @for (day of weekDays; track day) {
-                  <div class="calendar-header-cell">{{ day }}</div>
-                }
-              </div>
-              <div class="calendar-body">
-                @for (week of calendarWeeks(); track $index) {
-                  <div class="calendar-week">
-                    @for (cell of week; track $index) {
-                      <div class="calendar-cell" [class.other-month]="!cell.currentMonth"
-                           [class.today]="cell.isToday">
-                        <span class="cell-day">{{ cell.day }}</span>
-                        @for (event of cell.events; track event.id) {
-                          <div class="calendar-event"
-                               [class.cancelled]="event.status === cancelledStatus"
-                               [title]="event.title"
-                               (click)="selectedEvent.set(event)"
-                               role="button" tabindex="0"
-                               (keydown.enter)="selectedEvent.set(event)">
-                            <span class="calendar-event-time">{{ event.startsAt | date: 'HH:mm' }}</span>
-                            <span class="calendar-event-title">{{ event.title }}</span>
-                          </div>
-                        }
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
             </div>
           }
         </section>
@@ -316,18 +311,14 @@ import { EventModalComponent } from '../shared/event-modal.component';
       max-width: 440px;
     }
 
-    /* Events panel */
+    /* Events panel — no box, just a dashed divider on the left */
     .hero-panel {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 1.75rem;
+      border-left: 2px dashed rgba(255, 255, 255, 0.18);
+      padding-left: 3rem;
       max-height: 72vh;
       overflow-y: auto;
       scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.15) transparent;
+      scrollbar-color: rgba(255,255,255,0.12) transparent;
     }
     .hero-panel-header {
       margin-bottom: 1.25rem;
@@ -353,14 +344,16 @@ import { EventModalComponent } from '../shared/event-modal.component';
       overflow: hidden;
       transition: background 0.2s, border-color 0.2s;
       cursor: pointer;
+      width: 320px;
+      height: fit-content;
     }
     .hec:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(96, 165, 250, 0.35);
     }
     .hec-image {
-      width: 100%;
-      height: 120px;
+      width: max(100%, 320px);
+      height: 140px;
       overflow: hidden;
     }
     .hec-image img {
@@ -473,299 +466,236 @@ import { EventModalComponent } from '../shared/event-modal.component';
       margin: 0 auto;
       padding: 0 1.5rem;
     }
-    .section-header {
-      display: flex;
-      justify-content: space-between;
+    /* ===== MONTHLY SECTION ===== */
+    .monthly-section { margin-bottom: 4rem; }
+
+    /* ===== MONTH PANEL HEADER ===== */
+    .month-panel-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      padding: 1.25rem 0 1.75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.75rem;
+    }
+    .mph-left {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 1.5rem;
+    }
+    .mph-center {
+      text-align: center;
+      white-space: nowrap;
+    }
+    .mph-name {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+    .mph-year {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-left: 0.5rem;
+    }
+    .mph-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-left: 1.5rem;
+    }
+    .mnav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+    .mnav-btn:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
+    .mnav-btn:disabled { opacity: 0.35; cursor: default; }
+    .chevron-left, .chevron-right {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid var(--text-muted);
+      border-right: 2px solid var(--text-muted);
+    }
+    .chevron-left { transform: rotate(-135deg); margin-left: 2px; }
+    .chevron-right { transform: rotate(45deg); margin-right: 2px; }
+    .today-link {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem 0.375rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .today-link:hover { background: #eff6ff; }
+
+    /* ===== MONTH GRID ===== */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 320px));
+      justify-content: center;
       gap: 1rem;
     }
 
-    /* ===== MONTH NAV ===== */
-    .month-nav {
+    /* ===== MONTH CARD (light) ===== */
+    .month-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .month-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.12);
+      transform: translateY(-2px);
+    }
+    .month-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .month-card.cancelled { opacity: 0.55; }
+    .month-card.cancelled .mc-title { text-decoration: line-through; }
+
+    .mc-image {
+      width: max(100%, 320px);
+      height: 140px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .mc-image img { width: max(100%, 320px); height: 100%; object-fit: cover; }
+
+    .card-image-placeholder {
+      background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mc-date-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.875rem 1rem 0;
+    }
+    .mc-date {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8125rem; }
-    .btn-icon { padding: 0.5rem 0.625rem; line-height: 1; }
-    .chevron-left, .chevron-right {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-top: 2px solid var(--text-muted);
-      border-right: 2px solid var(--text-muted);
-    }
-    .chevron-left { transform: rotate(-135deg); }
-    .chevron-right { transform: rotate(45deg); }
-    .view-toggle {
-      display: flex;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-left: 0.5rem;
-    }
-    .toggle-btn {
-      padding: 0.375rem 0.75rem;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      background: white;
-      color: var(--text-muted);
-      transition: var(--transition);
-    }
-    .toggle-btn.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* ===== MONTHLY SECTION ===== */
-    .monthly-section {
-      margin-bottom: 4rem;
-    }
-
-    /* ===== TIMELINE (list view) ===== */
-    .event-timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .timeline-item {
-      display: flex;
-      gap: 1.5rem;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      transition: var(--transition);
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-    }
-    .timeline-item:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow);
-    }
-    .timeline-thumb {
-      width: 100px;
-      min-width: 100px;
-      height: 100px;
-      border-radius: 8px;
-      overflow: hidden;
-      flex-shrink: 0;
-      align-self: center;
-    }
-    .timeline-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .timeline-item.cancelled { opacity: 0.55; }
-    .timeline-item.cancelled h3 { text-decoration: line-through; }
-    .timeline-date {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-      border-radius: 10px;
-      min-width: 64px;
-      height: 64px;
-      border: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .timeline-date .day {
-      font-size: 1.5rem;
+    .mc-day {
+      font-size: 2.25rem;
       font-weight: 800;
       color: var(--primary);
       line-height: 1;
     }
-    .timeline-date .month {
-      font-size: 0.6875rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: 0.125rem;
-    }
-    .timeline-content {
-      flex-grow: 1;
-      min-width: 0;
-    }
-    .event-meta {
+    .mc-day-detail {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-      font-size: 0.8125rem;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+    .mc-dow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-main);
+    }
+    .mc-mon {
+      font-size: 0.6875rem;
       color: var(--text-muted);
       font-weight: 500;
     }
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    .time-meta::before { content: '\\1F552 '; font-size: 0.75rem; }
-    .location-meta::before { content: '\\1F4CD '; font-size: 0.75rem; }
-    .organiser-meta::before { content: '\\1F465 '; font-size: 0.75rem; }
-    .paid-meta {
-      background: #fef3c7;
-      color: #92400e;
-      padding: 0.125rem 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .reg-meta {
-      background: #fff7ed;
-      color: #c2410c;
-      padding: 0.125rem 0.5rem;
-      border-radius: 9999px;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .timeline-content h3 {
-      font-size: 1.125rem;
-      margin-bottom: 0.375rem;
-    }
-    .timeline-description {
+    .mc-time {
       font-size: 0.8125rem;
+      font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .mc-body {
+      padding: 0.625rem 1rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      flex: 1;
+    }
+    .mc-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .timeline-actions {
+    .mc-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
       display: flex;
-      gap: 1rem;
+      align-items: center;
+      gap: 0.25rem;
       flex-wrap: wrap;
     }
-    .link-btn {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--primary);
+    .mc-org { font-weight: 600; color: var(--text-main); }
+    .mc-sep { opacity: 0.4; }
+    .mc-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.125rem;
     }
-    .link-btn:hover { text-decoration: underline; }
-    .link-btn-secondary { color: var(--secondary); }
-
-    /* ===== CALENDAR GRID VIEW ===== */
-    .calendar-grid {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .calendar-header-row {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-    .calendar-header-cell {
-      padding: 0.625rem;
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
+    .mc-pill {
+      font-size: 0.5625rem;
+      font-weight: 700;
       text-transform: uppercase;
-      color: var(--text-muted);
       letter-spacing: 0.05em;
+      padding: 0.175rem 0.45rem;
+      border-radius: 9999px;
     }
-    .calendar-week {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-    }
-    .calendar-week:not(:last-child) { border-bottom: 1px solid var(--border); }
-    .calendar-cell {
-      min-height: 100px;
-      padding: 0.375rem;
-      border-right: 1px solid var(--border);
-      position: relative;
-    }
-    .calendar-cell:nth-child(7) { border-right: none; }
-    .calendar-cell.other-month { background: var(--bg); }
-    .calendar-cell.other-month .cell-day { color: var(--border); }
-    .calendar-cell.today .cell-day { background: var(--primary); color: white; }
-    .cell-day {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      border-radius: 50%;
-      margin-bottom: 0.25rem;
-      color: var(--text-main);
-    }
-    .calendar-event {
-      display: flex;
-      gap: 0.25rem;
-      padding: 0.125rem 0.25rem;
-      border-radius: 4px;
-      background: rgba(37, 99, 235, 0.08);
-      margin-bottom: 0.125rem;
-      cursor: default;
-      overflow: hidden;
-    }
-    .calendar-event.cancelled { opacity: 0.4; text-decoration: line-through; }
-    .calendar-event-time {
-      font-size: 0.625rem;
-      font-weight: 600;
-      color: var(--primary);
-      white-space: nowrap;
-    }
-    .calendar-event-title {
-      font-size: 0.625rem;
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .mc-paid        { background: #fef3c7; color: #92400e; }
+    .mc-reg         { background: #fff7ed; color: #c2410c; }
+    .mc-cancelled   { background: #fee2e2; color: #dc2626; }
+    .mc-rescheduled { background: #fef3c7; color: #d97706; }
 
-    /* ===== SKELETON (monthly) ===== */
-    .loading-timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .skeleton-timeline-item {
-      display: flex;
-      gap: 1.5rem;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-    }
-    .skeleton-date-box {
-      width: 64px;
-      height: 64px;
-      border-radius: 10px;
-      flex-shrink: 0;
+    /* ===== SKELETON (monthly grid) ===== */
+    .sk-card { pointer-events: none; }
+    .sk-img {
+      height: 140px;
       background: linear-gradient(90deg, var(--bg) 25%, #eef2f7 50%, var(--bg) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
     }
-    .skeleton-content {
-      flex-grow: 1;
+    .sk-body {
+      padding: 0.875rem 1rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      justify-content: center;
     }
-    .skeleton-line {
-      height: 14px;
+    .sk-line {
+      height: 12px;
+      border-radius: 4px;
       background: linear-gradient(90deg, var(--bg) 25%, #eef2f7 50%, var(--bg) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
-      border-radius: 4px;
     }
-    .skeleton-line.short { width: 40%; }
+    .sk-line.short  { width: 35%; }
+    .sk-line.medium { width: 60%; }
     @keyframes shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
@@ -817,21 +747,17 @@ import { EventModalComponent } from '../shared/event-modal.component';
       }
       .hero-panel {
         max-height: none;
+        border-left: none;
+        border-top: 2px dashed rgba(255, 255, 255, 0.18);
+        padding-left: 0;
+        padding-top: 2rem;
       }
     }
     @media (max-width: 640px) {
-      .section-header { flex-direction: column; align-items: flex-start; }
-      .month-nav { flex-wrap: wrap; }
-      .timeline-item { flex-direction: column; gap: 0.75rem; }
-      .timeline-date {
-        flex-direction: row;
-        gap: 0.5rem;
-        width: fit-content;
-        height: auto;
-        padding: 0.375rem 0.75rem;
-        min-width: auto;
-      }
-      .calendar-cell { min-height: 70px; }
+      .mph-name { font-size: 1.375rem; }
+      .mph-year { font-size: 0.9375rem; }
+      .mph-left { padding-right: 0.75rem; }
+      .mph-right { padding-left: 0.75rem; }
       .cta-banner { padding: 2.5rem 1.5rem; }
     }
   `,
@@ -840,7 +766,6 @@ export class LandingComponent implements OnInit {
   private readonly publicEventsService = inject(PublicEventsService);
 
   readonly cancelledStatus = EventStatus.CANCELLED;
-  readonly weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   readonly selectedEvent = signal<EventSummary | null>(null);
   readonly upcomingEvents = signal<EventSummary[]>([]);
@@ -850,12 +775,12 @@ export class LandingComponent implements OnInit {
 
   readonly selectedYear = signal(new Date().getFullYear());
   readonly selectedMonth = signal(new Date().getMonth() + 1);
-  readonly viewMode = signal<'list' | 'calendar'>('list');
 
-  readonly monthLabel = computed(() => {
-    const date = new Date(this.selectedYear(), this.selectedMonth() - 1);
-    return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-  });
+  readonly selectedDate = computed(() => new Date(this.selectedYear(), this.selectedMonth() - 1));
+
+  readonly monthLabel = computed(() =>
+    this.selectedDate().toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  );
 
   readonly canGoPrev = computed(() => {
     const now = new Date();
@@ -863,54 +788,6 @@ export class LandingComponent implements OnInit {
       this.selectedYear() > now.getFullYear() ||
       (this.selectedYear() === now.getFullYear() && this.selectedMonth() > now.getMonth() + 1)
     );
-  });
-
-  readonly calendarWeeks = computed(() => {
-    const year = this.selectedYear();
-    const month = this.selectedMonth() - 1;
-    const events = this.monthlyEvents();
-    const today = new Date();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    let startOffset = (firstDay.getDay() + 6) % 7;
-    const weeks: {
-      day: number;
-      currentMonth: boolean;
-      isToday: boolean;
-      events: EventSummary[];
-    }[][] = [];
-
-    let current = new Date(firstDay);
-    current.setDate(current.getDate() - startOffset);
-
-    while (current <= lastDay || weeks.length === 0 || weeks[weeks.length - 1].length < 7) {
-      if (!weeks.length || weeks[weeks.length - 1].length === 7) {
-        weeks.push([]);
-      }
-
-      const d = current.getDate();
-      const m = current.getMonth();
-      const y = current.getFullYear();
-      const isCurrentMonth = m === month && y === year;
-      const isToday =
-        d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
-
-      const dayEvents = isCurrentMonth
-        ? events.filter((e) => new Date(e.startsAt).getDate() === d)
-        : [];
-
-      weeks[weeks.length - 1].push({ day: d, currentMonth: isCurrentMonth, isToday, events: dayEvents });
-
-      current.setDate(current.getDate() + 1);
-
-      if (weeks[weeks.length - 1].length === 7 && current.getMonth() !== month && current > lastDay) {
-        break;
-      }
-    }
-
-    return weeks;
   });
 
   ngOnInit() {
@@ -958,7 +835,7 @@ export class LandingComponent implements OnInit {
 
   private loadUpcoming() {
     this.loadingUpcoming.set(true);
-    this.publicEventsService.getUpcomingEvents(5).subscribe({
+    this.publicEventsService.getUpcomingEvents(3).subscribe({
       next: (events) => {
         this.upcomingEvents.set(events);
         this.loadingUpcoming.set(false);

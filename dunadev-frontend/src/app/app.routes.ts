@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from './components/landing/landing.component';
-import { CalendarComponent } from './components/calendar/calendar.component';
 import { LoginComponent } from './components/login/login.component';
 import { ManagementComponent } from './components/management/management.component';
 import { LocationsComponent } from './components/locations/locations.component';
@@ -25,7 +24,6 @@ export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
-  { path: 'calendar', component: CalendarComponent },
   { path: 'login', component: LoginComponent },
   {
     path: 'manage',
