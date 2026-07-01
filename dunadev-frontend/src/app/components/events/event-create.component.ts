@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit, effect } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -32,7 +33,7 @@ interface EventForm {
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, LocalizedDatePipe, ImageUploadComponent, TranslatePipe],
   template: `
     <div class="event-create-page">
       <div class="container">
@@ -161,7 +162,7 @@ interface EventForm {
                       <div class="form-group">
                         <label>{{ 'loc.cityLabel' | translate }}</label>
                         <input type="text" [(ngModel)]="quickLoc.city" name="qlCity"
-                               placeholder="Budapest" autocomplete="off">
+                               [placeholder]="'loc.cityPh' | translate" autocomplete="off">
                       </div>
                       <div class="form-group">
                         <label>{{ 'loc.addressLabel' | translate }}</label>
@@ -219,7 +220,7 @@ interface EventForm {
                            [ngModel]="link.url"
                            (ngModelChange)="updateLink(i, 'url', $event)"
                            name="linkUrl{{ i }}"
-                           placeholder="https://…">
+                           [placeholder]="'eventForm.linkUrlPh' | translate">
                     <button type="button" class="btn-icon" (click)="removeLink(i)"
                             [title]="'eventCreate.removeLink' | translate">✕</button>
                   </div>
@@ -254,7 +255,7 @@ interface EventForm {
                 <ul class="week-list">
                   @for (ev of weekEvents(); track ev.id) {
                     <li class="week-item">
-                      <span class="week-time">{{ ev.startsAt | date:'EEE d MMM · HH:mm' }}</span>
+                      <span class="week-time">{{ ev.startsAt | localizedDate:fmt.SHORT_DATE_TIME }}</span>
                       <span class="week-title">{{ ev.title }}</span>
                       <span class="week-org">{{ ev.organiser.name }}</span>
                     </li>
@@ -504,6 +505,7 @@ interface EventForm {
   `,
 })
 export class EventCreateComponent implements OnInit {
+  protected readonly fmt = DATE_FORMATS;
   private readonly eventsService = inject(OrganiserEventsService);
   private readonly locationsService = inject(LocationsService);
   private readonly publicEventsService = inject(PublicEventsService);

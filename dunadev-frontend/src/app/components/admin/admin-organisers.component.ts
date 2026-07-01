@@ -63,7 +63,7 @@ function orgColor(name: string): string {
               </div>
               <div class="form-group">
                 <label>{{ 'adminOrgs.emailLabel' | translate }} <span class="required">*</span></label>
-                <input type="email" [(ngModel)]="inviteEmail" placeholder="organiser@example.com"
+                <input type="email" [(ngModel)]="inviteEmail" [placeholder]="'adminOrgs.emailPh' | translate"
                        [disabled]="inviting()" name="inviteEmail">
               </div>
               <button class="btn btn-primary" (click)="submitInvite()"

@@ -120,7 +120,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       <div class="manage-content">
         <!-- Mobile-only open button -->
         <div class="content-bar">
-          <button class="mobile-open-btn" (click)="toggleSidebar()" aria-label="Open navigation">
+          <button class="mobile-open-btn" (click)="toggleSidebar()" [attr.aria-label]="'sidebar.openMenu' | translate">
             <span class="ham-line"></span>
             <span class="ham-line"></span>
             <span class="ham-line"></span>

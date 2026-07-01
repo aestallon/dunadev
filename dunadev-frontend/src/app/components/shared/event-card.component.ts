@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { EventSummary } from '../../../api/dunadev';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-event-card',
   standalone: true,
-  imports: [DatePipe, TranslatePipe],
+  imports: [LocalizedDatePipe, TranslatePipe],
   template: `
     <div class="event-card"
          [class.cancelled]="event.status === 'CANCELLED'"
@@ -28,9 +28,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
       <div class="card-body">
         <div class="card-datetime">
-          <span class="card-date">{{ event.startsAt | date:'EEE, MMM d, y' }}</span>
-          <span class="card-time">{{ event.startsAt | date:'HH:mm' }}
-            @if (event.endsAt) { &ndash; {{ event.endsAt | date:'HH:mm' }} }
+          <span class="card-date">{{ event.startsAt | localizedDate:fmt.SHORT_DATE }}</span>
+          <span class="card-time">{{ event.startsAt | localizedDate:fmt.TIME }}
+            @if (event.endsAt) { &ndash; {{ event.endsAt | localizedDate:fmt.TIME }} }
           </span>
         </div>
 
@@ -204,6 +204,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   `,
 })
 export class EventCardComponent {
+  protected readonly fmt = DATE_FORMATS;
   @Input({ required: true }) event!: EventSummary;
   @Input() editLink: string | null = null;
   @Input() showPreview = false;

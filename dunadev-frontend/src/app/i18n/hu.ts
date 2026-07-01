@@ -1,18 +1,22 @@
 export const HU: Record<string, string> = {
   // --- Navbar ---
-  'nav.about':     'Rólunk',
-  'nav.contact':   'Kapcsolat',
-  'nav.dashboard': 'Vezérlőpult',
-  'nav.signIn':    'Bejelentkezés',
-  'nav.signOut':   'Kijelentkezés',
-  'nav.langSwitch':'EN',
+  'nav.about':      'Rólunk',
+  'nav.contact':    'Kapcsolat',
+  'nav.dashboard':  'Vezérlőpult',
+  'nav.signIn':     'Bejelentkezés',
+  'nav.signOut':    'Kijelentkezés',
+  'nav.langSwitch': 'EN',
+  'nav.toggleMenu': 'Navigációs menü váltása',
+  'nav.openMenu':   'Navigáció megnyitása',
 
   // --- Footer ---
-  'footer.tagline': 'Budapest tech eseménynaptára – ne maradj le egy meetupról sem.',
-  'footer.events':  'Események',
-  'footer.about':   'Rólunk',
-  'footer.contact': 'Kapcsolat',
-  'footer.copy':    '© {{year}} DunaDev. Minden jog fenntartva.',
+  'footer.tagline':    'Budapest tech eseménynaptára – ne maradj le egy meetupról sem.',
+  'footer.events':     'Események',
+  'footer.about':      'Rólunk',
+  'footer.contact':    'Kapcsolat',
+  'footer.copy':       '© {{year}} DunaDev. Minden jog fenntartva.',
+  'footer.versionUi':  'UI',
+  'footer.versionApi': 'API',
 
   // --- Landing hero ---
   'landing.eyebrow':    'Budapest · Tech Események',
@@ -21,6 +25,9 @@ export const HU: Record<string, string> = {
   'landing.panelLabel': 'Következő események',
   'landing.noUpcoming': 'Jelenleg nincs közelgő esemény. Nézz vissza hamarosan!',
   'landing.loadError':  'Az események betöltése sikertelen.',
+  'landing.ctaTitle':   'Szervező vagy?',
+  'landing.ctaBody':    'Lépj kapcsolatba velünk, és oszd meg eseményeidet a DunaDev közösséggel.',
+  'landing.ctaBtn':     'Kapcsolat',
 
   // --- Landing month grid ---
   'landing.today':         'Ma',
@@ -37,23 +44,29 @@ export const HU: Record<string, string> = {
   'badge.onNewLocation': 'Új helyszínen',
 
   // --- Event modal ---
-  'modal.when':          'Mikor',
-  'modal.where':         'Hol',
-  'modal.howToGetThere': 'Megközelítés',
-  'modal.registration':  'Regisztráció',
-  'modal.registerBtn':   'Regisztrálj itt',
-  'modal.links':         'Linkek',
+  'modal.when':           'Időpont',
+  'modal.where':          'Helyszín',
+  'modal.howToGetThere':  'Megközelítés',
+  'modal.registration':   'Regisztráció',
+  'modal.registerBtn':    'Regisztrálj itt',
+  'modal.getTickets':     'Jegyek vásárlása',
+  'modal.links':          'Linkek',
   'modal.noDescription':  'Nincs leírás.',
   'modal.close':          'Bezárás',
-  'modal.addToCalendar':  'Hozzáadás a naptárhoz',
+  'modal.addToCalendar':  'Naptárba!',
+  'modal.venueWebsite':   'Helyszín weboldala',
+  'modal.viewEventPage':  'Esemény weboldala',
+  'modal.ctaPaidAndReg':  'Ez egy <strong>fizetős esemény</strong>, amelyhez <strong>regisztráció szükséges</strong>. Látogasd meg az esemény oldalát a jegy megvásárlásához és a részvétel regisztrálásához.',
+  'modal.ctaPaidOnly':    'Ez egy <strong>fizetős esemény</strong>. Látogasd meg az esemény oldalát a jegyinformációkért.',
+  'modal.ctaRegOnly':     '<strong>Regisztráció szükséges</strong> az eseményen való részvételhez. Látogasd meg az esemény oldalát a regisztrációhoz.',
 
   // --- Event card (manage/admin) ---
   'card.edit':    'Szerkesztés',
   'card.preview': 'Előnézet',
 
   // --- Login ---
-  'login.title':              'Bejelentkezés a DunaDev-be',
-  'login.subtitle':           'Esemény szervezők és adminisztrátorok részére',
+  'login.title':              'Bejelentkezés',
+  'login.subtitle':           'Eseményszervezők és adminisztrátorok részére',
   'login.emailLabel':         'E-mail cím',
   'login.emailPlaceholder':   'nev@example.com',
   'login.passwordLabel':      'Jelszó',
@@ -86,6 +99,7 @@ export const HU: Record<string, string> = {
   'sidebar.collapse':  'Összecsukás',
   'sidebar.admin':     'Adminisztráció',
   'sidebar.soon':      'Hamarosan',
+  'sidebar.openMenu':  'Navigáció megnyitása',
 
   // --- Admin sidebar ---
   'admin.upcoming':   'Közelgő',
@@ -93,6 +107,8 @@ export const HU: Record<string, string> = {
   'admin.docs':       'Dokumentáció',
   'admin.password':   'Jelszó megváltoztatása',
   'admin.collapse':   'Összecsukás',
+  'admin.openMenu':   'Navigáció megnyitása',
+  'admin.roleChip':   'Admin',
 
   // --- Manage events ---
   'manageEvents.title':     'Eseményeim',
@@ -254,10 +270,11 @@ export const HU: Record<string, string> = {
   'adminOrgLocs.editBtn':   'Szerkesztés',
 
   // --- Admin: upcoming ---
-  'adminUpcoming.title':    'Közelgő események',
-  'adminUpcoming.daysLabel':'napra előre',
-  'adminUpcoming.empty':    'Nincs közelgő esemény a következő {{days}} napban.',
-  'adminUpcoming.loadError':'Az események betöltése sikertelen.',
+  'adminUpcoming.title':     'Közelgő események',
+  'adminUpcoming.daysLabel': 'napra előre',
+  'adminUpcoming.dayAbbrev': 'n',
+  'adminUpcoming.empty':     'Nincs közelgő esemény a következő {{days}} napban.',
+  'adminUpcoming.loadError': 'Az események betöltése sikertelen.',
 
   // --- Admin: organiser profile edit ---
   'adminProfile.nameLabel':        'Szervezet neve *',
@@ -302,21 +319,25 @@ export const HU: Record<string, string> = {
   // --- About ---
   'about.eyebrow':           'Rólunk',
   'about.title':             'Budapest Tech Eseménynaptára',
-  'about.lead':              'A DunaDev egy közösségi naptár, amely összegyűjti a Budapesten és környékén zajló tech meetupokat, workshopokat és konferenciákat.',
+  'about.lead':              'A DunaDev egy közösségi naptár, amely a Budapesten és környékének zajló tech meetupokat, workshopokat és konferenciákat aggregálja.',
   'about.mission.title':     'Küldetésünk',
   'about.mission.body':      'Hogy a fejlesztőknek, designereknek és tech-rajongóknak könnyű legyen helyi eseményeket felfedezni, kapcsolódni a közösséghez, és soha ne maradjanak le egy meetupról sem.',
   'about.community.title':   'A közösségért',
   'about.community.body':    'Az eseményeket ellenőrzött szervezők küldik be és kezelik. Minden listázott esemény kurált, hogy a naptár releváns, pontos és naprakész maradjon.',
-  'about.organiser.title':   'Te vagy a szervező?',
-  'about.organiser.body':    'Ha Budapesten tech eseményeket szervezel és szeretnéd listázni őket, vedd fel velünk a kapcsolatot. A szervező fiók meghívásos alapon működik a minőség megőrzéséért.',
+  'about.organiser.title':   'Eseményszervező vagy?',
+  'about.organiser.body':    'Ha Budapesten tech eseményeket szervezel és szeretnéd listázni őket, vedd fel velünk a kapcsolatot. Szervezői fiókok meghívásos alapon kerülnek létrehozásra.',
   'about.organiser.cta':     'Kapcsolat',
 
   // --- Contact ---
-  'contact.eyebrow':         'Kapcsolat',
-  'contact.title':           'Lépj kapcsolatba velünk',
-  'contact.lead':            'Kérdéseid vannak? Szeretnél szervező lenni? Írj nekünk.',
-  'contact.emailCard.title': 'E-mail',
-  'contact.emailCard.body':  'A leggyorsabb módja a kapcsolatfelvételnek. Általában 1–2 munkanapon belül válaszolunk.',
+  'contact.eyebrow':          'Kapcsolat',
+  'contact.title':            'Lépj kapcsolatba velünk',
+  'contact.lead':             'Kérdéseid vannak? Szeretnél eseményeid megjelentetni a weboldalon? Írj nekünk!',
+  'contact.emailCard.title':  'Írj nekünk',
+  'contact.emailCard.body':   'Partnerségi megkeresések, szervezői hozzáférési kérelmek vagy általános kérdések esetén.',
+  'contact.submitCard.title': 'Esemény beküldése',
+  'contact.submitCard.body':  'Tech eseményt szervezel Budapesten? Lépj kapcsolatba velünk az alábbi címen ingyenes szervezői meghívóért.',
+  'contact.reportCard.title': 'Hiba bejelentése',
+  'contact.reportCard.body':  'Hibás listázást, programhibát vagy valami furcsát találtál? Szólj nekünk és kijavítjuk.',
 
   // --- Generic actions ---
   'generic.loading':   'Betöltés…',
@@ -436,6 +457,7 @@ export const HU: Record<string, string> = {
   'adminOrgs.nameLabel':    'Szervezet neve',
   'adminOrgs.namePh':       'pl. Budapest.js',
   'adminOrgs.emailLabel':   'E-mail cím',
+  'adminOrgs.emailPh':     'szervezo@example.com',
   'adminOrgs.sending':      'Küldés…',
   'adminOrgs.sendBtn':      'Meghívó küldése',
   'adminOrgs.searchPh':     'Keresés név vagy e-mail alapján…',
@@ -454,4 +476,11 @@ export const HU: Record<string, string> = {
   // --- Admin upcoming (revised keys) ---
   'adminUpcoming.filterPh': 'Szűrés cím, szervező vagy helyszín alapján…',
   'adminUpcoming.noMatch':  'Nincs egyező közelgő esemény: «{{q}}».',
+
+  // --- Location form placeholders ---
+  'loc.latPh': '47.4979',
+  'loc.lngPh': '19.0402',
+
+  // --- Search box ---
+  'search.clearBtn': 'Keresés törlése',
 };

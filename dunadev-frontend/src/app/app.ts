@@ -13,7 +13,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
     <nav class="navbar">
       <div class="nav-container">
         <a class="logo" routerLink="/" (click)="closeMenu()">
-          <span class="logo-icon">D</span>
+          <span class="logo-icon"><img src="favicon-32x32.png"></span>
           <span class="logo-text">DunaDev</span>
         </a>
 
@@ -41,7 +41,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 
         <!-- Hamburger button (mobile only) -->
         <button class="hamburger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()"
-                aria-label="Toggle navigation menu">
+                [attr.aria-label]="'nav.toggleMenu' | translate">
           <span class="ham-bar" [class.open]="menuOpen()"></span>
           <span class="ham-bar" [class.open]="menuOpen()"></span>
           <span class="ham-bar" [class.open]="menuOpen()"></span>
@@ -86,7 +86,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
       <div class="footer-container">
         <div class="footer-top">
           <div class="footer-brand">
-            <span class="footer-logo-icon">D</span>
+            <span class="footer-logo-icon"><img src="favicon-32x32.png"></span>
             <span class="footer-name">DunaDev</span>
           </div>
           <p class="footer-tagline">{{ 'footer.tagline' | translate }}</p>
@@ -98,9 +98,9 @@ import { TranslatePipe } from './pipes/translate.pipe';
         </nav>
         <p class="footer-copy" [innerHTML]="'footer.copy' | translate : { year: year.toString() }"></p>
         <div class="footer-versions">
-          <span class="version-chip">UI&nbsp;{{ version.frontendVersion }}</span>
+          <span class="version-chip">{{ 'footer.versionUi' | translate }}&nbsp;{{ version.frontendVersion }}</span>
           @if (version.backendVersion()) {
-            <span class="version-chip">API&nbsp;{{ version.backendVersion() }}</span>
+            <span class="version-chip">{{ 'footer.versionApi' | translate }}&nbsp;{{ version.backendVersion() }}</span>
           }
         </div>
       </div>

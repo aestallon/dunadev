@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import {CommonModule, DatePipe, NgOptimizedImage} from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { RouterLink } from '@angular/router';
 import { PublicEventsService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { EventModalComponent } from '../shared/event-modal.component';
@@ -9,7 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, EventModalComponent, TranslatePipe],
+  imports: [CommonModule, RouterLink, LocalizedDatePipe, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="selectedEvent()" (close)="selectedEvent.set(null)"/>
 
@@ -73,7 +74,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                       @if (event.onNewLocation) {
                         <span class="hec-badge hec-badge-relocated">{{ 'badge.onNewLocation' | translate }}</span>
                       }
-                      <span class="hec-date">{{ event.startsAt | date: 'MMM d, y' }}</span>
+                      <span class="hec-date">{{ event.startsAt | localizedDate: fmt.SHORT_DATE }}</span>
                     </div>
                     <div class="hec-title">{{ event.title }}</div>
                     <div class="hec-meta">
@@ -83,7 +84,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                         <span class="hec-meta-item">{{ event.location.name }}</span>
                       }
                       <span class="hec-sep">·</span>
-                      <span class="hec-meta-item">{{ event.startsAt | date: 'HH:mm' }}</span>
+                      <span class="hec-meta-item">{{ event.startsAt | localizedDate: fmt.TIME }}</span>
                     </div>
                     <div class="hec-badges">
                       @if (!event.free) {
@@ -114,15 +115,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
               </button>
             </div>
             <div class="mph-center">
-              <span class="mph-name">{{ selectedDate() | date:'MMMM' }}</span>
-              <span class="mph-year">{{ selectedDate() | date:'yyyy' }}</span>
+              <span class="mph-name">{{ selectedDate() | localizedDate:fmt.MONTH_ONLY }}</span>
+              <span class="mph-year">{{ selectedDate() | localizedDate:fmt.YEAR }}</span>
             </div>
             <div class="mph-right">
-              @if (canGoPrev()) {
-                <button class="today-link" (click)="goToCurrentMonth()">
-                  {{ 'landing.today' | translate }}
-                </button>
-              }
               <button class="mnav-btn" (click)="nextMonth()"
                       [attr.aria-label]="'landing.nextMonth' | translate">
                 <span class="chevron-right"></span>
@@ -162,16 +158,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                   </div>
                   <div class="mc-date-row">
                     <div class="mc-date">
-                      <span class="mc-day">{{ event.startsAt | date:'d' }}</span>
+                      <span class="mc-day">{{ event.startsAt | localizedDate:fmt.DAY_NUM }}</span>
                       <div class="mc-day-detail">
-                        <span class="mc-dow">{{ event.startsAt | date:'EEE' }}</span>
-                        <span class="mc-mon">{{ event.startsAt | date:'MMM yyyy' }}</span>
+                        <span class="mc-dow">{{ event.startsAt | localizedDate:fmt.SHORT_DAY }}</span>
+                        <span class="mc-mon">{{ event.startsAt | localizedDate:fmt.MONTH_YEAR }}</span>
                       </div>
                     </div>
                     <span class="mc-time">
-                      {{ event.startsAt | date:'HH:mm' }}
+                      {{ event.startsAt | localizedDate:fmt.TIME }}
                       @if (event.endsAt) {
-                        &ndash; {{ event.endsAt | date:'HH:mm' }}
+                        &ndash; {{ event.endsAt | localizedDate:fmt.TIME }}
                       }
                     </span>
                   </div>
@@ -212,11 +208,9 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
         <section class="cta-banner">
           <div class="cta-content">
-            <h2>Are you an organiser?</h2>
-            <p>
-              Get access to our management tools and share your events with the DunaDev community.
-            </p>
-            <a routerLink="/manage" class="btn btn-primary">Manage your events</a>
+            <h2>{{ 'landing.ctaTitle' | translate }}</h2>
+            <p>{{ 'landing.ctaBody' | translate }}</p>
+            <a routerLink="/contact" class="btn btn-primary">{{ 'landing.ctaBtn' | translate }}</a>
           </div>
         </section>
 
@@ -770,6 +764,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class LandingComponent implements OnInit {
   private readonly publicEventsService = inject(PublicEventsService);
   private readonly i18n = inject(I18nService);
+  protected readonly fmt = DATE_FORMATS;
 
   readonly cancelledStatus = EventStatus.CANCELLED;
 

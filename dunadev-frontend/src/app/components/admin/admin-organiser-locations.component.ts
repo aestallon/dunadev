@@ -54,11 +54,11 @@ function emptyForm(): LocForm {
                   </div>
                   <div class="form-group">
                     <label>{{ 'loc.latLabel' | translate }}</label>
-                    <input type="text" [(ngModel)]="formData().latitude" placeholder="47.4979" />
+                    <input type="text" [(ngModel)]="formData().latitude" [placeholder]="'loc.latPh' | translate" />
                   </div>
                   <div class="form-group">
                     <label>{{ 'loc.lngLabel' | translate }}</label>
-                    <input type="text" [(ngModel)]="formData().longitude" placeholder="19.0402" />
+                    <input type="text" [(ngModel)]="formData().longitude" [placeholder]="'loc.lngPh' | translate" />
                   </div>
                   <div class="form-group span-2">
                     <label>{{ 'loc.howLabel' | translate }}</label>

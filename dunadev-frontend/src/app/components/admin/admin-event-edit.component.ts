@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AdministrationService, EventSummary, EventUpdateRequest, EventLinkRequest, LocationSummary } from '../../../api/dunadev';
@@ -15,7 +16,7 @@ interface EditForm {
 @Component({
   selector: 'app-admin-event-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, LocalizedDatePipe, ImageUploadComponent, TranslatePipe],
   template: `
     <div class="event-edit-page">
       <div class="container">
@@ -43,10 +44,10 @@ interface EditForm {
                 <dt>{{ 'eventEdit.organiser' | translate }}</dt>
                 <dd>{{ event()!.organiser.name }}</dd>
                 <dt>{{ 'eventForm.startsAt' | translate }}</dt>
-                <dd>{{ event()!.startsAt | date:'EEE, d MMM yyyy · HH:mm' }}</dd>
+                <dd>{{ event()!.startsAt | localizedDate:fmt.SHORT_DATE_TIME }}</dd>
                 @if (event()!.endsAt) {
                   <dt>{{ 'eventForm.endsAt' | translate }}</dt>
-                  <dd>{{ event()!.endsAt | date:'HH:mm' }}</dd>
+                  <dd>{{ event()!.endsAt | localizedDate:fmt.TIME }}</dd>
                 }
                 @if (event()!.location) {
                   <dt>{{ 'eventEdit.location' | translate }}</dt>
@@ -120,7 +121,7 @@ interface EditForm {
                       <input type="text" [ngModel]="link.label" (ngModelChange)="updateLink(i,'label',$event)"
                              [name]="'ll'+i" [placeholder]="'eventForm.linkLabelPh' | translate">
                       <input type="url" [ngModel]="link.url" (ngModelChange)="updateLink(i,'url',$event)"
-                             [name]="'lu'+i" placeholder="https://…">
+                             [name]="'lu'+i" [placeholder]="'eventForm.linkUrlPh' | translate">
                       <button type="button" class="btn-icon" (click)="removeLink(i)"
                               [title]="'eventCreate.removeLink' | translate">✕</button>
                     </div>
@@ -301,6 +302,7 @@ interface EditForm {
   `,
 })
 export class AdminEventEditComponent implements OnInit {
+  protected readonly fmt = DATE_FORMATS;
   private readonly adminService = inject(AdministrationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

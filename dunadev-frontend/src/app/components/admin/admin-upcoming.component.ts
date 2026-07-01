@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { RouterLink } from '@angular/router';
 import { AdministrationService, EventSummary, EventStatus } from '../../../api/dunadev';
 import { SearchBoxComponent } from '../shared/search-box.component';
@@ -9,7 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
   selector: 'app-admin-upcoming',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, SearchBoxComponent, EventModalComponent, TranslatePipe],
+  imports: [CommonModule, RouterLink, LocalizedDatePipe, SearchBoxComponent, EventModalComponent, TranslatePipe],
   template: `
     <app-event-modal [event]="previewEvent()" (close)="previewEvent.set(null)" />
 
@@ -21,7 +22,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <div class="day-filter">
             @for (d of dayOptions; track d) {
               <button class="day-btn" [class.active]="days() === d" (click)="setDays(d)">
-                {{ d }}d
+                {{ d }}{{ 'adminUpcoming.dayAbbrev' | translate }}
               </button>
             }
           </div>
@@ -48,8 +49,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             @for (event of filtered(); track event.id) {
               <div class="event-row" [class.cancelled]="event.status === 'CANCELLED'">
                 <div class="event-date">
-                  <span class="date-day">{{ event.startsAt | date:'d' }}</span>
-                  <span class="date-mon">{{ event.startsAt | date:'MMM' }}</span>
+                  <span class="date-day">{{ event.startsAt | localizedDate:fmt.DAY_NUM }}</span>
+                  <span class="date-mon">{{ event.startsAt | localizedDate:fmt.SHORT_MONTH }}</span>
                 </div>
                 <div class="event-info">
                   <div class="event-title-row">
@@ -63,8 +64,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                   <div class="event-meta">
                     <span class="org-name">{{ event.organiser.name }}</span>
                     <span class="sep">·</span>
-                    <span>{{ event.startsAt | date:'EEE HH:mm' }}</span>
-                    @if (event.endsAt) { <span>– {{ event.endsAt | date:'HH:mm' }}</span> }
+                    <span>{{ event.startsAt | localizedDate:fmt.DAY_TIME }}</span>
+                    @if (event.endsAt) { <span>– {{ event.endsAt | localizedDate:fmt.TIME }}</span> }
                     @if (event.location) {
                       <span class="sep">·</span>
                       <span>{{ event.location.name }}</span>
@@ -162,6 +163,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   `,
 })
 export class AdminUpcomingComponent implements OnInit {
+  protected readonly fmt = DATE_FORMATS;
   private readonly adminService = inject(AdministrationService);
 
   readonly dayOptions = [7, 14, 30];

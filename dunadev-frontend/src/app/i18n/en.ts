@@ -1,18 +1,22 @@
 export const EN: Record<string, string> = {
   // --- Navbar ---
-  'nav.about':     'About',
-  'nav.contact':   'Contact',
-  'nav.dashboard': 'Dashboard',
-  'nav.signIn':    'Sign in',
-  'nav.signOut':   'Sign out',
-  'nav.langSwitch':'HU',
+  'nav.about':       'About',
+  'nav.contact':     'Contact',
+  'nav.dashboard':   'Dashboard',
+  'nav.signIn':      'Sign in',
+  'nav.signOut':     'Sign out',
+  'nav.langSwitch':  'HU',
+  'nav.toggleMenu':  'Toggle navigation menu',
+  'nav.openMenu':    'Open navigation',
 
   // --- Footer ---
-  'footer.tagline': "Budapest's tech event calendar — never miss a meetup.",
-  'footer.events':  'Events',
-  'footer.about':   'About',
-  'footer.contact': 'Contact',
-  'footer.copy':    '© {{year}} DunaDev. All rights reserved.',
+  'footer.tagline':    "Budapest's tech event calendar — never miss a meetup.",
+  'footer.events':     'Events',
+  'footer.about':      'About',
+  'footer.contact':    'Contact',
+  'footer.copy':       '© {{year}} DunaDev. All rights reserved.',
+  'footer.versionUi':  'UI',
+  'footer.versionApi': 'API',
 
   // --- Landing hero ---
   'landing.eyebrow':    'Budapest · Tech Events',
@@ -21,6 +25,9 @@ export const EN: Record<string, string> = {
   'landing.panelLabel': 'Coming Up Next',
   'landing.noUpcoming': 'No upcoming events right now. Check back soon!',
   'landing.loadError':  'Failed to load events.',
+  'landing.ctaTitle':   'Are you an organiser?',
+  'landing.ctaBody':    'Get access to our management tools and share your events with the DunaDev community.',
+  'landing.ctaBtn':     'Get in touch',
 
   // --- Landing month grid ---
   'landing.today':         'Today',
@@ -37,15 +44,21 @@ export const EN: Record<string, string> = {
   'badge.onNewLocation': 'On new location',
 
   // --- Event modal ---
-  'modal.when':          'When',
-  'modal.where':         'Where',
-  'modal.howToGetThere': 'How to get there',
-  'modal.registration':  'Registration',
-  'modal.registerBtn':   'Register here',
-  'modal.links':         'Links',
+  'modal.when':           'When',
+  'modal.where':          'Where',
+  'modal.howToGetThere':  'How to get there',
+  'modal.registration':   'Registration',
+  'modal.registerBtn':    'Register here',
+  'modal.getTickets':     'Get tickets',
+  'modal.links':          'Links',
   'modal.noDescription':  'No description provided.',
   'modal.close':          'Close',
   'modal.addToCalendar':  'Add to Calendar',
+  'modal.venueWebsite':   'Venue website',
+  'modal.viewEventPage':  'View event page',
+  'modal.ctaPaidAndReg':  'This is a <strong>paid event</strong> and requires <strong>registration</strong>. Visit the event page to purchase a ticket and register your attendance.',
+  'modal.ctaPaidOnly':    'This is a <strong>paid event</strong>. Visit the event page for ticket information.',
+  'modal.ctaRegOnly':     '<strong>Registration is required</strong> to attend this event. Visit the event page to register your attendance.',
 
   // --- Event card (manage/admin) ---
   'card.edit':    'Edit',
@@ -86,6 +99,7 @@ export const EN: Record<string, string> = {
   'sidebar.collapse':  'Collapse',
   'sidebar.admin':     'Administration',
   'sidebar.soon':      'Soon',
+  'sidebar.openMenu':  'Open navigation',
 
   // --- Admin sidebar ---
   'admin.upcoming':   'Upcoming',
@@ -93,6 +107,8 @@ export const EN: Record<string, string> = {
   'admin.docs':       'Documentation',
   'admin.password':   'Change Password',
   'admin.collapse':   'Collapse',
+  'admin.openMenu':   'Open navigation',
+  'admin.roleChip':   'Admin',
 
   // --- Manage events ---
   'manageEvents.title':     'My Events',
@@ -254,10 +270,11 @@ export const EN: Record<string, string> = {
   'adminOrgLocs.editBtn':   'Edit',
 
   // --- Admin: upcoming ---
-  'adminUpcoming.title':    'Upcoming Events',
-  'adminUpcoming.daysLabel':'days ahead',
-  'adminUpcoming.empty':    'No upcoming events in the next {{days}} days.',
-  'adminUpcoming.loadError':'Failed to load events.',
+  'adminUpcoming.title':     'Upcoming Events',
+  'adminUpcoming.daysLabel': 'days ahead',
+  'adminUpcoming.dayAbbrev': 'd',
+  'adminUpcoming.empty':     'No upcoming events in the next {{days}} days.',
+  'adminUpcoming.loadError': 'Failed to load events.',
 
   // --- Admin: organiser profile edit ---
   'adminProfile.nameLabel':        'Organisation name *',
@@ -312,11 +329,15 @@ export const EN: Record<string, string> = {
   'about.organiser.cta':     'Get in touch',
 
   // --- Contact ---
-  'contact.eyebrow':         'Contact',
-  'contact.title':           'Get in Touch',
-  'contact.lead':            'Have a question? Want to become an organiser? Drop us a message.',
-  'contact.emailCard.title': 'Email',
-  'contact.emailCard.body':  'The fastest way to reach us. We typically respond within 1–2 business days.',
+  'contact.eyebrow':          'Contact',
+  'contact.title':            'Get in Touch',
+  'contact.lead':             'Have a question? Want to become an organiser? Drop us a message.',
+  'contact.emailCard.title':  'Email Us',
+  'contact.emailCard.body':   'For partnership inquiries, organiser access requests, or general questions.',
+  'contact.submitCard.title': 'Submit an Event',
+  'contact.submitCard.body':  'Running a tech event in Budapest? Organiser accounts are free and invite-only to ensure listing quality.',
+  'contact.reportCard.title': 'Report an Issue',
+  'contact.reportCard.body':  "Found an incorrect listing, a bug, or something that looks off? Let us know and we'll sort it out.",
 
   // --- Generic actions ---
   'generic.loading':   'Loading…',
@@ -436,6 +457,7 @@ export const EN: Record<string, string> = {
   'adminOrgs.nameLabel':    'Organisation name',
   'adminOrgs.namePh':       'e.g. Budapest.js',
   'adminOrgs.emailLabel':   'Email address',
+  'adminOrgs.emailPh':     'organiser@example.com',
   'adminOrgs.sending':      'Sending…',
   'adminOrgs.sendBtn':      'Send Invitation',
   'adminOrgs.searchPh':     'Search by name or email…',
@@ -454,4 +476,11 @@ export const EN: Record<string, string> = {
   // --- Admin upcoming (revised keys) ---
   'adminUpcoming.filterPh': 'Filter by title, organiser, or location…',
   'adminUpcoming.noMatch':  'No upcoming events match «{{q}}».',
+
+  // --- Location form placeholders ---
+  'loc.latPh': '47.4979',
+  'loc.lngPh': '19.0402',
+
+  // --- Search box ---
+  'search.clearBtn': 'Clear search',
 };

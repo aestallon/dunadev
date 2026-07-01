@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import {
@@ -27,7 +28,7 @@ interface EditForm {
 @Component({
   selector: 'app-event-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, ImageUploadComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, LocalizedDatePipe, ImageUploadComponent, TranslatePipe],
   template: `
     <div class="event-edit-page">
       <div class="container">
@@ -57,11 +58,11 @@ interface EditForm {
 
               <dl class="detail-list">
                 <dt>{{ 'eventForm.startsAt' | translate }}</dt>
-                <dd>{{ event()!.startsAt | date:'EEE, d MMM yyyy · HH:mm' }}</dd>
+                <dd>{{ event()!.startsAt | localizedDate:fmt.SHORT_DATE_TIME }}</dd>
 
                 @if (event()!.endsAt) {
                   <dt>{{ 'eventForm.endsAt' | translate }}</dt>
-                  <dd>{{ event()!.endsAt | date:'HH:mm' }}</dd>
+                  <dd>{{ event()!.endsAt | localizedDate:fmt.TIME }}</dd>
                 }
 
                 @if (event()!.location) {
@@ -176,7 +177,7 @@ interface EditForm {
                              [ngModel]="link.url"
                              (ngModelChange)="updateLink(i, 'url', $event)"
                              name="linkUrl{{ i }}"
-                             placeholder="https://…">
+                             [placeholder]="'eventForm.linkUrlPh' | translate">
                       <button type="button" class="btn-icon" (click)="removeLink(i)"
                               [title]="'eventCreate.removeLink' | translate">✕</button>
                     </div>
@@ -508,6 +509,7 @@ interface EditForm {
   `,
 })
 export class EventEditComponent implements OnInit {
+  protected readonly fmt = DATE_FORMATS;
   private readonly eventsService = inject(OrganiserEventsService);
   private readonly locationsService = inject(LocationsService);
   private readonly router = inject(Router);

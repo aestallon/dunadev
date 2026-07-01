@@ -17,29 +17,23 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         <div class="contact-grid">
           <div class="contact-card">
             <div class="contact-icon email-icon"></div>
-            <h3>Email Us</h3>
-            <p>For partnership inquiries, organiser access requests, or general questions.</p>
-            <a href="mailto:hello@dunadev.hu" class="contact-link">hello&#64;dunadev.hu</a>
+            <h3>{{ 'contact.emailCard.title' | translate }}</h3>
+            <p>{{ 'contact.emailCard.body' | translate }}</p>
+            <a href="https://github.com/aestallon" class="contact-link">https://github.com/aestallon</a>
           </div>
 
           <div class="contact-card">
             <div class="contact-icon events-icon"></div>
-            <h3>Submit an Event</h3>
-            <p>
-              Running a tech event in Budapest? Organiser accounts are free and invite-only to
-              ensure listing quality.
-            </p>
-            <a href="mailto:organiser@dunadev.hu" class="contact-link">organiser&#64;dunadev.hu</a>
+            <h3>{{ 'contact.submitCard.title' | translate }}</h3>
+            <p>{{ 'contact.submitCard.body' | translate }}</p>
+            <a href="https://github.com/aestallon" class="contact-link">https://github.com/aestallon</a>
           </div>
 
           <div class="contact-card">
             <div class="contact-icon report-icon"></div>
-            <h3>Report an Issue</h3>
-            <p>
-              Found an incorrect listing, a bug, or something that looks off? Let us know and we'll
-              sort it out.
-            </p>
-            <a href="mailto:report@dunadev.hu" class="contact-link">report&#64;dunadev.hu</a>
+            <h3>{{ 'contact.reportCard.title' | translate }}</h3>
+            <p>{{ 'contact.reportCard.body' | translate }}</p>
+            <a href="https://github.com/aestallon/dunadev-tracker" class="contact-link">https://github.com/aestallon/dunadev-tracker</a>
           </div>
         </div>
       </div>

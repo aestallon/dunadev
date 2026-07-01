@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { I18nService } from '../../services/i18n.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-search-box',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   template: `
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -20,7 +22,7 @@ import { FormsModule } from '@angular/forms';
         [attr.aria-label]="placeholder"
       />
       @if (query) {
-        <button class="clear-btn" (click)="clear()" aria-label="Clear search">
+        <button class="clear-btn" (click)="clear()" [attr.aria-label]="'search.clearBtn' | translate">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -81,7 +83,9 @@ import { FormsModule } from '@angular/forms';
   `,
 })
 export class SearchBoxComponent {
-  @Input() placeholder = 'Search…';
+  private readonly i18n = inject(I18nService);
+
+  @Input() placeholder = '';
   @Output() queryChange = new EventEmitter<string>();
 
   query = '';

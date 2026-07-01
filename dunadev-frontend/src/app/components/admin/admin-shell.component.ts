@@ -61,7 +61,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
         <div class="sidebar-footer">
           <div class="sidebar-role">
-            <span class="role-chip">ADMIN</span>
+            <span class="role-chip">{{ 'admin.roleChip' | translate }}</span>
           </div>
           <button class="collapse-btn" (click)="toggleSidebar()"
                   [title]="'admin.collapse' | translate">
@@ -80,7 +80,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
       <div class="manage-content">
         <div class="content-bar">
-          <button class="mobile-open-btn" (click)="toggleSidebar()" aria-label="Open navigation">
+          <button class="mobile-open-btn" (click)="toggleSidebar()" [attr.aria-label]="'admin.openMenu' | translate">
             <span class="ham-line"></span>
             <span class="ham-line"></span>
             <span class="ham-line"></span>

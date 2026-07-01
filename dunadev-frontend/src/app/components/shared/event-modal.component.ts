@@ -12,15 +12,15 @@ import {
   Injector,
   runInInjectionContext,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { EventSummary } from '../../../api/dunadev';
+import { LocalizedDatePipe, DATE_FORMATS } from '../../pipes/localized-date.pipe';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-event-modal',
   standalone: true,
-  imports: [DatePipe, TranslatePipe],
+  imports: [LocalizedDatePipe, TranslatePipe],
   template: `
     @if (event) {
       <div class="modal-backdrop" (click)="close.emit()" (keydown.escape)="close.emit()">
@@ -67,10 +67,10 @@ import * as L from 'leaflet';
             <div class="modal-when-where">
               <div class="info-block">
                 <span class="info-label">{{ 'modal.when' | translate }}</span>
-                <span class="info-value">{{ event.startsAt | date:'EEEE, MMMM d, y' }}</span>
+                <span class="info-value">{{ event.startsAt | localizedDate:fmt.FULL_DATE }}</span>
                 <span class="info-value">
-                  {{ event.startsAt | date:'HH:mm' }}
-                  @if (event.endsAt) { &ndash; {{ event.endsAt | date:'HH:mm' }} }
+                  {{ event.startsAt | localizedDate:fmt.TIME }}
+                  @if (event.endsAt) { &ndash; {{ event.endsAt | localizedDate:fmt.TIME }} }
                 </span>
               </div>
               @if (event.location) {
@@ -84,7 +84,7 @@ import * as L from 'leaflet';
                   }
                   @if (event.location.websiteUrl) {
                     <a [href]="event.location.websiteUrl" target="_blank" rel="noopener"
-                       class="location-link">Venue website &rarr;</a>
+                       class="location-link">{{ 'modal.venueWebsite' | translate }} &rarr;</a>
                   }
                 </div>
               }
@@ -107,18 +107,16 @@ import * as L from 'leaflet';
             @if (!event.free || event.registrationRequired) {
               <div class="cta-box">
                 @if (!event.free && event.registrationRequired) {
-                  <p>This is a <strong>paid event</strong> and requires <strong>registration</strong>.
-                     Visit the event page to purchase a ticket and register your attendance.</p>
+                  <p [innerHTML]="'modal.ctaPaidAndReg' | translate"></p>
                 } @else if (!event.free) {
-                  <p>This is a <strong>paid event</strong>. Visit the event page for ticket information.</p>
+                  <p [innerHTML]="'modal.ctaPaidOnly' | translate"></p>
                 } @else {
-                  <p><strong>Registration is required</strong> to attend this event.
-                     Visit the event page to register your attendance.</p>
+                  <p [innerHTML]="'modal.ctaRegOnly' | translate"></p>
                 }
                 @if (event.eventUrl || event.registrationUrl) {
                   <a [href]="event.registrationUrl || event.eventUrl" target="_blank" rel="noopener"
                      class="btn btn-primary cta-btn">
-                    {{ event.registrationRequired ? ('modal.registerBtn' | translate) : 'Get tickets' }} &rarr;
+                    {{ event.registrationRequired ? ('modal.registerBtn' | translate) : ('modal.getTickets' | translate) }} &rarr;
                   </a>
                 }
               </div>
@@ -135,7 +133,7 @@ import * as L from 'leaflet';
             @if (event.eventUrl) {
               <div class="modal-section">
                 <a [href]="event.eventUrl" target="_blank" rel="noopener" class="event-url-btn">
-                  View event page &rarr;
+                  {{ 'modal.viewEventPage' | translate }} &rarr;
                 </a>
               </div>
             }
@@ -392,6 +390,7 @@ import * as L from 'leaflet';
 })
 export class EventModalComponent implements OnChanges {
   private readonly injector = inject(Injector);
+  protected readonly fmt = DATE_FORMATS;
 
   @Input() event: EventSummary | null = null;
   @Output() close = new EventEmitter<void>();
