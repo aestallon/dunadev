@@ -3,6 +3,7 @@ package com.aestallon.dunadev.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,7 +15,7 @@ import com.aestallon.dunadev.service.mail.SmtpEmailService;
 public class EmailConfig {
 
   @Bean
-  @ConditionalOnBean(JavaMailSender.class)
+  @ConditionalOnProperty("spring.mail.host")
   public EmailService emailService(JavaMailSender mailSender,
                                    @Value("${dunadev.mail.from:}") String from) {
     if (from == null || from.isBlank()) throw new IllegalStateException("From cannot be empty!");
@@ -22,7 +23,7 @@ public class EmailConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean(JavaMailSender.class)
+  @ConditionalOnProperty(value = "spring.mail.host", matchIfMissing = true)
   public EmailService mockEmailService() {
     return new LoggingEmailService();
   }
