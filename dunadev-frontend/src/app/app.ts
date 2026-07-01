@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { I18nService } from './services/i18n.service';
+import { VersionService } from './services/version.service';
 import { TranslatePipe } from './pipes/translate.pipe';
 
 @Component({
@@ -96,6 +97,12 @@ import { TranslatePipe } from './pipes/translate.pipe';
           <a routerLink="/contact">{{ 'footer.contact' | translate }}</a>
         </nav>
         <p class="footer-copy" [innerHTML]="'footer.copy' | translate : { year: year.toString() }"></p>
+        <div class="footer-versions">
+          <span class="version-chip">UI&nbsp;{{ version.frontendVersion }}</span>
+          @if (version.backendVersion()) {
+            <span class="version-chip">API&nbsp;{{ version.backendVersion() }}</span>
+          }
+        </div>
       </div>
     </footer>
   `,
@@ -363,6 +370,21 @@ import { TranslatePipe } from './pipes/translate.pipe';
       font-size: 0.8125rem;
       color: #334155;
     }
+    .footer-versions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .version-chip {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #334155;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #1e293b;
+      border-radius: 9999px;
+      padding: 0.15rem 0.625rem;
+    }
 
     /* --- Responsive breakpoint --- */
     @media (max-width: 640px) {
@@ -374,6 +396,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 export class App {
   protected readonly auth = inject(AuthService);
   protected readonly i18n = inject(I18nService);
+  protected readonly version = inject(VersionService);
   private readonly router = inject(Router);
 
   readonly year = new Date().getFullYear();

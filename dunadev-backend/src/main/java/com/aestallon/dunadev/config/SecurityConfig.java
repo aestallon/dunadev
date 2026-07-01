@@ -50,7 +50,7 @@ public class SecurityConfig {
         .authenticationProvider(authenticationProvider)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/upcoming",  "/img/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/version", "/api/events", "/api/events/upcoming", "/img/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
