@@ -4,10 +4,14 @@
   "packageManager": "npm@11.5.2",
   "scripts": {
     "ng": "ng",
+    "generate-version": "node scripts/generate-version.mjs",
+    "prestart": "npm run generate-version",
     "start": "ng serve",
+    "prebuild": "npm run generate-version",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "gen-api": "openapi-generator-cli generate --generator-key dunadev"
   },
   "prettier": {
     "printWidth": 100,
@@ -29,6 +33,8 @@
     "@angular/forms": "^22.0.2",
     "@angular/platform-browser": "^22.0.2",
     "@angular/router": "^22.0.2",
+    "@types/leaflet": "^1.9.21",
+    "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -36,6 +42,7 @@
     "@angular/build": "^22.0.3",
     "@angular/cli": "^22.0.3",
     "@angular/compiler-cli": "^22.0.2",
+    "@openapitools/openapi-generator-cli": "^2.39.0",
     "@types/jasmine": "~5.1.0",
     "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "~5.9.0",

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to DunaDev</title>
+  <style>
+    body { margin: 0; padding: 0; background: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .wrapper { max-width: 560px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .header { background: #2563eb; padding: 32px 40px; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .header p { margin: 8px 0 0; color: rgba(255,255,255,0.8); font-size: 14px; }
+    .body { padding: 32px 40px; color: #1e293b; font-size: 15px; line-height: 1.7; }
+    .body p { margin: 0 0 16px; }
+    .credentials { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+    .credentials p { margin: 0 0 8px; font-size: 13px; color: #64748b; }
+    .credentials p:last-child { margin: 0; }
+    .credentials strong { font-size: 15px; color: #1e293b; font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px; }
+    .notice { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 18px; margin: 20px 0 0; font-size: 13px; color: #92400e; }
+    .footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 40px; color: #94a3b8; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>Welcome to DunaDev</h1>
+      <p>You've been invited to manage events for <strong>{{orgName}}</strong></p>
+    </div>
+    <div class="body">
+      <p>Hi,</p>
+      <p>
+        An administrator has created a DunaDev account for you. You can now log in and start
+        scheduling tech events in and around Budapest.
+      </p>
+      <div class="credentials">
+        <p>Email: <strong>{{email}}</strong></p>
+        <p>Temporary password: <strong>{{password}}</strong></p>
+      </div>
+      <p>
+        Please log in and change your password immediately — you can do this from the
+        <em>Change Password</em> link in your sidebar.
+      </p>
+      <div class="notice">
+        Keep this password private. If you did not expect this invitation, please contact
+        the administration team at <a href="mailto:{{adminEmail}}" style="color:#92400e;">{{adminEmail}}</a>.
+      </div>
+    </div>
+    <div class="footer">
+      <p>This is an automated message from DunaDev. Please do not reply directly to this email.</p>
+    </div>
+  </div>
+</body>
+</html>

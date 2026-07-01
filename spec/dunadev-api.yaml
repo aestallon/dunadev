@@ -1,8 +1,1344 @@
 openapi: 3.0.1
 info:
   title: DunaDev API
+  description: Public calendar of tech meetups and events in and around Budapest.
   version: 1.0.0
-tags: []
-paths: {}
+
+tags:
+  - name: Public Events
+    description: Publicly accessible event endpoints (no authentication required).
+  - name: Authentication
+    description: Login and token refresh endpoints.
+  - name: Organiser Profile
+    description: Organiser profile management (authentication required).
+  - name: Locations
+    description: Location management for organisers (authentication required).
+  - name: Organiser Events
+    description: Event management for authenticated organisers.
+  - name: Administration
+    description: Admin-only management endpoints (ROLE_ADMIN required).
+  - name: Account
+    description: Self-service account management for all authenticated users.
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      operationId: login
+      summary: Authenticate with email and password
+      description: >
+        Validates the provided credentials and returns an access/refresh token pair.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials.
+
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      operationId: refreshToken
+      summary: Refresh an access token
+      description: >
+        Accepts a valid refresh token and returns a new access/refresh token pair.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid or expired refresh token.
+
+  /api/me/password:
+    post:
+      tags:
+        - Account
+      operationId: changePassword
+      summary: Change the authenticated user's password
+      description: >
+        Verifies the current password then replaces it with the new one.
+        Triggers a notification email to the account's registered address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+      responses:
+        '204':
+          description: Password changed successfully.
+        '400':
+          description: Current password is incorrect or new password fails validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Not authenticated.
+
+  /api/organiser/me:
+    get:
+      tags:
+        - Organiser Profile
+      operationId: getMyOrganiserProfile
+      summary: Get the authenticated organiser's profile
+      responses:
+        '200':
+          description: The organiser's profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganiserProfile'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Organiser profile not found.
+    put:
+      tags:
+        - Organiser Profile
+      operationId: updateMyOrganiserProfile
+      summary: Update the authenticated organiser's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganiserUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganiserProfile'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Organiser profile not found.
+
+  /api/events/upcoming:
+    get:
+      tags:
+        - Public Events
+      operationId: getUpcomingEvents
+      summary: List the next upcoming events
+      description: >
+        Returns the closest upcoming events that are publicly visible and not
+        cancelled. Intended for the landing-page hero cards.
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of events to return (1–20).
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 5
+      responses:
+        '200':
+          description: A list of upcoming events ordered by start time ascending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+
+  /api/events:
+    get:
+      tags:
+        - Public Events
+      operationId: getEventsByMonth
+      summary: List events for a given month
+      description: >
+        Returns all publicly visible, non-cancelled events whose start time
+        falls within the specified year and month. Intended for the monthly
+        event list and calendar view on the landing page.
+      parameters:
+        - name: year
+          in: query
+          description: Four-digit year.
+          required: true
+          schema:
+            type: integer
+            example: 2026
+        - name: month
+          in: query
+          description: Month number (1–12).
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            example: 6
+      responses:
+        '200':
+          description: A list of events for the requested month ordered by start time ascending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '400':
+          description: Invalid year or month parameter.
+    post:
+      tags:
+        - Organiser Events
+      operationId: createEvent
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '201':
+          description: Event created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated organiser.
+
+  /api/events/{id}:
+    get:
+      tags:
+        - Organiser Events
+      operationId: getEvent
+      summary: Get a single event owned by the authenticated organiser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The requested event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+    put:
+      tags:
+        - Organiser Events
+      operationId: updateEvent
+      summary: Update the editable fields of an upcoming event
+      description: >
+        Updates title, description, links, and other metadata of a future event.
+        Date, time, and location cannot be changed through this endpoint.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: Event updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '400':
+          description: The event has already started or passed.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+
+  /api/events/{id}/image:
+    post:
+      tags:
+        - Organiser Events
+      operationId: uploadEventImage
+      summary: Upload or replace the cover image of an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image stored successfully. Returns the updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+
+  /api/events/{id}/cancel:
+    post:
+      tags:
+        - Organiser Events
+      operationId: cancelEvent
+      summary: Cancel an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Event cancelled or deleted.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is in an unalterable state.
+
+  /api/events/{id}/reschedule:
+    post:
+      tags:
+        - Organiser Events
+      operationId: rescheduleEvent
+      summary: Reschedule an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRescheduleRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/events/{id}/relocate:
+    post:
+      tags:
+        - Organiser Events
+      operationId: relocateEvent
+      summary: Change the location of an event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRelocateRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Event not found or not owned by the authenticated organiser.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/events/my:
+    get:
+      tags:
+        - Organiser Events
+      operationId: getMyEvents
+      summary: List the authenticated organiser's events
+      description: >
+        Returns all events created by the authenticated organiser,
+        ordered by start time descending (most recent first).
+      responses:
+        '200':
+          description: The organiser's events (past and upcoming).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '401':
+          description: Not authenticated.
+
+  /api/locations:
+    get:
+      tags:
+        - Locations
+      operationId: getMyLocations
+      summary: List the logged-in organiser's active locations
+      responses:
+        '200':
+          description: A list of the organiser's active locations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+    post:
+      tags:
+        - Locations
+      operationId: createLocation
+      summary: Create a new location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+
+  /api/admin/organisers:
+    get:
+      tags:
+        - Administration
+      operationId: listAdminOrganisers
+      summary: List all organisers
+      responses:
+        '200':
+          description: All organisers with event and location counts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminOrganiserSummary'
+        '403':
+          description: Not an administrator.
+    post:
+      tags:
+        - Administration
+      operationId: createAdminOrganiser
+      summary: Invite a new organiser
+      description: >
+        Creates a new organisation and its primary user account. A randomly generated
+        password is emailed to the provided address. The organiser's status is set to
+        INVITED until their first login, after which it becomes ACTIVE.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminOrganiserCreateRequest'
+      responses:
+        '201':
+          description: Organiser created and invitation email sent.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminOrganiserSummary'
+        '409':
+          description: Email address is already registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Not an administrator.
+
+  /api/admin/organisers/{id}:
+    get:
+      tags:
+        - Administration
+      operationId: getAdminOrganiser
+      summary: Get a single organiser's profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The organiser's profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganiserProfile'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Organiser not found.
+    put:
+      tags:
+        - Administration
+      operationId: updateAdminOrganiser
+      summary: Update any organiser's profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganiserUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganiserProfile'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Organiser not found.
+
+  /api/admin/organisers/{id}/events:
+    get:
+      tags:
+        - Administration
+      operationId: getAdminOrganiserEvents
+      summary: Get all events for a specific organiser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The organiser's events, ordered by start time descending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Organiser not found.
+
+  /api/admin/organisers/{id}/locations:
+    get:
+      tags:
+        - Administration
+      operationId: getAdminOrganiserLocations
+      summary: Get all active locations for a specific organiser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The organiser's active locations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Organiser not found.
+
+  /api/admin/events/upcoming:
+    get:
+      tags:
+        - Administration
+      operationId: getAdminUpcomingEvents
+      summary: List upcoming events across all organisers
+      parameters:
+        - name: days
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 60
+            default: 14
+      responses:
+        '200':
+          description: Upcoming events within the specified number of days, ordered by start time ascending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+
+  /api/admin/events/{id}/image:
+    post:
+      tags:
+        - Administration
+      operationId: uploadAdminEventImage
+      summary: Upload or replace the cover image of any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image stored successfully. Returns the updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+
+  /api/admin/events/{id}/cancel:
+    post:
+      tags:
+        - Administration
+      operationId: cancelAdminEvent
+      summary: Cancel any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Event cancelled or deleted.
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is in an unalterable state.
+
+  /api/admin/events/{id}/reschedule:
+    post:
+      tags:
+        - Administration
+      operationId: rescheduleAdminEvent
+      summary: Reschedule any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRescheduleRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/admin/events/{id}/relocate:
+    post:
+      tags:
+        - Administration
+      operationId: relocateAdminEvent
+      summary: Change the location of any event
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRelocateRequest'
+      responses:
+        '200':
+          description: Updated event summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+        '409':
+          description: Event has already started or is cancelled.
+
+  /api/admin/events/{id}:
+    get:
+      tags:
+        - Administration
+      operationId: getAdminEvent
+      summary: Get any event by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+    put:
+      tags:
+        - Administration
+      operationId: updateAdminEvent
+      summary: Update any event's editable fields
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: Event updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Event not found.
+
+  /api/admin/locations/{id}:
+    put:
+      tags:
+        - Administration
+      operationId: updateAdminLocation
+      summary: Update any location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '403':
+          description: Not an administrator.
+        '404':
+          description: Location not found.
+
+  /api/locations/{id}:
+    get:
+      tags:
+        - Locations
+      operationId: getLocation
+      summary: Get a single location by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The requested location.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
+    put:
+      tags:
+        - Locations
+      operationId: updateLocation
+      summary: Update an existing location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationSummary'
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
+    delete:
+      tags:
+        - Locations
+      operationId: deleteLocation
+      summary: Delete a location (soft-delete if used by events)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Location deleted successfully.
+        '401':
+          description: Not authenticated.
+        '404':
+          description: Location not found or not owned by the authenticated user.
+
 components:
-  schemas: {}
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+        description:
+          type: string
+      required: [ status, timestamp ]
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - expiresIn
+        - role
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+          description: Access token lifetime in seconds.
+        role:
+          type: string
+
+    EventSummary:
+      type: object
+      description: Public-facing summary of an event, including organiser and location info.
+      required:
+        - id
+        - title
+        - startsAt
+        - free
+        - registrationRequired
+        - status
+        - organiser
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+          description: Link to the external event page.
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        organiser:
+          $ref: '#/components/schemas/OrganiserSummary'
+        location:
+          $ref: '#/components/schemas/LocationSummary'
+        coverImageUrl:
+          type: string
+          nullable: true
+          description: Relative URL of the event's cover image, served as a static resource.
+        onNewLocation:
+          type: boolean
+          nullable: true
+          description: True when the event was relocated after the critical-day threshold.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLink'
+
+    EventStatus:
+      type: string
+      enum:
+        - SCHEDULED
+        - CANCELLED
+        - RESCHEDULED
+
+    OrganiserProfile:
+      type: object
+      description: Full profile of the authenticated organiser.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+
+    OrganiserUpdateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+
+    OrganiserSummary:
+      type: object
+      description: Minimal organiser info embedded in event responses.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+
+    LocationSummary:
+      type: object
+      description: Minimal location info embedded in event responses.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        howToGetThere:
+          type: string
+          nullable: true
+
+    LocationRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        howToGetThere:
+          type: string
+          nullable: true
+
+    EventLink:
+      type: object
+      description: An additional external link attached to an event.
+      required:
+        - label
+        - url
+      properties:
+        label:
+          type: string
+        url:
+          type: string
+
+    EventRequest:
+      type: object
+      required:
+        - title
+        - startsAt
+        - locationId
+        - free
+        - registrationRequired
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+          description: Link to the external event page.
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        visibleFrom:
+          type: string
+          format: date-time
+          nullable: true
+          description: >
+            The date-time from which the event becomes publicly visible.
+            Omit or set to null to publish immediately.
+        locationId:
+          type: integer
+          format: int64
+          description: ID of the organiser's location where the event takes place.
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLinkRequest'
+
+    EventLinkRequest:
+      type: object
+      required:
+        - label
+        - url
+      properties:
+        label:
+          type: string
+        url:
+          type: string
+
+    EventRescheduleRequest:
+      type: object
+      required: [startsAt]
+      properties:
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    EventRelocateRequest:
+      type: object
+      required: [locationId]
+      properties:
+        locationId:
+          type: integer
+          format: int64
+
+    EventUpdateRequest:
+      type: object
+      description: Fields that may be edited on a future event. Date, time, and location are immutable.
+      required:
+        - title
+        - free
+        - registrationRequired
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        eventUrl:
+          type: string
+          nullable: true
+        free:
+          type: boolean
+        registrationRequired:
+          type: boolean
+        registrationUrl:
+          type: string
+          nullable: true
+        visibleFrom:
+          type: string
+          format: date-time
+          nullable: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventLinkRequest'
+
+    PasswordChangeRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+
+    AdminOrganiserSummary:
+      type: object
+      description: Organiser summary for admin views, includes counts and user email.
+      required: [id, name, status, eventCount, locationCount, userEmail]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          type: string
+          enum: [INVITED, ACTIVE]
+        description:
+          type: string
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+        eventCount:
+          type: integer
+        locationCount:
+          type: integer
+        userEmail:
+          type: string
+
+    AdminOrganiserCreateRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          description: Name of the organisation.
+        email:
+          type: string
+          description: Email address for the primary user of the organisation.
