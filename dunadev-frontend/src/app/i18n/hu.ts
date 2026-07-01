@@ -43,8 +43,9 @@ export const HU: Record<string, string> = {
   'modal.registration':  'Regisztráció',
   'modal.registerBtn':   'Regisztrálj itt',
   'modal.links':         'Linkek',
-  'modal.noDescription': 'Nincs leírás.',
-  'modal.close':         'Bezárás',
+  'modal.noDescription':  'Nincs leírás.',
+  'modal.close':          'Bezárás',
+  'modal.addToCalendar':  'Hozzáadás a naptárhoz',
 
   // --- Event card (manage/admin) ---
   'card.edit':    'Szerkesztés',

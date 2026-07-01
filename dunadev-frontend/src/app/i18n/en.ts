@@ -43,8 +43,9 @@ export const EN: Record<string, string> = {
   'modal.registration':  'Registration',
   'modal.registerBtn':   'Register here',
   'modal.links':         'Links',
-  'modal.noDescription': 'No description provided.',
-  'modal.close':         'Close',
+  'modal.noDescription':  'No description provided.',
+  'modal.close':          'Close',
+  'modal.addToCalendar':  'Add to Calendar',
 
   // --- Event card (manage/admin) ---
   'card.edit':    'Edit',

@@ -88,6 +88,19 @@ import * as L from 'leaflet';
                   }
                 </div>
               }
+              <div class="ics-action">
+                <button class="btn btn-ics" (click)="exportIcs()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                       fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                       stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  {{ 'modal.addToCalendar' | translate }}
+                </button>
+              </div>
             </div>
 
             <!-- CTA box for paid / registration events -->
@@ -289,6 +302,29 @@ import * as L from 'leaflet';
     }
     .location-link:hover { text-decoration: underline; }
 
+    .ics-action {
+      display: flex;
+      align-items: flex-end;
+      margin-left: auto;
+    }
+    .btn-ics {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4375rem;
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .btn-ics:hover { opacity: 0.88; }
+    .btn-ics svg { flex-shrink: 0; }
+
     .cta-box {
       background: #fff7ed;
       border: 1px solid #fed7aa;
@@ -393,5 +429,60 @@ export class EventModalComponent implements OnChanges {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
     L.marker([lat, lng]).bindPopup(name).addTo(this.map);
+  }
+
+  exportIcs() {
+    if (!this.event) return;
+    const e = this.event;
+
+    const toIcsDate = (iso: string) =>
+      new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const icsEscape = (s: string) =>
+      s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+
+    const now = toIcsDate(new Date().toISOString());
+    const dtstart = toIcsDate(e.startsAt);
+    const dtend = e.endsAt ? toIcsDate(e.endsAt) : dtstart;
+
+    const locationParts = [
+      e.location?.name,
+      e.location?.address,
+      e.location?.city,
+    ].filter(Boolean);
+
+    const lines: string[] = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//DunaDev//DunaDev//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:event-${e.id}@dunadev`,
+      `DTSTAMP:${now}`,
+      `DTSTART:${dtstart}`,
+      `DTEND:${dtend}`,
+      `SUMMARY:${icsEscape(e.title)}`,
+    ];
+
+    if (e.description) {
+      lines.push(`DESCRIPTION:${icsEscape(e.description)}`);
+    }
+    if (locationParts.length) {
+      lines.push(`LOCATION:${icsEscape(locationParts.join(', '))}`);
+    }
+    if (e.eventUrl) {
+      lines.push(`URL:${e.eventUrl}`);
+    }
+    lines.push(`ORGANIZER;CN="${icsEscape(e.organiser.name)}":mailto:noreply@dunadev.hu`);
+    lines.push('END:VEVENT', 'END:VCALENDAR');
+
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${e.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
