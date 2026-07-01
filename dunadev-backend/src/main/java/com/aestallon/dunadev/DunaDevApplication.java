@@ -53,6 +53,7 @@ public class DunaDevApplication {
       var budapestJs = OrganiserEntity.builder()
           .user(bjsUser)
           .name("Budapest.js")
+          .status("ACTIVE")
           .description("Monthly JavaScript meetup in Budapest covering frontend, backend, and everything in between.")
           .websiteUrl("https://www.meetup.com/budapest-js/")
           .build();
@@ -69,6 +70,7 @@ public class DunaDevApplication {
       var budapestPy = OrganiserEntity.builder()
           .user(bpyUser)
           .name("Budapest.py")
+          .status("ACTIVE")
           .description("Python community meetup in Budapest for developers of all levels.")
           .websiteUrl("https://www.meetup.com/budapest-py/")
           .build();
@@ -85,6 +87,7 @@ public class DunaDevApplication {
       var hwsw = OrganiserEntity.builder()
           .user(hwswUser)
           .name("HWSW")
+          .status("ACTIVE")
           .description("Hungary's leading IT professional community, organising meetups and conferences.")
           .websiteUrl("https://hwsw.hu")
           .build();
@@ -101,6 +104,7 @@ public class DunaDevApplication {
       var craftConf = OrganiserEntity.builder()
           .user(craftUser)
           .name("Craft Conf")
+          .status("ACTIVE")
           .description("International software craftsmanship conference held annually in Budapest.")
           .websiteUrl("https://craft-conf.com")
           .build();

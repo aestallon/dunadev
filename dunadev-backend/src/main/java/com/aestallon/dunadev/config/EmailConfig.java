@@ -1,5 +1,6 @@
 package com.aestallon.dunadev.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +15,10 @@ public class EmailConfig {
 
   @Bean
   @ConditionalOnBean(JavaMailSender.class)
-  public EmailService emailService(JavaMailSender mailSender) {
-    return new SmtpEmailService(mailSender);
+  public EmailService emailService(JavaMailSender mailSender,
+                                   @Value("${dunadev.mail.from:}") String from) {
+    if (from == null || from.isBlank()) throw new IllegalStateException("From cannot be empty!");
+    return new SmtpEmailService(mailSender, from);
   }
 
   @Bean
