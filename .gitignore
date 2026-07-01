@@ -7,7 +7,10 @@
 **/.vscode
 dunadev-frontend/dist
 dunadev-frontend/src/environments/version.generated.ts
+dunadev-frontend/node
+dunadev-frontend/.frontend-gradle-plugin
 /media
+/logs
 
 CLAUDE.md
 MEMORY.md
