@@ -20,7 +20,8 @@ export const EN: Record<string, string> = {
 
   // --- Landing hero ---
   'landing.eyebrow':    'Budapest · Tech Events',
-  'landing.heroTitle':  'Discover the <span class="text-gradient">Tech Community</span>',
+  'landing.heroTitle':  'Every tech event',
+  'landing.heroTitle2': 'on a single website',
   'landing.heroBody':   'Join local meetups, workshops, and conferences. Stay connected with the developer community in the heart of Hungary.',
   'landing.panelLabel': 'Coming Up Next',
   'landing.noUpcoming': 'No upcoming events right now. Check back soon!',
@@ -336,8 +337,8 @@ export const EN: Record<string, string> = {
   'contact.emailCard.body':   'For partnership inquiries, organiser access requests, or general questions.',
   'contact.submitCard.title': 'Submit an Event',
   'contact.submitCard.body':  'Running a tech event in Budapest? Organiser accounts are free and invite-only to ensure listing quality.',
-  'contact.reportCard.title': 'Report an Issue',
-  'contact.reportCard.body':  "Found an incorrect listing, a bug, or something that looks off? Let us know and we'll sort it out.",
+  'contact.reportCard.title': 'Report an Issue, Request a Feature',
+  'contact.reportCard.body':  "Found a bug, or something that looks off? Are you missing some sleak feature? Let us know and we'll sort it out!",
 
   // --- Generic actions ---
   'generic.loading':   'Loading…',

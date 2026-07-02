@@ -33,7 +33,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
             <div class="contact-icon report-icon"></div>
             <h3>{{ 'contact.reportCard.title' | translate }}</h3>
             <p>{{ 'contact.reportCard.body' | translate }}</p>
-            <a href="https://github.com/aestallon/dunadev-tracker" class="contact-link">https://github.com/aestallon/dunadev-tracker</a>
+            <a href="https://github.com/aestallon/dunadev-tracker" class="contact-link">GitHub Issue Tracker</a>
           </div>
         </div>
       </div>

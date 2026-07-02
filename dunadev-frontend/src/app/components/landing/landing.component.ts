@@ -31,6 +31,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
           <div class="hero-text">
             <span class="hero-eyebrow">{{ 'landing.eyebrow' | translate }}</span>
             <h1 [innerHTML]="'landing.heroTitle' | translate"></h1>
+            <h1 class="text-gradient" [innerHTML]="'landing.heroTitle2' | translate"></h1>
             <p>{{ 'landing.heroBody' | translate }}</p>
           </div>
 
@@ -271,6 +272,15 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
       background-image:
         radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
       background-size: 32px 32px;
+    }
+
+    .hero-text h1 {
+      font-size: 3rem !important;
+      margin-bottom: unset !important;
+    }
+
+    .hero-text p {
+      margin-top: 2rem;
     }
 
     /* Hero content */

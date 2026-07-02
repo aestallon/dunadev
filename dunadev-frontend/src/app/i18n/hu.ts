@@ -20,13 +20,14 @@ export const HU: Record<string, string> = {
 
   // --- Landing hero ---
   'landing.eyebrow':    'Budapest · Tech Események',
-  'landing.heroTitle':  'Fedezd fel a <span class="text-gradient">Tech Közösséget</span>',
+  'landing.heroTitle':  'Minden tech esemény',
+  'landing.heroTitle2':  'egy helyen',
   'landing.heroBody':   'Csatlakozz helyi meetupokhoz, workshopokhoz és konferenciákhoz. Maradj kapcsolatban a fejlesztői közösséggel Magyarország szívében.',
   'landing.panelLabel': 'Következő események',
   'landing.noUpcoming': 'Jelenleg nincs közelgő esemény. Nézz vissza hamarosan!',
   'landing.loadError':  'Az események betöltése sikertelen.',
   'landing.ctaTitle':   'Szervező vagy?',
-  'landing.ctaBody':    'Lépj kapcsolatba velünk, és oszd meg eseményeidet a DunaDev közösséggel.',
+  'landing.ctaBody':    'Lépj kapcsolatba velünk, és juss el még több emberhez!',
   'landing.ctaBtn':     'Kapcsolat',
 
   // --- Landing month grid ---
@@ -319,25 +320,25 @@ export const HU: Record<string, string> = {
   // --- About ---
   'about.eyebrow':           'Rólunk',
   'about.title':             'Budapest Tech Eseménynaptára',
-  'about.lead':              'A DunaDev egy közösségi naptár, amely a Budapesten és környékének zajló tech meetupokat, workshopokat és konferenciákat aggregálja.',
+  'about.lead':              'A DunaDev egy közösségi naptár, amely a Budapesten és környékén zajló tech meetupokat, workshopokat és konferenciákat gyűjti.',
   'about.mission.title':     'Küldetésünk',
-  'about.mission.body':      'Hogy a fejlesztőknek, designereknek és tech-rajongóknak könnyű legyen helyi eseményeket felfedezni, kapcsolódni a közösséghez, és soha ne maradjanak le egy meetupról sem.',
+  'about.mission.body':      'Hogy a fejlesztőknek, designereknek és tech-rajongóknak könnyű legyen helyi eseményeket felfedezni, kapcsolódni a közösséghez, és részesei lehessenek minél több meetupnak.',
   'about.community.title':   'A közösségért',
-  'about.community.body':    'Az eseményeket ellenőrzött szervezők küldik be és kezelik. Minden listázott esemény kurált, hogy a naptár releváns, pontos és naprakész maradjon.',
+  'about.community.body':    'Az eseményeket maga a közösség hozza létre és kezeli. Közösen dolgozunk azon, hogy minél több eseménnyel tölthessük meg a mindennapokat.',
   'about.organiser.title':   'Eseményszervező vagy?',
-  'about.organiser.body':    'Ha Budapesten tech eseményeket szervezel és szeretnéd listázni őket, vedd fel velünk a kapcsolatot. Szervezői fiókok meghívásos alapon kerülnek létrehozásra.',
+  'about.organiser.body':    'Ha Budapesten tech eseményeket szervezel és szeretnéd megjelentetni azokat, vedd fel velünk a kapcsolatot!',
   'about.organiser.cta':     'Kapcsolat',
 
   // --- Contact ---
   'contact.eyebrow':          'Kapcsolat',
   'contact.title':            'Lépj kapcsolatba velünk',
-  'contact.lead':             'Kérdéseid vannak? Szeretnél eseményeid megjelentetni a weboldalon? Írj nekünk!',
+  'contact.lead':             'Kérdéseid vannak? Szeretnél eseményeket publikálni a weboldalon? Írj nekünk!',
   'contact.emailCard.title':  'Írj nekünk',
   'contact.emailCard.body':   'Partnerségi megkeresések, szervezői hozzáférési kérelmek vagy általános kérdések esetén.',
   'contact.submitCard.title': 'Esemény beküldése',
   'contact.submitCard.body':  'Tech eseményt szervezel Budapesten? Lépj kapcsolatba velünk az alábbi címen ingyenes szervezői meghívóért.',
-  'contact.reportCard.title': 'Hiba bejelentése',
-  'contact.reportCard.body':  'Hibás listázást, programhibát vagy valami furcsát találtál? Szólj nekünk és kijavítjuk.',
+  'contact.reportCard.title': 'Hibabejelentések, fejlesztési ötletek',
+  'contact.reportCard.body':  'Programhibát vagy valami furcsát találtál? Valamit hiányolsz? Szólj nekünk és implementáljuk!',
 
   // --- Generic actions ---
   'generic.loading':   'Betöltés…',
